@@ -11,7 +11,6 @@ public class LocalGame extends Game {
 
     public LocalGame(MahjongRule rule) {
         super(rule);
-
     }
 
     public boolean join(Player player) {

@@ -5,8 +5,10 @@ import com.google.common.collect.Maps;
 import top.focess.mahjong.game.GameState;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
-import top.focess.mahjong.game.RemoteGame;
+import top.focess.mahjong.game.remote.GameRequester;
+import top.focess.mahjong.game.remote.RemoteGame;
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.packet.GameActionStatusPacket;
 import top.focess.mahjong.game.packet.GamesPacket;
 import top.focess.mahjong.game.packet.JoinGamePacket;
 import top.focess.mahjong.game.packet.ListGamesPacket;
@@ -14,13 +16,9 @@ import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.FocessClientReceiver;
 import top.focess.net.receiver.FocessReceiver;
-import top.focess.net.socket.FocessClientSocket;
-import top.focess.net.socket.FocessSocket;
 import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.net.socket.FocessUDPServerMultiSocket;
 import top.focess.scheduler.Callback;
-import top.focess.scheduler.FocessScheduler;
-import top.focess.scheduler.Task;
 import top.focess.scheduler.ThreadPoolScheduler;
 import top.focess.util.Pair;
 import top.focess.util.option.Option;
@@ -28,11 +26,8 @@ import top.focess.util.option.OptionParserClassifier;
 import top.focess.util.option.Options;
 import top.focess.util.option.type.IntegerOptionType;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -123,7 +118,9 @@ public class Launcher {
                         ret.add(new RemoteGame(finalClientSocket, data));
                     flag.set(true);
                 });
-                receiver.register();
+                receiver.register(GameActionStatusPacket.class, (clientId, packet) -> {
+                    GameRequester.getGameRequester(packet.getGameId()).response(packet.getGameAction().getName(), packet.getPlayerId(), packet.getGameActionStatus());
+                });
                 clientSockets.put(Pair.of(ip, port), clientSocket);
             }
             clientSocket.getReceiver().sendPacket(new ListGamesPacket());

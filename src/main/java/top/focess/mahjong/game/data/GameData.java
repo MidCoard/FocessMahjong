@@ -1,8 +1,6 @@
 package top.focess.mahjong.game.data;
 
-import com.google.common.collect.Lists;
 import top.focess.mahjong.game.GameState;
-import top.focess.mahjong.game.RemoteGame;
 import top.focess.mahjong.game.rule.MahjongRule;
 
 import java.util.List;

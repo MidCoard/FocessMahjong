@@ -1,7 +1,6 @@
 package top.focess.mahjong.game;
 
 import top.focess.mahjong.game.rule.MahjongRule;
-import top.focess.mahjong.game.tile.Tiles;
 
 import java.util.UUID;
 
