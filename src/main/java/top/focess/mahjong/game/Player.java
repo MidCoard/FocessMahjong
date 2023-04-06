@@ -1,12 +1,22 @@
 package top.focess.mahjong.game;
 
+import top.focess.mahjong.game.data.PlayerData;
+
 import java.util.UUID;
 
 public class Player {
 
-    private final UUID id = UUID.randomUUID();
+    private final UUID id;
 
     private Game game;
+
+    public Player() {
+        this(UUID.randomUUID());
+    }
+
+    public Player(UUID id) {
+        this.id = id;
+    }
 
     public Game getGame() {
         return this.game;
@@ -26,5 +36,9 @@ public class Player {
 
     public UUID getId() {
         return this.id;
+    }
+
+    public PlayerData getPlayerData() {
+        return new PlayerData(this.id);
     }
 }

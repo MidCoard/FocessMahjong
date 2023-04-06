@@ -1,0 +1,23 @@
+package top.focess.mahjong.game.packet;
+
+import top.focess.mahjong.game.data.GameData;
+import top.focess.net.packet.Packet;
+
+public class GamePacket extends Packet {
+
+    public static final int PACKET_ID = 123;
+    private final GameData gameData;
+
+    public GamePacket(GameData gameData) {
+        this.gameData = gameData;
+    }
+
+    public GameData getGameData() {
+        return gameData;
+    }
+
+    @Override
+    public int getId() {
+        return PACKET_ID;
+    }
+}

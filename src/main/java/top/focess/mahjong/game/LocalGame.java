@@ -1,6 +1,7 @@
 package top.focess.mahjong.game;
 
 import com.google.common.collect.Lists;
+import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.rule.MahjongRule;
 
 import java.util.List;
@@ -31,4 +32,13 @@ public class LocalGame extends Game {
         return true;
     }
 
+    @Override
+    public GameData getGameData() {
+        return new GameData(this.getId(), this.rule, this.gameState, null, this.players.stream().map(Player::getPlayerData).toList());
+    }
+
+    @Override
+    protected void update(GameData gameData) {
+        // ignore all the data update
+    }
 }

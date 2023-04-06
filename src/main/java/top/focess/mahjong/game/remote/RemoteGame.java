@@ -6,6 +6,7 @@ import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.GameActionStatusPacket;
 import top.focess.mahjong.game.packet.JoinGamePacket;
 import top.focess.mahjong.game.packet.LeaveGamePacket;
+import top.focess.mahjong.game.packet.SyncGamePacket;
 import top.focess.net.socket.FocessUDPClientSocket;
 
 public class RemoteGame extends Game {
@@ -38,5 +39,23 @@ public class RemoteGame extends Game {
             return true;
         }
         return false;
+    }
+
+    public void syncGameData() {
+        this.socket.getReceiver().sendPacket(new SyncGamePacket(this.getId()));
+        GameData gameData = this.requester.request("sync");
+        this.update(gameData);
+    }
+
+    @Override
+    public GameData getGameData() {
+        syncGameData();
+        return super.getGameData();
+    }
+
+    @Override
+    protected void update(GameData gameData) {
+        super.update(gameData);
+        // todo update players
     }
 }

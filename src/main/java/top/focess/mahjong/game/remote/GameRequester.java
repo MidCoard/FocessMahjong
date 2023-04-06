@@ -2,7 +2,6 @@ package top.focess.mahjong.game.remote;
 
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.packet.GameActionStatusPacket;
-import top.focess.scheduler.ThreadPoolScheduler;
 
 import java.util.Map;
 import java.util.UUID;
@@ -28,13 +27,13 @@ public class GameRequester {
         return gameId;
     }
 
-    public GameActionStatusPacket.GameActionStatus request(String action, UUID playerId) {
+    public <T> T request(String action, Object... args) {
         GameRequest gameRequest;
         synchronized (LOCK) {
             if (gameRequests.containsKey(action))
                 gameRequest = gameRequests.get(action);
             else {
-                gameRequest = new GameRequest(new Object(), playerId);
+                gameRequest = new GameRequest(new Object(), args);
                 gameRequests.put(action, gameRequest);
             }
         }
@@ -43,46 +42,44 @@ public class GameRequester {
                 gameRequest.getLock().wait(5000, 0);
             } catch (InterruptedException ignored) {
             }
-            return gameRequest.getStatus();
+            return gameRequest.getResponse();
         }
     }
 
-    public void response(String action, UUID playerId, GameActionStatusPacket.GameActionStatus status) {
+    public void response(String action, Object arg) {
         synchronized (LOCK) {
             GameRequest gameRequest = this.gameRequests.get(action);
-            if (gameRequest != null && gameRequest.getPlayerId().equals(playerId))
+            if (gameRequest != null)
                 synchronized (gameRequest.getLock()) {
-                    gameRequest.setStatus(status);
+                    gameRequest.setResponse(arg);
                     gameRequest.getLock().notifyAll();
                 }
         }
     }
 
     public static class GameRequest {
-
         private final Object lock;
-        private final UUID playerId;
-        private GameActionStatusPacket.GameActionStatus status = GameActionStatusPacket.GameActionStatus.UNKNOWN;
+        private final Object[] args;
+        private Object response;
 
-        public GameRequest(Object lock, UUID playerId) {
+        public GameRequest(Object lock, Object... args) {
             this.lock = lock;
-            this.playerId = playerId;
+            this.args = args;
         }
 
         public Object getLock() {
             return lock;
         }
-
-        public GameActionStatusPacket.GameActionStatus getStatus() {
-            return status;
+        public void setResponse(Object arg) {
+            this.response = arg;
         }
 
-        public void setStatus(GameActionStatusPacket.GameActionStatus status) {
-            this.status = status;
+        public <T> T getResponse() {
+            return (T) response;
         }
 
-        public UUID getPlayerId() {
-            return playerId;
+        public Object[] getArgs() {
+            return args;
         }
     }
 }

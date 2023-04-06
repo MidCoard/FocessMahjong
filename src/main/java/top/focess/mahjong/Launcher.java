@@ -2,20 +2,21 @@ package top.focess.mahjong;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.GameState;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
+import top.focess.mahjong.game.packet.*;
 import top.focess.mahjong.game.remote.GameRequester;
 import top.focess.mahjong.game.remote.RemoteGame;
 import top.focess.mahjong.game.data.GameData;
-import top.focess.mahjong.game.packet.GameActionStatusPacket;
-import top.focess.mahjong.game.packet.GamesPacket;
-import top.focess.mahjong.game.packet.JoinGamePacket;
-import top.focess.mahjong.game.packet.ListGamesPacket;
+import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.FocessClientReceiver;
 import top.focess.net.receiver.FocessReceiver;
+import top.focess.net.receiver.ServerMultiReceiver;
+import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.net.socket.FocessUDPServerMultiSocket;
 import top.focess.scheduler.Callback;
@@ -35,8 +36,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Launcher {
 
-    private static final ThreadPoolScheduler FOCESS_SCHEDULER = new ThreadPoolScheduler("Mahjong", 10);
+    static {
+        ASocket.enableDebug();
+    }
 
+    private static final ThreadPoolScheduler FOCESS_SCHEDULER = new ThreadPoolScheduler("Mahjong", 10);
     private final LocalPlayer player = new LocalPlayer();
     private final FocessUDPServerMultiSocket serverSocket;
 
@@ -48,10 +52,38 @@ public class Launcher {
 
     public Launcher(int serverPort) throws IllegalPortException {
         this.serverSocket = new FocessUDPServerMultiSocket(serverPort);
-        FocessReceiver receiver;
-        this.serverSocket.registerReceiver(receiver = new FocessReceiver(this.serverSocket));
+        ServerMultiReceiver receiver = this.serverSocket.getReceiver();
         receiver.register("mahjong", JoinGamePacket.class, (clientId, packet) -> {
-
+            Game game = Game.getGame(packet.getGameId());
+            boolean flag = false;
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
+                flag = game.join(player);
+            }
+            receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), GameActionStatusPacket.GameAction.JOIN, flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+        });
+        receiver.register("mahjong", LeaveGamePacket.class, (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            boolean flag = false;
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
+                flag = game.leave(player);
+            }
+            receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), GameActionStatusPacket.GameAction.LEAVE, flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+        });
+        receiver.register("mahjong", ListGamesPacket.class, (clientId, packet) -> {
+            List<GameData> gameDataList = Lists.newArrayList();
+            for (Game game : Game.getGames()) {
+                if (game instanceof RemoteGame)
+                    continue;
+                gameDataList.add(game.getGameData());
+            }
+            receiver.sendPacket(clientId, new GamesPacket(gameDataList));
+        });
+        receiver.register("mahjong", SyncGamePacket.class, (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            if (game instanceof LocalGame)
+                receiver.sendPacket(clientId, new GamePacket(game.getGameData()));
         });
     }
 
@@ -98,6 +130,7 @@ public class Launcher {
                     for (RemoteGame remoteGame : games)
                         if (remoteGame.getGameState() == GameState.WAITING) {
                             boolean flag = remoteGame.join(launcher.getPlayer());
+                            System.out.println(flag);
                         }
             }
         }
@@ -118,9 +151,8 @@ public class Launcher {
                         ret.add(new RemoteGame(finalClientSocket, data));
                     flag.set(true);
                 });
-                receiver.register(GameActionStatusPacket.class, (clientId, packet) -> {
-                    GameRequester.getGameRequester(packet.getGameId()).response(packet.getGameAction().getName(), packet.getPlayerId(), packet.getGameActionStatus());
-                });
+                receiver.register(GameActionStatusPacket.class, (clientId, packet) -> GameRequester.getGameRequester(packet.getGameId()).response(packet.getGameAction().getName(), packet.getGameActionStatus()));
+                receiver.register(GamePacket.class, (clientId, packet) -> GameRequester.getGameRequester(packet.getGameData().getId()).response("sync", packet.getGameData()));
                 clientSockets.put(Pair.of(ip, port), clientSocket);
             }
             clientSocket.getReceiver().sendPacket(new ListGamesPacket());
