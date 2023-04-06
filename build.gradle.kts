@@ -12,7 +12,8 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    implementation("top.focess:focess-util")
+    implementation("top.focess:focess-util:1.1.17")
+    implementation("top.focess:focess-socket:1.1.2")
 }
 
 tasks.test {

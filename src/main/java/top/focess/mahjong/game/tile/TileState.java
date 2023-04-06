@@ -1,0 +1,46 @@
+package top.focess.mahjong.game.tile;
+
+public enum TileState {
+
+    ONE_DOTS,
+    TWO_DOTS,
+    THREE_DOTS,
+    FOUR_DOTS,
+    FIVE_DOTS,
+    SIX_DOTS,
+    SEVEN_DOTS,
+    EIGHT_DOTS,
+    NINE_DOTS,
+
+
+    ONE_BAMBOO,
+    TWO_BAMBOO,
+    THREE_BAMBOO,
+    FOUR_BAMBOO,
+    FIVE_BAMBOO,
+    SIX_BAMBOO,
+    SEVEN_BAMBOO,
+    EIGHT_BAMBOO,
+    NINE_BAMBOO,
+
+    ONE_CHARACTERS,
+    TWO_CHARACTERS,
+    THREE_CHARACTERS,
+    FOUR_CHARACTERS,
+    FIVE_CHARACTERS,
+    SIX_CHARACTERS,
+    SEVEN_CHARACTERS,
+    EIGHT_CHARACTERS,
+    NINE_CHARACTERS,
+
+    EAST_WIND,
+    SOUTH_WIND,
+    WEST_WIND,
+    NORTH_WIND,
+
+    RED_DRAGON,
+    GREEN_DRAGON,
+    WHITE_DRAGON,
+
+    ;
+}
