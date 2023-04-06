@@ -29,7 +29,7 @@ public class GamesPacketCodec extends PacketCodec<GamesPacket> {
             for (int j = 0; j < playerSize; j++) {
                 UUID playerId = UUID.fromString(packetPreCodec.readString());
                 // todo
-                playerData.add(new PlayerData(playerId));
+                playerData.add(new PlayerData(playerId, playerState));
             }
 
             games.add(new GameData(gameId, rule, gameState, null, playerData));

@@ -10,6 +10,8 @@ public class Player {
 
     private Game game;
 
+    protected PlayerState playerState;
+
     public Player() {
         this(UUID.randomUUID());
     }
@@ -39,6 +41,10 @@ public class Player {
     }
 
     public PlayerData getPlayerData() {
-        return new PlayerData(this.id);
+        return new PlayerData(this.id, playerState);
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
     }
 }

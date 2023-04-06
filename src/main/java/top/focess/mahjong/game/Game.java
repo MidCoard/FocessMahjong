@@ -3,6 +3,8 @@ package top.focess.mahjong.game;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.data.PlayerData;
+import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 
 import java.util.Collections;
@@ -17,6 +19,8 @@ public abstract class Game {
     protected MahjongRule rule;
     protected GameState gameState;
     private final UUID id;
+
+    protected final List<Player> players = Lists.newArrayList();
 
     public Game(MahjongRule rule) {
         this(UUID.randomUUID(), rule, GameState.NEW);
@@ -50,16 +54,7 @@ public abstract class Game {
     }
 
     public GameData getGameData() {
-        return null;
+        return new GameData(this.getId(), this.rule, this.gameState, null, this.players.stream().map(Player::getPlayerData).toList());
     }
 
-
-    protected void update(GameData gameData) {
-        if (gameData.getId() != this.id)
-            throw new IllegalArgumentException("The game id is not equal to the game data id.");
-        this.rule = gameData.getRule();
-        this.gameState = gameData.getGameState();
-
-        // todo update tiles
-    }
 }

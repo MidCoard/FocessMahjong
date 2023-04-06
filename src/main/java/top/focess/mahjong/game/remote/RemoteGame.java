@@ -3,6 +3,7 @@ package top.focess.mahjong.game.remote;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.GameActionStatusPacket;
 import top.focess.mahjong.game.packet.JoinGamePacket;
 import top.focess.mahjong.game.packet.LeaveGamePacket;
@@ -53,9 +54,18 @@ public class RemoteGame extends Game {
         return super.getGameData();
     }
 
-    @Override
-    protected void update(GameData gameData) {
-        super.update(gameData);
-        // todo update players
+    public void update(GameData gameData) {
+        if (!this.getId().equals(gameData.getId()))
+            throw new IllegalArgumentException("The game id is not equal to the game data id.");
+        this.rule = gameData.getRule();
+        this.gameState = gameData.getGameState();
+
+        // todo update tiles
+
+        for (PlayerData playerData : gameData.getPlayerData()) {
+            RemotePlayer player = RemotePlayer.getOrCreatePlayer(-1, playerData.getId());
+            player.update(playerData);
+        }
     }
+
 }

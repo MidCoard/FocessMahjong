@@ -8,8 +8,6 @@ import java.util.List;
 
 public class LocalGame extends Game {
 
-    private final List<Player> players = Lists.newArrayList();
-
     public LocalGame(MahjongRule rule) {
         super(rule);
     }
@@ -30,15 +28,5 @@ public class LocalGame extends Game {
         this.players.remove(player);
         player.setGame(null);
         return true;
-    }
-
-    @Override
-    public GameData getGameData() {
-        return new GameData(this.getId(), this.rule, this.gameState, null, this.players.stream().map(Player::getPlayerData).toList());
-    }
-
-    @Override
-    protected void update(GameData gameData) {
-        // ignore all the data update
     }
 }
