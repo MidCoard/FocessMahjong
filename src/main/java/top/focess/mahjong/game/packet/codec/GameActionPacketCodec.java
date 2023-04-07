@@ -1,28 +1,24 @@
 package top.focess.mahjong.game.packet.codec;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
 import top.focess.mahjong.game.packet.GameActionPacket;
-import top.focess.mahjong.game.packet.GameActionStatusPacket;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.PacketCodec;
 
 import java.util.UUID;
 
-public class GameActionStatusPacketCodec extends PacketCodec<GameActionStatusPacket> {
+public class GameActionPacketCodec extends PacketCodec<GameActionPacket> {
     @Override
-    public @Nullable GameActionStatusPacket readPacket(PacketPreCodec packetPreCodec) {
+    public GameActionPacket readPacket(PacketPreCodec packetPreCodec) {
         UUID playerId = UUID.fromString(packetPreCodec.readString());
         UUID gameId = UUID.fromString(packetPreCodec.readString());
         GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.valueOf(packetPreCodec.readString());
-        GameActionStatusPacket.GameActionStatus gameActionStatus = GameActionStatusPacket.GameActionStatus.valueOf(packetPreCodec.readString());
-        return new GameActionStatusPacket(playerId, gameId, gameAction, gameActionStatus);
+        return new GameActionPacket(playerId, gameId, gameAction);
     }
 
     @Override
-    public void writePacket(GameActionStatusPacket packet, PacketPreCodec packetPreCodec) {
+    public void writePacket(GameActionPacket packet, PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getPlayerId().toString());
         packetPreCodec.writeString(packet.getGameId().toString());
         packetPreCodec.writeString(packet.getGameAction().name());
-        packetPreCodec.writeString(packet.getGameActionStatus().name());
     }
 }

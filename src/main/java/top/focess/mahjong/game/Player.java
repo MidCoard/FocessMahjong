@@ -47,4 +47,15 @@ public class Player {
     public PlayerState getPlayerState() {
         return playerState;
     }
+
+    public void setPlayerState(PlayerState playerState) {
+        this.playerState = playerState;
+    }
+
+    public enum PlayerState {
+
+        WAITING,
+        READY,
+        PLAYING;
+    }
 }

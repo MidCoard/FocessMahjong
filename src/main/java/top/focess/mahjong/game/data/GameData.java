@@ -1,6 +1,6 @@
 package top.focess.mahjong.game.data;
 
-import top.focess.mahjong.game.GameState;
+import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.rule.MahjongRule;
 
 import java.util.List;
@@ -10,11 +10,11 @@ public class GameData {
 
     private final UUID id;
     private final MahjongRule rule;
-    private final GameState gameState;
+    private final Game.GameState gameState;
     private final TilesData tilesData;
     private final List<PlayerData> playerData;
 
-    public GameData(UUID id, MahjongRule rule, GameState gameState, TilesData tilesData, List<PlayerData> playerData) {
+    public GameData(UUID id, MahjongRule rule, Game.GameState gameState, TilesData tilesData, List<PlayerData> playerData) {
         this.id = id;
         this.rule = rule;
         this.gameState = gameState;
@@ -30,7 +30,7 @@ public class GameData {
         return rule;
     }
 
-    public GameState getGameState() {
+    public Game.GameState getGameState() {
         return gameState;
     }
 

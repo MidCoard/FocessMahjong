@@ -1,11 +1,18 @@
 package top.focess.mahjong.game.packet;
 
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.packet.codec.GamePacketCodec;
+import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 
 public class GamePacket extends Packet {
 
     public static final int PACKET_ID = 123;
+
+    static {
+        PacketPreCodec.register(PACKET_ID, new GamePacketCodec());
+    }
+
     private final GameData gameData;
 
     public GamePacket(GameData gameData) {

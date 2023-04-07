@@ -3,7 +3,6 @@ package top.focess.mahjong;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
-import top.focess.mahjong.game.GameState;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.packet.*;
@@ -14,7 +13,6 @@ import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.FocessClientReceiver;
-import top.focess.net.receiver.FocessReceiver;
 import top.focess.net.receiver.ServerMultiReceiver;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessUDPClientSocket;
@@ -40,7 +38,7 @@ public class Launcher {
         ASocket.enableDebug();
     }
 
-    private static final ThreadPoolScheduler FOCESS_SCHEDULER = new ThreadPoolScheduler("Mahjong", 10);
+    private static final ThreadPoolScheduler THREAD_POOL_SCHEDULER = new ThreadPoolScheduler(10, false, "Mahjong", true);
     private final LocalPlayer player = new LocalPlayer();
     private final FocessUDPServerMultiSocket serverSocket;
 
@@ -53,23 +51,19 @@ public class Launcher {
     public Launcher(int serverPort) throws IllegalPortException {
         this.serverSocket = new FocessUDPServerMultiSocket(serverPort);
         ServerMultiReceiver receiver = this.serverSocket.getReceiver();
-        receiver.register("mahjong", JoinGamePacket.class, (clientId, packet) -> {
+        receiver.register("mahjong", GameActionPacket.class, (clientId, packet) -> {
             Game game = Game.getGame(packet.getGameId());
             boolean flag = false;
             if (game instanceof LocalGame) {
                 RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
-                flag = game.join(player);
+                flag = switch (packet.getGameAction()) {
+                    case READY -> game.ready(player);
+                    case UNREADY -> game.unready(player);
+                    case LEAVE -> game.leave(player);
+                    case JOIN -> game.join(player);
+                };
             }
-            receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), GameActionStatusPacket.GameAction.JOIN, flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
-        });
-        receiver.register("mahjong", LeaveGamePacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
-            boolean flag = false;
-            if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
-                flag = game.leave(player);
-            }
-            receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), GameActionStatusPacket.GameAction.LEAVE, flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+            receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
         });
         receiver.register("mahjong", ListGamesPacket.class, (clientId, packet) -> {
             List<GameData> gameDataList = Lists.newArrayList();
@@ -94,7 +88,7 @@ public class Launcher {
     }
 
     public LocalGame createGame(MahjongRule rule) {
-        return new LocalGame(rule);
+        return new LocalGame(this.serverSocket, rule);
     }
 
     public LocalPlayer getPlayer() {
@@ -128,7 +122,7 @@ public class Launcher {
                 List<RemoteGame> games = launcher.getRemoteGames("127.0.0.1", 1234);
                 if (games != null)
                     for (RemoteGame remoteGame : games)
-                        if (remoteGame.getGameState() == GameState.WAITING) {
+                        if (remoteGame.getGameState() == Game.GameState.WAITING) {
                             boolean flag = remoteGame.join(launcher.getPlayer());
                             System.out.println(flag);
                         }
@@ -156,7 +150,7 @@ public class Launcher {
                 clientSockets.put(Pair.of(ip, port), clientSocket);
             }
             clientSocket.getReceiver().sendPacket(new ListGamesPacket());
-            Callback<List<RemoteGame>> callback = FOCESS_SCHEDULER.submit(() -> {
+            Callback<List<RemoteGame>> callback = THREAD_POOL_SCHEDULER.submit(() -> {
                 while(!flag.get());
                 return ret;
             });

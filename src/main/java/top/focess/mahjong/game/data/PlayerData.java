@@ -1,6 +1,6 @@
 package top.focess.mahjong.game.data;
 
-import top.focess.mahjong.game.PlayerState;
+import top.focess.mahjong.game.Player;
 
 import java.util.UUID;
 
@@ -8,9 +8,9 @@ public class PlayerData {
 
     private final UUID id;
 
-    private final PlayerState playerState;
+    private final Player.PlayerState playerState;
 
-    public PlayerData(UUID id, PlayerState playerState) {
+    public PlayerData(UUID id, Player.PlayerState playerState) {
         this.id = id;
         this.playerState = playerState;
     }
@@ -19,7 +19,7 @@ public class PlayerData {
         return id;
     }
 
-    public PlayerState getPlayerState() {
+    public Player.PlayerState getPlayerState() {
         return playerState;
     }
 }

@@ -1,32 +1,102 @@
 package top.focess.mahjong.game;
 
-import com.google.common.collect.Lists;
-import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.packet.GameStartPacket;
+import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
+import top.focess.net.socket.FocessUDPServerMultiSocket;
+import top.focess.scheduler.FocessScheduler;
+import top.focess.scheduler.Task;
 
-import java.util.List;
+import java.time.Duration;
 
 public class LocalGame extends Game {
 
-    public LocalGame(MahjongRule rule) {
+    private static final FocessScheduler FOCESS_SCHEDULER = new FocessScheduler("GameTicker", true);
+    private final FocessUDPServerMultiSocket serverSocket;
+    private int startTime;
+    private Task task;
+
+    public LocalGame(FocessUDPServerMultiSocket serverSocket, MahjongRule rule) {
         super(rule);
+        this.serverSocket = serverSocket;
     }
 
-    public boolean join(Player player) {
+    public synchronized boolean join(Player player) {
+        if (this.getGameState() == GameState.NEW)
+            return false;
         if (this.rule.checkPlayerSize(players.size() + 1))
             return false;
-        if (player.getGame() != null)
+        if (player.getGame() != null || player.getPlayerState() != Player.PlayerState.WAITING)
             return false;
         this.players.add(player);
         player.setGame(this);
         return true;
     }
 
-    public boolean leave(Player player) {
-        if (player.getGame() != this)
+    public synchronized boolean leave(Player player) {
+        if (player.getGame() != this || !this.players.remove(player) )
             return false;
-        this.players.remove(player);
         player.setGame(null);
+        player.setPlayerState(Player.PlayerState.WAITING);
         return true;
+    }
+
+    @Override
+    public synchronized boolean ready(Player player) {
+        if (this.getGameState() != GameState.WAITING)
+            return false;
+        if (this.players.contains(player))
+            if (player.getPlayerState() == Player.PlayerState.WAITING) {
+                player.setPlayerState(Player.PlayerState.READY);
+                if (this.players.stream().allMatch(p -> p.getPlayerState() == Player.PlayerState.READY)) {
+                    this.startTime = this.rule.getReadyTime(this.players.size());
+                    if (this.startTime != -1)
+                        this.task = FOCESS_SCHEDULER.runTimer(this::tick, Duration.ZERO, Duration.ofSeconds(1));
+                }
+                return true;
+            }
+        return false;
+    }
+
+    @Override
+    public synchronized boolean unready(Player player) {
+        if (this.getGameState() != GameState.WAITING)
+            return false;
+        if (this.players.contains(player))
+            if (player.getPlayerState() == Player.PlayerState.READY) {
+                player.setPlayerState(Player.PlayerState.WAITING);
+                if (this.task != null) {
+                    this.task.cancel();
+                    this.task = null;
+                }
+                return true;
+            }
+        return false;
+    }
+
+    private synchronized void tick() {
+        if (this.getGameState() != GameState.WAITING)
+            return;
+        if (this.startTime == 0) {
+            this.task.cancel();
+            this.start();
+            return;
+        }
+        this.startTime--;
+    }
+
+    private synchronized void start() {
+        if (this.getGameState() != GameState.WAITING)
+            return;
+        this.gameState = GameState.PLAYING;
+        this.players.forEach(player -> player.setPlayerState(Player.PlayerState.PLAYING));
+        GameStartPacket gameStartPacket = new GameStartPacket(this.getId());
+        for (Player player : this.players)
+            if (player instanceof RemotePlayer) {
+                int clientId = ((RemotePlayer) player).getClientId();
+                if (clientId == -1)
+                    throw new IllegalStateException("Client id is -1");
+                serverSocket.getReceiver().sendPacket(((RemotePlayer) player).getClientId(), gameStartPacket);
+            }
     }
 }

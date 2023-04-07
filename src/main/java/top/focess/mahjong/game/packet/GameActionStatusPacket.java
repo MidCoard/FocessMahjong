@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class GameActionStatusPacket extends Packet {
 
-    public static final int PACKET_ID = 102;
+    public static final int PACKET_ID = 101;
 
     static {
         PacketPreCodec.register(PACKET_ID, new GameActionStatusPacketCodec());
@@ -16,10 +16,10 @@ public class GameActionStatusPacket extends Packet {
 
     private final UUID playerId;
     private final UUID gameId;
-    private final GameAction gameAction;
+    private final GameActionPacket.GameAction gameAction;
     private final GameActionStatus gameActionStatus;
 
-    public GameActionStatusPacket(UUID playerId, UUID gameId, GameAction gameAction, GameActionStatus gameActionStatus) {
+    public GameActionStatusPacket(UUID playerId, UUID gameId, GameActionPacket.GameAction gameAction, GameActionStatus gameActionStatus) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.gameAction = gameAction;
@@ -34,7 +34,7 @@ public class GameActionStatusPacket extends Packet {
         return gameId;
     }
 
-    public GameAction getGameAction() {
+    public GameActionPacket.GameAction getGameAction() {
         return gameAction;
     }
 
@@ -45,21 +45,6 @@ public class GameActionStatusPacket extends Packet {
     @Override
     public int getId() {
         return PACKET_ID;
-    }
-
-    public enum GameAction {
-        JOIN("join"),
-        LEAVE("leave");
-
-        private final String name;
-
-        GameAction(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 
     public enum GameActionStatus {

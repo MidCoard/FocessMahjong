@@ -4,10 +4,7 @@ import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
-import top.focess.mahjong.game.packet.GameActionStatusPacket;
-import top.focess.mahjong.game.packet.JoinGamePacket;
-import top.focess.mahjong.game.packet.LeaveGamePacket;
-import top.focess.mahjong.game.packet.SyncGamePacket;
+import top.focess.mahjong.game.packet.*;
 import top.focess.net.socket.FocessUDPClientSocket;
 
 public class RemoteGame extends Game {
@@ -21,8 +18,8 @@ public class RemoteGame extends Game {
     }
 
     @Override
-    public boolean join(Player player) {
-        this.socket.getReceiver().sendPacket(new JoinGamePacket(player.getId(), this.getId()));
+    public synchronized boolean join(Player player) {
+        this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.JOIN));
         GameActionStatusPacket.GameActionStatus status = this.requester.request("join", player.getId());
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setGame(this);
@@ -32,11 +29,34 @@ public class RemoteGame extends Game {
     }
 
     @Override
-    public boolean leave(Player player) {
-        this.socket.getReceiver().sendPacket(new LeaveGamePacket(player.getId(), this.getId()));
+    public synchronized boolean leave(Player player) {
+        this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.LEAVE));
         GameActionStatusPacket.GameActionStatus status = this.requester.request("leave", player.getId());
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setGame(null);
+            player.setPlayerState(Player.PlayerState.WAITING);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public synchronized boolean ready(Player player) {
+        this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.READY));
+        GameActionStatusPacket.GameActionStatus status = this.requester.request("ready", player.getId());
+        if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
+            player.setPlayerState(Player.PlayerState.READY);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean unready(Player player) {
+        this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.UNREADY));
+        GameActionStatusPacket.GameActionStatus status = this.requester.request("unready", player.getId());
+        if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
+            player.setPlayerState(Player.PlayerState.WAITING);
             return true;
         }
         return false;
@@ -61,10 +81,12 @@ public class RemoteGame extends Game {
         this.gameState = gameData.getGameState();
 
         // todo update tiles
-
+        this.players.clear();
         for (PlayerData playerData : gameData.getPlayerData()) {
             RemotePlayer player = RemotePlayer.getOrCreatePlayer(-1, playerData.getId());
+            // player is not null
             player.update(playerData);
+            this.players.add(player);
         }
     }
 

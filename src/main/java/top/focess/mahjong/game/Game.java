@@ -3,7 +3,6 @@ package top.focess.mahjong.game;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.GameData;
-import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 
@@ -45,6 +44,10 @@ public abstract class Game {
 
     public abstract boolean leave(Player player);
 
+    public abstract boolean ready(Player player);
+
+    public abstract boolean unready(Player player);
+
     public GameState getGameState() {
         return gameState;
     }
@@ -57,4 +60,11 @@ public abstract class Game {
         return new GameData(this.getId(), this.rule, this.gameState, null, this.players.stream().map(Player::getPlayerData).toList());
     }
 
+    public enum GameState {
+
+        NEW, // The game is just created, no setup is done.
+        WAITING, // setup is done, waiting for players to join and ready.
+        PLAYING; // game is playing. including the shuffling tiles, dealing tiles, playing tiles, and game over.
+
+    }
 }
