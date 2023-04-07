@@ -60,6 +60,10 @@ public abstract class Game {
         return new GameData(this.getId(), this.rule, this.gameState, null, this.players.stream().map(Player::getPlayerData).toList());
     }
 
+    public MahjongRule getRule() {
+        return this.rule;
+    }
+
     public enum GameState {
 
         NEW, // The game is just created, no setup is done.

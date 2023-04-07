@@ -14,6 +14,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("top.focess:focess-util:1.1.17")
     implementation("top.focess:focess-socket:1.1.4")
+    implementation("top.focess:focess-command:1.3.1")
 }
 
 tasks.test {

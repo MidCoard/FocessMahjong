@@ -1,6 +1,8 @@
 package top.focess.mahjong;
 
 import com.google.common.collect.Lists;
+import top.focess.command.Command;
+import top.focess.command.DataCollection;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
@@ -9,25 +11,39 @@ import top.focess.mahjong.game.packet.*;
 import top.focess.mahjong.game.packet.codec.*;
 import top.focess.mahjong.game.remote.RemoteGame;
 import top.focess.mahjong.game.remote.RemotePlayer;
-import top.focess.mahjong.game.remote.RemoteServer;
 import top.focess.mahjong.game.rule.MahjongRule;
+import top.focess.mahjong.terminal.command.CommandLine;
+import top.focess.mahjong.terminal.command.GameCommand;
+import top.focess.mahjong.terminal.command.PlayerCommand;
+import top.focess.mahjong.terminal.command.RemoteCommand;
+import top.focess.mahjong.terminal.command.converter.MahjongRuleConverter;
+import top.focess.mahjong.terminal.command.data.MahjongRuleBuffer;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.receiver.ServerMultiReceiver;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessMultiSocket;
-import top.focess.net.socket.FocessUDPMultiSocket;
-import top.focess.util.option.Option;
-import top.focess.util.option.OptionParserClassifier;
-import top.focess.util.option.Options;
-import top.focess.util.option.type.IntegerOptionType;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class Launcher {
 
+    public static final int DEFAULT_PORT = 2735;
+
+    public static final Launcher DEFAULT_LAUNCHER;
+
     static {
         ASocket.enableDebug();
+        try {
+            DEFAULT_LAUNCHER = new Launcher(DEFAULT_PORT);
+        } catch (IllegalPortException e) {
+            throw new RuntimeException(e);
+        }
+        DataCollection.register(new MahjongRuleConverter(), MahjongRuleBuffer::allocate);
+        Command.register(new GameCommand());
+        Command.register(new RemoteCommand());
+        Command.register(new PlayerCommand());
         PacketPreCodec.register(GameActionPacket.PACKET_ID, new GameActionPacketCodec());
         PacketPreCodec.register(GameActionStatusPacket.PACKET_ID, new GameActionStatusPacketCodec());
         PacketPreCodec.register(GameSyncPacket.PACKET_ID, new GameSyncPacketCodec());
@@ -89,49 +105,10 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
-        Options options = Options.parse(args,
-                new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE),
-                new OptionParserClassifier("test", IntegerOptionType.INTEGER_OPTION_TYPE));
-        Option option = options.get("port");
-        Launcher launcher;
-        try {
-            launcher = new Launcher(option != null ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : 0);
-        } catch (IllegalPortException e) {
-            System.err.println("No available port found!");
-            return;
-        }
-        option = options.get("test");
-        if (option != null) {
-            int test = option.get(IntegerOptionType.INTEGER_OPTION_TYPE);
-            if (test == 1) {
-                LocalGame game = launcher.createGame(MahjongRule.SICHUAN);
-                launcher.getPlayer().join(game);
-                while(true) {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println(game.getGameState());
-                    if (2 == 1)
-                        break;
-                }
-            } else if (test == 2) {
-                RemoteServer remoteServer;
-                try {
-                    remoteServer = RemoteServer.connect("127.0.0.1", 1234);
-                } catch (IllegalPortException e) {
-                    throw new RuntimeException(e);
-                }
-                List<RemoteGame> games = remoteServer.getRemoteGames();
-                if (games != null)
-                    for (RemoteGame remoteGame : games)
-                        if (remoteGame.getGameState() == Game.GameState.WAITING) {
-                            boolean flag = remoteGame.join(launcher.getPlayer());
-                            System.out.println(flag);
-                        }
-                remoteServer.close();
-            }
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNextLine()) {
+            String nextLine = scanner.nextLine();
+            CommandLine.execute(nextLine);
         }
     }
 
