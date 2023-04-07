@@ -37,10 +37,14 @@ public class LocalGame extends Game {
     public synchronized boolean leave(Player player) {
         if (this.getGameState() == GameState.NEW)
             return false;
-        if (player.getGame() != this || !this.players.remove(player) )
+        if (player.getGame() != this || !this.players.remove(player))
             return false;
         player.setGame(null);
         player.setPlayerState(Player.PlayerState.WAITING);
+        if (this.task != null) {
+            this.task.cancel();
+            this.task = null;
+        }
         return true;
     }
 
@@ -53,6 +57,8 @@ public class LocalGame extends Game {
                 player.setPlayerState(Player.PlayerState.READY);
                 if (this.players.stream().allMatch(p -> p.getPlayerState() == Player.PlayerState.READY)) {
                     this.startTime = this.rule.getReadyTime(this.players.size());
+                    if (this.task != null)
+                        this.task.cancel();
                     if (this.startTime != -1)
                         this.task = FOCESS_SCHEDULER.runTimer(this::countdown, Duration.ZERO, Duration.ofSeconds(1));
                 }
@@ -90,6 +96,8 @@ public class LocalGame extends Game {
 
     public synchronized void start() {
         if (this.getGameState() != GameState.WAITING)
+            return;
+        if (!this.players.stream().allMatch(player -> player.getPlayerState() == Player.PlayerState.READY))
             return;
         this.gameState = GameState.PLAYING;
         this.players.forEach(player -> player.setPlayerState(Player.PlayerState.PLAYING));

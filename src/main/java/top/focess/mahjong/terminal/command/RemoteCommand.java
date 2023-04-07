@@ -57,6 +57,6 @@ public class RemoteCommand extends Command {
 
     @Override
     public @NotNull List<String> usage(CommandSender sender) {
-        return List.of();
+        return List.of("connect <name> <ip> <port>", "fetch <name>");
     }
 }
