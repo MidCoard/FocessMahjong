@@ -1,0 +1,30 @@
+package top.focess.mahjong.game.packet;
+
+import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.packet.codec.GameSyncPacketCodec;
+import top.focess.net.PacketPreCodec;
+import top.focess.net.packet.Packet;
+
+public class GameSyncPacket extends Packet {
+
+    public static final int PACKET_ID = 102;
+
+    static {
+        PacketPreCodec.register(PACKET_ID, new GameSyncPacketCodec());
+    }
+
+    private final GameData gameData;
+
+    public GameSyncPacket(GameData gameData) {
+        this.gameData = gameData;
+    }
+
+    @Override
+    public int getId() {
+        return PACKET_ID;
+    }
+
+    public GameData getGameData() {
+        return gameData;
+    }
+}

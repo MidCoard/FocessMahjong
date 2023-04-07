@@ -52,7 +52,7 @@ public class RemoteGame extends Game {
     }
 
     @Override
-    public boolean unready(Player player) {
+    public synchronized boolean unready(Player player) {
         this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.UNREADY));
         GameActionStatusPacket.GameActionStatus status = this.requester.request("unready", player.getId());
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
@@ -62,19 +62,19 @@ public class RemoteGame extends Game {
         return false;
     }
 
-    public void syncGameData() {
+    public synchronized void syncGameData() {
         this.socket.getReceiver().sendPacket(new SyncGamePacket(this.getId()));
         GameData gameData = this.requester.request("sync");
         this.update(gameData);
     }
 
     @Override
-    public GameData getGameData() {
+    public synchronized GameData getGameData() {
         syncGameData();
         return super.getGameData();
     }
 
-    public void update(GameData gameData) {
+    public synchronized void update(GameData gameData) {
         if (!this.getId().equals(gameData.getId()))
             throw new IllegalArgumentException("The game id is not equal to the game data id.");
         this.rule = gameData.getRule();
@@ -83,8 +83,9 @@ public class RemoteGame extends Game {
         // todo update tiles
         this.players.clear();
         for (PlayerData playerData : gameData.getPlayerData()) {
-            RemotePlayer player = RemotePlayer.getOrCreatePlayer(-1, playerData.getId());
-            // player is not null
+            Player player = Player.getPlayer(playerData.getId());
+            if (player == null)
+                throw new IllegalArgumentException("The player is not exist.");
             player.update(playerData);
             this.players.add(player);
         }

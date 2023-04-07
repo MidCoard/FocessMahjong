@@ -1,6 +1,6 @@
 package top.focess.mahjong.game;
 
-import top.focess.mahjong.game.packet.GameStartPacket;
+import top.focess.mahjong.game.packet.GameSyncPacket;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.net.socket.FocessUDPServerMultiSocket;
@@ -51,7 +51,7 @@ public class LocalGame extends Game {
                 if (this.players.stream().allMatch(p -> p.getPlayerState() == Player.PlayerState.READY)) {
                     this.startTime = this.rule.getReadyTime(this.players.size());
                     if (this.startTime != -1)
-                        this.task = FOCESS_SCHEDULER.runTimer(this::tick, Duration.ZERO, Duration.ofSeconds(1));
+                        this.task = FOCESS_SCHEDULER.runTimer(this::countdown, Duration.ZERO, Duration.ofSeconds(1));
                 }
                 return true;
             }
@@ -74,7 +74,7 @@ public class LocalGame extends Game {
         return false;
     }
 
-    private synchronized void tick() {
+    private synchronized void countdown() {
         if (this.getGameState() != GameState.WAITING)
             return;
         if (this.startTime == 0) {
@@ -85,18 +85,30 @@ public class LocalGame extends Game {
         this.startTime--;
     }
 
-    private synchronized void start() {
+    public synchronized void start() {
         if (this.getGameState() != GameState.WAITING)
             return;
         this.gameState = GameState.PLAYING;
         this.players.forEach(player -> player.setPlayerState(Player.PlayerState.PLAYING));
-        GameStartPacket gameStartPacket = new GameStartPacket(this.getId());
+        sync();
+    }
+
+    public synchronized void end() {
+        if (this.getGameState() != GameState.PLAYING)
+            return;
+        this.gameState = GameState.WAITING;
+        this.players.forEach(player -> player.setPlayerState(Player.PlayerState.WAITING));
+        sync();
+    }
+
+    private void sync() {
+        GameSyncPacket gameEndPacket = new GameSyncPacket(this.getGameData());
         for (Player player : this.players)
             if (player instanceof RemotePlayer) {
                 int clientId = ((RemotePlayer) player).getClientId();
                 if (clientId == -1)
                     throw new IllegalStateException("Client id is -1");
-                serverSocket.getReceiver().sendPacket(((RemotePlayer) player).getClientId(), gameStartPacket);
+                serverSocket.getReceiver().sendPacket(((RemotePlayer) player).getClientId(), gameEndPacket);
             }
     }
 }

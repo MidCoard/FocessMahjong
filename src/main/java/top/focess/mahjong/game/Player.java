@@ -1,10 +1,14 @@
 package top.focess.mahjong.game;
 
+import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.PlayerData;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class Player {
+
+    private static final Map<UUID, Player> PLAYERS = Maps.newConcurrentMap();
 
     private final UUID id;
 
@@ -18,6 +22,7 @@ public class Player {
 
     public Player(UUID id) {
         this.id = id;
+        PLAYERS.put(id, this);
     }
 
     public Game getGame() {
@@ -50,6 +55,16 @@ public class Player {
 
     public void setPlayerState(PlayerState playerState) {
         this.playerState = playerState;
+    }
+
+    public static Player getPlayer(UUID id) {
+        return PLAYERS.get(id);
+    }
+
+    public void update(PlayerData playerData) {
+        if (!this.getId().equals(playerData.getId()))
+            throw new IllegalArgumentException("The player id is not equal to the player data id.");
+        this.playerState = playerData.getPlayerState();
     }
 
     public enum PlayerState {
