@@ -8,6 +8,7 @@ import top.focess.mahjong.game.packet.*;
 import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.FocessClientReceiver;
+import top.focess.net.socket.FocessClientSocket;
 import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.util.Pair;
 
@@ -16,18 +17,18 @@ import java.util.Map;
 
 public class RemoteServer {
 
-    private static final Map<Pair<String, Integer>, FocessUDPClientSocket> CLIENT_SOCKET_MAP = Maps.newConcurrentMap();
-    private final FocessUDPClientSocket clientSocket;
+    private static final Map<Pair<String, Integer>, FocessClientSocket> CLIENT_SOCKET_MAP = Maps.newConcurrentMap();
+    private final FocessClientSocket clientSocket;
     private final List<RemoteGame> games = Lists.newArrayList();
 
     private final Object fetchRemoteGamesLock = new Object();
 
     private RemoteServer(String ip, int port) throws IllegalPortException {
-        FocessUDPClientSocket clientSocket = CLIENT_SOCKET_MAP.get(Pair.of(ip, port));
+        FocessClientSocket clientSocket = CLIENT_SOCKET_MAP.get(Pair.of(ip, port));
         if (clientSocket == null) {
-            clientSocket = new FocessUDPClientSocket("localhost", ip, port, "mahjong", true, true);
+            clientSocket = new FocessClientSocket("localhost", ip, port, "mahjong", true, true);
             ClientReceiver receiver = clientSocket.getReceiver();
-            FocessUDPClientSocket finalClientSocket = clientSocket;
+            FocessClientSocket finalClientSocket = clientSocket;
             receiver.register(GamesPacket.class, (clientId, packet) -> {
                 synchronized (this.games) {
                     this.games.clear();

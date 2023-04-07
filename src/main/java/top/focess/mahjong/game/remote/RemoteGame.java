@@ -4,14 +4,16 @@ import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
-import top.focess.mahjong.game.packet.*;
-import top.focess.net.socket.FocessUDPClientSocket;
+import top.focess.mahjong.game.packet.GameActionPacket;
+import top.focess.mahjong.game.packet.GameActionStatusPacket;
+import top.focess.mahjong.game.packet.SyncGamePacket;
+import top.focess.net.socket.FocessClientSocket;
 
 public class RemoteGame extends Game {
-    private final FocessUDPClientSocket socket;
+    private final FocessClientSocket socket;
     private final GameRequester requester;
 
-    public RemoteGame(FocessUDPClientSocket socket, GameData data) {
+    public RemoteGame(FocessClientSocket socket, GameData data) {
         super(data.getId(), data.getRule(), data.getGameState());
         this.socket = socket;
         this.requester = new GameRequester(this.getId());

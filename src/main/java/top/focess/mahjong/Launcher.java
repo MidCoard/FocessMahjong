@@ -15,7 +15,8 @@ import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.receiver.ServerMultiReceiver;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessUDPServerMultiSocket;
+import top.focess.net.socket.FocessMultiSocket;
+import top.focess.net.socket.FocessUDPMultiSocket;
 import top.focess.util.option.Option;
 import top.focess.util.option.OptionParserClassifier;
 import top.focess.util.option.Options;
@@ -36,14 +37,14 @@ public class Launcher {
         PacketPreCodec.register(GamePacket.PACKET_ID, new GamePacketCodec());
     }
     private final LocalPlayer player = new LocalPlayer();
-    private final FocessUDPServerMultiSocket serverSocket;
+    private final FocessMultiSocket serverSocket;
 
     public Launcher() throws IllegalPortException {
         this(0);
     }
 
     public Launcher(int serverPort) throws IllegalPortException {
-        this.serverSocket = new FocessUDPServerMultiSocket(serverPort);
+        this.serverSocket = new FocessMultiSocket(serverPort);
         ServerMultiReceiver receiver = this.serverSocket.getReceiver();
         receiver.register("mahjong", GameActionPacket.class, (clientId, packet) -> {
             Game game = Game.getGame(packet.getGameId());

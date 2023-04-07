@@ -3,7 +3,7 @@ package top.focess.mahjong.game;
 import top.focess.mahjong.game.packet.GameSyncPacket;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
-import top.focess.net.socket.FocessUDPServerMultiSocket;
+import top.focess.net.socket.FocessMultiSocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Task;
 
@@ -12,11 +12,11 @@ import java.time.Duration;
 public class LocalGame extends Game {
 
     private static final FocessScheduler FOCESS_SCHEDULER = new FocessScheduler("GameTicker", true);
-    private final FocessUDPServerMultiSocket serverSocket;
+    private final FocessMultiSocket serverSocket;
     private int startTime;
     private Task task;
 
-    public LocalGame(FocessUDPServerMultiSocket serverSocket, MahjongRule rule) {
+    public LocalGame(FocessMultiSocket serverSocket, MahjongRule rule) {
         super(rule);
         this.serverSocket = serverSocket;
         this.gameState = GameState.WAITING;
