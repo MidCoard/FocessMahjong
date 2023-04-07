@@ -43,7 +43,7 @@ public class PacketUtil {
         return new GameData(gameId, rule, gameState, null, playerData);
     }
 
-    private static PlayerData readPlayerData(PacketPreCodec codec) {
+    public static PlayerData readPlayerData(PacketPreCodec codec) {
         UUID playerId = UUID.fromString(codec.readString());
         Player.PlayerState playerState = Player.PlayerState.valueOf(codec.readString());
         // todo

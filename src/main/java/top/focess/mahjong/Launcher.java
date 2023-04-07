@@ -6,7 +6,9 @@ import top.focess.command.DataCollection;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
+import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.*;
 import top.focess.mahjong.game.packet.codec.*;
 import top.focess.mahjong.game.remote.RemoteGame;
@@ -20,9 +22,14 @@ import top.focess.mahjong.terminal.command.converter.MahjongRuleConverter;
 import top.focess.mahjong.terminal.command.data.MahjongRuleBuffer;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
+import top.focess.net.packet.Packet;
 import top.focess.net.receiver.ServerMultiReceiver;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessMultiSocket;
+import top.focess.util.option.Option;
+import top.focess.util.option.OptionParserClassifier;
+import top.focess.util.option.Options;
+import top.focess.util.option.type.IntegerOptionType;
 
 import java.util.List;
 import java.util.Scanner;
@@ -31,16 +38,10 @@ public class Launcher {
 
     public static final int DEFAULT_PORT = 2735;
 
-    public static final Launcher DEFAULT_LAUNCHER;
+    public static Launcher defaultLauncher;
 
     static {
-        ASocket.enableDebug();
-        try {
-            DEFAULT_LAUNCHER = new Launcher(DEFAULT_PORT);
-        } catch (IllegalPortException e) {
-            throw new RuntimeException(e);
-        }
-        DataCollection.register(new MahjongRuleConverter(), MahjongRuleBuffer::allocate);
+        DataCollection.register(MahjongRuleConverter.MAHJONG_RULE_CONVERTER, MahjongRuleBuffer::allocate);
         Command.register(new GameCommand());
         Command.register(new RemoteCommand());
         Command.register(new PlayerCommand());
@@ -51,6 +52,8 @@ public class Launcher {
         PacketPreCodec.register(GamesPacket.PACKET_ID, new GamesPacketCodec());
         PacketPreCodec.register(SyncGamePacket.PACKET_ID, new SyncGamePacketCodec());
         PacketPreCodec.register(GamePacket.PACKET_ID, new GamePacketCodec());
+        PacketPreCodec.register(SyncPlayerPacket.PACKET_ID, new SyncPlayerPacketCodec());
+        PacketPreCodec.register(PlayerPacket.PACKET_ID, new PlayerPacketCodec());
     }
     private final LocalPlayer player = new LocalPlayer();
     private final FocessMultiSocket serverSocket;
@@ -67,6 +70,13 @@ public class Launcher {
             boolean flag = false;
             if (game instanceof LocalGame) {
                 RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
+                if (player == null)
+                     return;
+                SyncPlayerPacket syncPlayerPacket = new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId());
+                this.serverSocket.getReceiver().sendPacket(clientId, syncPlayerPacket);
+                PlayerData playerData = game.getGameRequester().request("syncPlayer", packet.getPlayerId());
+                if (playerData != null)
+                    player.update(playerData);
                 flag = switch (packet.getGameAction()) {
                     case READY -> game.ready(player);
                     case UNREADY -> game.unready(player);
@@ -90,6 +100,11 @@ public class Launcher {
             if (game instanceof LocalGame)
                 receiver.sendPacket(clientId, new GamePacket(game.getGameData()));
         });
+        receiver.register("mahjong", PlayerPacket.class, (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            if (game instanceof LocalGame)
+                game.getGameRequester().response("syncPlayer", packet.getPlayerData(), id -> id[0].equals(packet.getPlayerData().getId()));
+        });
     }
 
     public void exit() {
@@ -105,6 +120,13 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
+        Options options = Options.parse(args, new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE));
+        Option option = options.get("port");
+        try {
+            defaultLauncher = new Launcher(option != null ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : DEFAULT_PORT);
+        } catch (IllegalPortException e) {
+            throw new RuntimeException(e);
+        }
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String nextLine = scanner.nextLine();
@@ -113,4 +135,7 @@ public class Launcher {
     }
 
 
+    public void sendPacket(int clientId, Packet packet) {
+        this.serverSocket.getReceiver().sendPacket(clientId, packet);
+    }
 }

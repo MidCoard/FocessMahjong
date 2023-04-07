@@ -5,6 +5,8 @@ import top.focess.mahjong.game.packet.GameActionStatusPacket;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class GameRequester {
 
@@ -47,9 +49,13 @@ public class GameRequester {
     }
 
     public void response(String action, Object arg) {
+        response(action, arg, objects -> true);
+    }
+
+    public void response(String action, Object arg, Predicate<Object[]> predicate) {
         synchronized (LOCK) {
             GameRequest gameRequest = this.gameRequests.get(action);
-            if (gameRequest != null)
+            if (gameRequest != null && predicate.test(gameRequest.getArgs()))
                 synchronized (gameRequest.getLock()) {
                     gameRequest.setResponse(arg);
                     gameRequest.getLock().notifyAll();

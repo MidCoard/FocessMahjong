@@ -11,18 +11,16 @@ import top.focess.net.socket.FocessClientSocket;
 
 public class RemoteGame extends Game {
     private final FocessClientSocket socket;
-    private final GameRequester requester;
 
     public RemoteGame(FocessClientSocket socket, GameData data) {
         super(data.getId(), data.getRule(), data.getGameState());
         this.socket = socket;
-        this.requester = new GameRequester(this.getId());
     }
 
     @Override
     public synchronized boolean join(Player player) {
         this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.JOIN));
-        GameActionStatusPacket.GameActionStatus status = this.requester.request("join", player.getId());
+        GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("join");
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setGame(this);
             return true;
@@ -33,7 +31,7 @@ public class RemoteGame extends Game {
     @Override
     public synchronized boolean leave(Player player) {
         this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.LEAVE));
-        GameActionStatusPacket.GameActionStatus status = this.requester.request("leave", player.getId());
+        GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("leave");
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setGame(null);
             player.setPlayerState(Player.PlayerState.WAITING);
@@ -45,7 +43,7 @@ public class RemoteGame extends Game {
     @Override
     public synchronized boolean ready(Player player) {
         this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.READY));
-        GameActionStatusPacket.GameActionStatus status = this.requester.request("ready", player.getId());
+        GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("ready");
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setPlayerState(Player.PlayerState.READY);
             return true;
@@ -56,7 +54,7 @@ public class RemoteGame extends Game {
     @Override
     public synchronized boolean unready(Player player) {
         this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.UNREADY));
-        GameActionStatusPacket.GameActionStatus status = this.requester.request("unready", player.getId());
+        GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("unready");
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setPlayerState(Player.PlayerState.WAITING);
             return true;
@@ -66,7 +64,7 @@ public class RemoteGame extends Game {
 
     public synchronized void syncGameData() {
         this.socket.getReceiver().sendPacket(new SyncGamePacket(this.getId()));
-        GameData gameData = this.requester.request("sync");
+        GameData gameData = this.gameRequester.request("sync");
         this.update(gameData);
     }
 

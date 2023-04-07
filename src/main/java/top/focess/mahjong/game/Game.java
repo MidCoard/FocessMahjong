@@ -3,6 +3,7 @@ package top.focess.mahjong.game;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.remote.GameRequester;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 
@@ -14,6 +15,8 @@ import java.util.UUID;
 public abstract class Game {
 
     private static final Map<UUID, Game> GAMES = Maps.newConcurrentMap();
+
+    protected final GameRequester gameRequester;
 
     protected MahjongRule rule;
     protected GameState gameState;
@@ -29,6 +32,7 @@ public abstract class Game {
         this.id = id;
         this.rule = rule;
         this.gameState = gameState;
+        this.gameRequester = new GameRequester(this.id);
         GAMES.put(id, this);
     }
 
@@ -62,6 +66,10 @@ public abstract class Game {
 
     public MahjongRule getRule() {
         return this.rule;
+    }
+
+    public GameRequester getGameRequester() {
+        return this.gameRequester;
     }
 
     public enum GameState {

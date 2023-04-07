@@ -25,7 +25,7 @@ public class LocalGame extends Game {
     public synchronized boolean join(Player player) {
         if (this.getGameState() == GameState.NEW)
             return false;
-        if (this.rule.checkPlayerSize(players.size() + 1))
+        if (!this.rule.checkPlayerSize(players.size() + 1))
             return false;
         if (player.getGame() != null || player.getPlayerState() != Player.PlayerState.WAITING)
             return false;

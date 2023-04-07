@@ -22,7 +22,7 @@ public class GameCommand extends Command {
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             MahjongRule rule = dataCollection.get(MahjongRule.class);
-            Game game = Launcher.DEFAULT_LAUNCHER.createGame(rule);
+            Game game = Launcher.defaultLauncher.createGame(rule);
             System.out.println("Game " + game.getId() + " created!");
             return CommandResult.ALLOW;
         }, CommandArgument.of("create"), CommandArgument.of(MahjongRuleConverter.MAHJONG_RULE_CONVERTER));
@@ -30,6 +30,6 @@ public class GameCommand extends Command {
 
     @Override
     public @NotNull List<String> usage(CommandSender sender) {
-        return List.of("create <rule>");
+        return List.of("game create <rule>");
     }
 }

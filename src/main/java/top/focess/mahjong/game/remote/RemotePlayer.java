@@ -1,10 +1,9 @@
 package top.focess.mahjong.game.remote;
 
 import com.google.common.collect.Maps;
+import top.focess.mahjong.Launcher;
 import top.focess.mahjong.game.Player;
-import top.focess.mahjong.game.data.PlayerData;
-import top.focess.net.packet.Packet;
-import top.focess.util.Pair;
+import top.focess.mahjong.game.packet.SyncPlayerPacket;
 
 import java.util.Map;
 import java.util.UUID;

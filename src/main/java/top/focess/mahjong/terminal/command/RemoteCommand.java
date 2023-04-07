@@ -6,7 +6,6 @@ import top.focess.command.Command;
 import top.focess.command.CommandArgument;
 import top.focess.command.CommandResult;
 import top.focess.command.CommandSender;
-import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.remote.RemoteGame;
 import top.focess.mahjong.game.remote.RemoteServer;
 import top.focess.net.IllegalPortException;
@@ -35,6 +34,7 @@ public class RemoteCommand extends Command {
             try {
                 RemoteServer remoteServer = RemoteServer.connect(ip, port);
                 REMOTE_SERVER_MAP.put(name, remoteServer);
+                System.out.println("Remote server " + name + " connected!");
                 return CommandResult.ALLOW;
             } catch (IllegalPortException e) {
                 return CommandResult.REFUSE;
@@ -57,6 +57,6 @@ public class RemoteCommand extends Command {
 
     @Override
     public @NotNull List<String> usage(CommandSender sender) {
-        return List.of("connect <name> <ip> <port>", "fetch <name>");
+        return List.of("remote connect <name> <ip> <port>", "remote fetch <name>");
     }
 }

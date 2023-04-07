@@ -21,14 +21,14 @@ public class PlayerCommand extends Command {
     @Override
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            Player player = Launcher.DEFAULT_LAUNCHER.getPlayer();
+            Player player = Launcher.defaultLauncher.getPlayer();
             System.out.println("Local player is " + player.getId() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("local"));
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = Launcher.DEFAULT_LAUNCHER.getPlayer();
+            Player player = Launcher.defaultLauncher.getPlayer();
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");
@@ -45,7 +45,7 @@ public class PlayerCommand extends Command {
         //leave
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = Launcher.DEFAULT_LAUNCHER.getPlayer();
+            Player player = Launcher.defaultLauncher.getPlayer();
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");
@@ -62,7 +62,7 @@ public class PlayerCommand extends Command {
         //ready
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = Launcher.DEFAULT_LAUNCHER.getPlayer();
+            Player player = Launcher.defaultLauncher.getPlayer();
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");
@@ -79,7 +79,7 @@ public class PlayerCommand extends Command {
         //unready
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = Launcher.DEFAULT_LAUNCHER.getPlayer();
+            Player player = Launcher.defaultLauncher.getPlayer();
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");

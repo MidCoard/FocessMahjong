@@ -3,13 +3,12 @@ package top.focess.mahjong.game.remote;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
+import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
 import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.ClientReceiver;
-import top.focess.net.receiver.FocessClientReceiver;
 import top.focess.net.socket.FocessClientSocket;
-import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.util.Pair;
 
 import java.util.List;
@@ -43,6 +42,13 @@ public class RemoteServer {
                 Game game = Game.getGame(packet.getGameData().getId());
                 if (game instanceof RemoteGame)
                     ((RemoteGame) game).update(packet.getGameData());
+            });
+            receiver.register(SyncPlayerPacket.class, (clientId, packet) -> {
+                Player player = Player.getPlayer(packet.getPlayerId());
+                if (player != null) {
+                    PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), player.getPlayerData());
+                    receiver.sendPacket(playerPacket);
+                }
             });
             CLIENT_SOCKET_MAP.put(Pair.of(ip, port), clientSocket);
         }
