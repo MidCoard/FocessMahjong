@@ -19,6 +19,7 @@ public class LocalGame extends Game {
     public LocalGame(FocessUDPServerMultiSocket serverSocket, MahjongRule rule) {
         super(rule);
         this.serverSocket = serverSocket;
+        this.gameState = GameState.WAITING;
     }
 
     public synchronized boolean join(Player player) {
@@ -34,6 +35,8 @@ public class LocalGame extends Game {
     }
 
     public synchronized boolean leave(Player player) {
+        if (this.getGameState() == GameState.NEW)
+            return false;
         if (player.getGame() != this || !this.players.remove(player) )
             return false;
         player.setGame(null);

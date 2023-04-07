@@ -10,10 +10,6 @@ import java.util.List;
 public class GamesPacket extends Packet {
 
     public static final int PACKET_ID = 121;
-
-    static {
-        PacketPreCodec.register(PACKET_ID, new GamesPacketCodec());
-    }
     private final List<GameData> games;
 
     public GamesPacket(List<GameData> games) {

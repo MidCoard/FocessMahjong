@@ -9,10 +9,6 @@ public class GamePacket extends Packet {
 
     public static final int PACKET_ID = 123;
 
-    static {
-        PacketPreCodec.register(PACKET_ID, new GamePacketCodec());
-    }
-
     private final GameData gameData;
 
     public GamePacket(GameData gameData) {

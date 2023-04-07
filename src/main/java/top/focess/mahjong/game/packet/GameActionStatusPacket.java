@@ -9,11 +9,6 @@ import java.util.UUID;
 public class GameActionStatusPacket extends Packet {
 
     public static final int PACKET_ID = 101;
-
-    static {
-        PacketPreCodec.register(PACKET_ID, new GameActionStatusPacketCodec());
-    }
-
     private final UUID playerId;
     private final UUID gameId;
     private final GameActionPacket.GameAction gameAction;

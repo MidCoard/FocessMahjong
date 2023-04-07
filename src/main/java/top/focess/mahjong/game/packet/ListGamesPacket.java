@@ -7,10 +7,6 @@ import top.focess.net.packet.Packet;
 public class ListGamesPacket extends Packet {
 
     public static final int PACKET_ID = 120;
-
-    static {
-        PacketPreCodec.register(PACKET_ID, new ListGamesPacketCodec());
-    }
     @Override
     public int getId() {
         return PACKET_ID;

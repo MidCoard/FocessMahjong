@@ -10,9 +10,6 @@ public class GameActionPacket extends Packet {
 
     public static final int PACKET_ID = 100;
 
-    static {
-        PacketPreCodec.register(PACKET_ID, new GameActionPacketCodec());
-    }
     private final UUID playerId;
     private final UUID gameId;
     private final GameAction gameAction;

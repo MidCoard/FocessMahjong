@@ -9,11 +9,6 @@ import java.util.UUID;
 public class SyncGamePacket extends Packet {
 
     public static final int PACKET_ID = 122;
-
-    static {
-        PacketPreCodec.register(PACKET_ID, new SyncGamePacketCodec());
-    }
-
     private final UUID gameId;
 
     public SyncGamePacket(UUID gameId) {

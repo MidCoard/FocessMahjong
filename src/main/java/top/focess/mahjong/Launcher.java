@@ -1,35 +1,39 @@
 package top.focess.mahjong;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
+import top.focess.mahjong.game.packet.codec.*;
 import top.focess.mahjong.game.remote.RemoteGame;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.remote.RemoteServer;
 import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.net.IllegalPortException;
+import top.focess.net.PacketPreCodec;
 import top.focess.net.receiver.ServerMultiReceiver;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.net.socket.FocessUDPServerMultiSocket;
-import top.focess.scheduler.ThreadPoolScheduler;
-import top.focess.util.Pair;
 import top.focess.util.option.Option;
 import top.focess.util.option.OptionParserClassifier;
 import top.focess.util.option.Options;
 import top.focess.util.option.type.IntegerOptionType;
 
 import java.util.List;
-import java.util.Map;
 
 public class Launcher {
 
     static {
         ASocket.enableDebug();
+        PacketPreCodec.register(GameActionPacket.PACKET_ID, new GameActionPacketCodec());
+        PacketPreCodec.register(GameActionStatusPacket.PACKET_ID, new GameActionStatusPacketCodec());
+        PacketPreCodec.register(GameSyncPacket.PACKET_ID, new GameSyncPacketCodec());
+        PacketPreCodec.register(ListGamesPacket.PACKET_ID, new ListGamesPacketCodec());
+        PacketPreCodec.register(GamesPacket.PACKET_ID, new GamesPacketCodec());
+        PacketPreCodec.register(SyncGamePacket.PACKET_ID, new SyncGamePacketCodec());
+        PacketPreCodec.register(GamePacket.PACKET_ID, new GamePacketCodec());
     }
     private final LocalPlayer player = new LocalPlayer();
     private final FocessUDPServerMultiSocket serverSocket;
@@ -101,10 +105,15 @@ public class Launcher {
             if (test == 1) {
                 LocalGame game = launcher.createGame(MahjongRule.SICHUAN);
                 launcher.getPlayer().join(game);
-                try {
-                    new Object().wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                while(true) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(game.getGameState());
+                    if (2 == 1)
+                        break;
                 }
             } else if (test == 2) {
                 RemoteServer remoteServer;

@@ -6,6 +6,7 @@ import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
 import top.focess.net.IllegalPortException;
+import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.FocessClientReceiver;
 import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.util.Pair;
@@ -23,10 +24,9 @@ public class RemoteServer {
 
     private RemoteServer(String ip, int port) throws IllegalPortException {
         FocessUDPClientSocket clientSocket = CLIENT_SOCKET_MAP.get(Pair.of(ip, port));
-        FocessClientReceiver receiver;
         if (clientSocket == null) {
             clientSocket = new FocessUDPClientSocket("localhost", ip, port, "mahjong", true, true);
-            clientSocket.registerReceiver(receiver = new FocessClientReceiver(clientSocket, "localhost", ip, port, "mahjong"));
+            ClientReceiver receiver = clientSocket.getReceiver();
             FocessUDPClientSocket finalClientSocket = clientSocket;
             receiver.register(GamesPacket.class, (clientId, packet) -> {
                 synchronized (this.games) {
