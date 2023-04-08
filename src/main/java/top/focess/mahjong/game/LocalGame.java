@@ -1,13 +1,16 @@
 package top.focess.mahjong.game;
 
+import com.google.common.collect.Lists;
 import top.focess.mahjong.game.packet.GameSyncPacket;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
+import top.focess.mahjong.terminal.TerminalLauncher;
 import top.focess.net.socket.FocessMultiSocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Task;
 
 import java.time.Duration;
+import java.util.List;
 
 public class LocalGame extends Game {
 
@@ -27,6 +30,8 @@ public class LocalGame extends Game {
             return false;
         if (player.getGame() != null || player.getPlayerState() != Player.PlayerState.WAITING)
             return false;
+        List<Player> old = Lists.newArrayList(this.players);
+        TerminalLauncher.change("players", this, old, this.players);
         this.players.add(player);
         player.setGame(this);
         this.syncOtherPlayer(player);
@@ -37,6 +42,9 @@ public class LocalGame extends Game {
         this.players.stream().filter(p -> p != player).forEach(p -> {
             if (p instanceof RemotePlayer) {
                 int clientId = ((RemotePlayer) p).getClientId();
+                if (clientId == -1) {
+                    System.out.println("Player " + p.getId() + " is not connected to server");
+                }
                 this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getGameData()));
             }
         });
@@ -45,8 +53,10 @@ public class LocalGame extends Game {
     public synchronized boolean leave(Player player) {
         if (player.getGame() == null && !this.players.contains(player))
             return true;
+        List<Player> old = Lists.newArrayList(this.players);
         if (player.getGame() != this || !this.players.remove(player))
             return false;
+        TerminalLauncher.change("players", this, old, this.players);
         player.setGame(null);
         player.setPlayerState(Player.PlayerState.WAITING);
         if (this.task != null) {

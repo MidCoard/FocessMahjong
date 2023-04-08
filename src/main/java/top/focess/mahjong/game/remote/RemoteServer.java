@@ -54,7 +54,6 @@ public class RemoteServer {
             });
             receiver.register(GameActionStatusPacket.class, (clientId, packet) -> {
                 Game game = Game.getGame(packet.getGameId());
-                System.out.println(packet.getGameId());
                 if (game != null)
                     game.getGameRequester().response(packet.getGameAction().getName(), packet.getGameActionStatus(), id -> id[0].equals(packet.getPlayerId()));
             });

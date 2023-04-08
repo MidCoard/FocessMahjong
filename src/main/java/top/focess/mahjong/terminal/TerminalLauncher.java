@@ -1,5 +1,6 @@
 package top.focess.mahjong.terminal;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.Player;
@@ -7,6 +8,7 @@ import top.focess.mahjong.terminal.command.CommandLine;
 import top.focess.mahjong.terminal.listener.TerminalGameListener;
 import top.focess.mahjong.terminal.listener.TerminalPlayerListener;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -24,7 +26,20 @@ public class TerminalLauncher {
                 System.out.println("Game " + game.getId() + " stopped!");
         });
         registerGameChangeListener("startTime", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " start time changed to " + newValue));
-
+        registerGameChangeListener("players", List.class, (game, oldValue, newValue) -> {
+            List<Player> joinPlayers = Lists.newArrayList();
+            List<Player> leavePlayers = Lists.newArrayList();
+            for (Object o : oldValue)
+                if (!newValue.contains(o))
+                    leavePlayers.add((Player) o);
+            for (Object o : newValue)
+                if (!oldValue.contains(o))
+                    joinPlayers.add((Player) o);
+            for (Player player : joinPlayers)
+                System.out.println("Player " + player.getId() + " join game " + game.getId());
+            for (Player player : leavePlayers)
+                System.out.println("Player " + player.getId() + " leave game " + game.getId());
+        });
 
 
         registerPlayerChangeListener("playerState", Player.PlayerState.class, (player, oldValue, newValue) -> {

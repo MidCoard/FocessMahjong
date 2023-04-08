@@ -28,9 +28,7 @@ public class GameRequester {
         task.run();
         synchronized (gameRequest.getLock()) {
             try {
-                System.out.println("Start lock: " + System.currentTimeMillis());
-                gameRequest.getLock().wait(10000, 0);
-                System.out.println("End lock: " + System.currentTimeMillis());
+                gameRequest.getLock().wait(5000, 0);
             } catch (InterruptedException ignored) {
             }
             return gameRequest.getResponse();
@@ -42,15 +40,12 @@ public class GameRequester {
     }
 
     public void response(String action, Object arg, Predicate<Object[]> predicate) {
-        System.out.println("Begin Response: " + System.currentTimeMillis());
         synchronized (LOCK) {
             GameRequest gameRequest = this.gameRequests.get(action);
             if (gameRequest != null && predicate.test(gameRequest.getArgs())) {
-                System.out.println("Response: " + System.currentTimeMillis());
                 synchronized (gameRequest.getLock()) {
                     gameRequest.setResponse(arg);
                     gameRequest.getLock().notifyAll();
-                    System.out.println("End Response: " + System.currentTimeMillis());
                 }
             }
         }

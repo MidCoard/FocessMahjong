@@ -1,5 +1,6 @@
 package top.focess.mahjong.game.remote;
 
+import com.google.common.collect.Lists;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
@@ -7,7 +8,10 @@ import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.GameActionPacket;
 import top.focess.mahjong.game.packet.GameActionStatusPacket;
 import top.focess.mahjong.game.packet.SyncGamePacket;
+import top.focess.mahjong.terminal.TerminalLauncher;
 import top.focess.net.socket.FocessClientSocket;
+
+import java.util.List;
 
 public class RemoteGame extends Game {
     private final FocessClientSocket socket;
@@ -100,15 +104,18 @@ public class RemoteGame extends Game {
 
         // todo update tiles
 
-        this.players.clear();
+        List<Player> temp = Lists.newArrayList();
         for (PlayerData playerData : gameData.getPlayerData()) {
             Player player = Player.getPlayer(-1, playerData.getId());
             if (player == null)
                 throw new IllegalArgumentException("The player is not exist.");
             if (player instanceof RemotePlayer)
                 ((RemotePlayer) player).update(playerData);
-            this.players.add(player);
+            temp.add(player);
         }
+        TerminalLauncher.change("players", this, this.players, temp);
+        this.players.clear();
+        this.players.addAll(temp);
     }
 
     public void remove() {
