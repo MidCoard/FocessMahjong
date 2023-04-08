@@ -36,8 +36,6 @@ import java.util.Scanner;
 
 public class Launcher {
 
-    private static final ThreadPoolScheduler THREAD_POOL_SCHEDULER = new ThreadPoolScheduler(10, false, "PacketHandler", true);
-
     public static final int DEFAULT_PORT = 2735;
 
     public static Launcher defaultLauncher;
@@ -78,21 +76,18 @@ public class Launcher {
                 RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
                 if (player == null)
                      return;
-//                THREAD_POOL_SCHEDULER.run(()->{
-                    PlayerData playerData = game.getGameRequester().request("syncPlayer",
-                            () -> this.serverSocket.getReceiver().sendPacket(clientId, new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId())),
-                            packet.getPlayerId());
-                    if (playerData != null)
-                        player.update(playerData);
-                    boolean flag = switch (packet.getGameAction()) {
-                        case READY -> game.ready(player);
-                        case UNREADY -> game.unready(player);
-                        case LEAVE -> game.leave(player);
-                        case JOIN -> game.join(player);
-                    };
-                    receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
-
-//                });
+                PlayerData playerData = game.getGameRequester().request("syncPlayer",
+                        () -> this.serverSocket.getReceiver().sendPacket(clientId, new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId())),
+                        packet.getPlayerId());
+                if (playerData != null)
+                    player.update(playerData);
+                boolean flag = switch (packet.getGameAction()) {
+                    case READY -> game.ready(player);
+                    case UNREADY -> game.unready(player);
+                    case LEAVE -> game.leave(player);
+                    case JOIN -> game.join(player);
+                };
+                receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
             }
             else receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
         });
