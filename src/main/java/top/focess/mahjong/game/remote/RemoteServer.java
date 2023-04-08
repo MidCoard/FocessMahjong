@@ -34,10 +34,20 @@ public class RemoteServer {
                     for (GameData data : packet.getGames())
                         games.add(new RemoteGame(finalClientSocket, data));
                 }
-                fetchRemoteGamesLock.notifyAll();
+                synchronized (fetchRemoteGamesLock) {
+                    fetchRemoteGamesLock.notifyAll();
+                }
             });
-            receiver.register(GameActionStatusPacket.class, (clientId, packet) -> GameRequester.getGameRequester(packet.getGameId()).response(packet.getGameAction().getName(), packet.getGameActionStatus()));
-            receiver.register(GamePacket.class, (clientId, packet) -> GameRequester.getGameRequester(packet.getGameData().getId()).response("sync", packet.getGameData()));
+            receiver.register(GameActionStatusPacket.class, (clientId, packet) -> {
+                Game game = Game.getGame(packet.getGameId());
+                if (game != null)
+                    game.getGameRequester().response(packet.getGameAction().getName(), packet.getGameActionStatus(), id -> id[0].equals(packet.getPlayerId()));
+            });
+            receiver.register(GamePacket.class, (clientId, packet) -> {
+                Game game = Game.getGame(packet.getGameData().getId());
+                if (game != null)
+                    game.getGameRequester().response("sync", packet.getGameData(), id -> id[0].equals(packet.getGameData().getId()));
+            });
             receiver.register(GameSyncPacket.class, (clientId, packet) -> {
                 Game game = Game.getGame(packet.getGameData().getId());
                 if (game instanceof RemoteGame)

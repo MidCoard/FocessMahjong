@@ -25,6 +25,8 @@ public class LocalGame extends Game {
     public synchronized boolean join(Player player) {
         if (this.getGameState() == GameState.NEW)
             return false;
+        if (player.getGame() == this && this.players.contains(player))
+            return true;
         if (!this.rule.checkPlayerSize(players.size() + 1))
             return false;
         if (player.getGame() != null || player.getPlayerState() != Player.PlayerState.WAITING)
@@ -37,6 +39,8 @@ public class LocalGame extends Game {
     public synchronized boolean leave(Player player) {
         if (this.getGameState() == GameState.NEW)
             return false;
+        if (player.getGame() == null && !this.players.contains(player))
+            return true;
         if (player.getGame() != this || !this.players.remove(player))
             return false;
         player.setGame(null);
@@ -63,7 +67,7 @@ public class LocalGame extends Game {
                         this.task = FOCESS_SCHEDULER.runTimer(this::countdown, Duration.ZERO, Duration.ofSeconds(1));
                 }
                 return true;
-            }
+            } else return player.getPlayerState() == Player.PlayerState.READY;
         return false;
     }
 
@@ -79,7 +83,7 @@ public class LocalGame extends Game {
                     this.task = null;
                 }
                 return true;
-            }
+            } else return player.getPlayerState() == Player.PlayerState.WAITING;
         return false;
     }
 

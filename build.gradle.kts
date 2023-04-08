@@ -13,7 +13,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("top.focess:focess-util:1.1.17")
-    implementation("top.focess:focess-socket:1.1.4")
+    implementation("top.focess:focess-socket:1.1.5")
     implementation("top.focess:focess-command:1.3.1")
 }
 

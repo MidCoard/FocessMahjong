@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.remote.GameRequester;
-import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 
 import java.util.Collections;
@@ -32,7 +31,7 @@ public abstract class Game {
         this.id = id;
         this.rule = rule;
         this.gameState = gameState;
-        this.gameRequester = new GameRequester(this.id);
+        this.gameRequester = new GameRequester();
         GAMES.put(id, this);
     }
 

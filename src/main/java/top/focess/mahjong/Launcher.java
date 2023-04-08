@@ -26,6 +26,7 @@ import top.focess.net.packet.Packet;
 import top.focess.net.receiver.ServerMultiReceiver;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessMultiSocket;
+import top.focess.scheduler.ThreadPoolScheduler;
 import top.focess.util.option.Option;
 import top.focess.util.option.OptionParserClassifier;
 import top.focess.util.option.Options;
@@ -35,6 +36,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Launcher {
+
+    private static final ThreadPoolScheduler THREAD_POOL_SCHEDULER = new ThreadPoolScheduler(10, false, "PacketHandler", true);
 
     public static final int DEFAULT_PORT = 2735;
 
@@ -65,26 +68,34 @@ public class Launcher {
     public Launcher(int serverPort) throws IllegalPortException {
         this.serverSocket = new FocessMultiSocket(serverPort);
         ServerMultiReceiver receiver = this.serverSocket.getReceiver();
+        receiver.setDisconnectedHandler(clientId -> {
+            List<RemotePlayer> players = RemotePlayer.removePlayers(clientId);
+            for (RemotePlayer player : players)
+                player.getGame().leave(player);
+        });
         receiver.register("mahjong", GameActionPacket.class, (clientId, packet) -> {
             Game game = Game.getGame(packet.getGameId());
-            boolean flag = false;
             if (game instanceof LocalGame) {
                 RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
                 if (player == null)
                      return;
                 SyncPlayerPacket syncPlayerPacket = new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId());
                 this.serverSocket.getReceiver().sendPacket(clientId, syncPlayerPacket);
-                PlayerData playerData = game.getGameRequester().request("syncPlayer", packet.getPlayerId());
-                if (playerData != null)
-                    player.update(playerData);
-                flag = switch (packet.getGameAction()) {
-                    case READY -> game.ready(player);
-                    case UNREADY -> game.unready(player);
-                    case LEAVE -> game.leave(player);
-                    case JOIN -> game.join(player);
-                };
+                THREAD_POOL_SCHEDULER.run(()->{
+                    PlayerData playerData = game.getGameRequester().request("syncPlayer", packet.getPlayerId());
+                    if (playerData != null)
+                        player.update(playerData);
+                    boolean flag = switch (packet.getGameAction()) {
+                        case READY -> game.ready(player);
+                        case UNREADY -> game.unready(player);
+                        case LEAVE -> game.leave(player);
+                        case JOIN -> game.join(player);
+                    };
+                    receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+
+                });
             }
-            receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+            else receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
         });
         receiver.register("mahjong", ListGamesPacket.class, (clientId, packet) -> {
             List<GameData> gameDataList = Lists.newArrayList();
@@ -120,8 +131,11 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
-        Options options = Options.parse(args, new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE));
-        Option option = options.get("port");
+        Options options = Options.parse(args, new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE), new OptionParserClassifier("debug"));
+        Option option = options.get("debug");
+        if (option != null)
+            ASocket.enableDebug();
+        option = options.get("port");
         try {
             defaultLauncher = new Launcher(option != null ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : DEFAULT_PORT);
         } catch (IllegalPortException e) {

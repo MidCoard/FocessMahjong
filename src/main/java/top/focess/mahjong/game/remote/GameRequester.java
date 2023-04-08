@@ -10,24 +10,10 @@ import java.util.function.Supplier;
 
 public class GameRequester {
 
-    private static final Map<UUID, GameRequester> GAME_REQUESTER_MAP = Maps.newConcurrentMap();
-    private final UUID gameId;
     private final Map<String, GameRequest> gameRequests = Maps.newHashMap();
 
     private static final Object LOCK = new Object();
 
-    public GameRequester(UUID gameId) {
-        this.gameId = gameId;
-        GAME_REQUESTER_MAP.put(gameId, this);
-    }
-
-    public static GameRequester getGameRequester(UUID gameId) {
-        return GAME_REQUESTER_MAP.get(gameId);
-    }
-
-    public UUID getGameId() {
-        return gameId;
-    }
 
     public <T> T request(String action, Object... args) {
         GameRequest gameRequest;
@@ -41,7 +27,9 @@ public class GameRequester {
         }
         synchronized (gameRequest.getLock()) {
             try {
-                gameRequest.getLock().wait(5000, 0);
+                System.out.println("Start lock: " + System.currentTimeMillis());
+                gameRequest.getLock().wait(10000, 0);
+                System.out.println("End lock: " + System.currentTimeMillis());
             } catch (InterruptedException ignored) {
             }
             return gameRequest.getResponse();
@@ -53,13 +41,17 @@ public class GameRequester {
     }
 
     public void response(String action, Object arg, Predicate<Object[]> predicate) {
+        System.out.println("Begin Response: " + System.currentTimeMillis());
         synchronized (LOCK) {
             GameRequest gameRequest = this.gameRequests.get(action);
-            if (gameRequest != null && predicate.test(gameRequest.getArgs()))
+            if (gameRequest != null && predicate.test(gameRequest.getArgs())) {
+                System.out.println("Response: " + System.currentTimeMillis());
                 synchronized (gameRequest.getLock()) {
                     gameRequest.setResponse(arg);
                     gameRequest.getLock().notifyAll();
+                    System.out.println("End Response: " + System.currentTimeMillis());
                 }
+            }
         }
     }
 
