@@ -2,14 +2,13 @@ package top.focess.mahjong.game;
 
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.PlayerData;
+import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.terminal.TerminalLauncher;
 
 import java.util.Map;
 import java.util.UUID;
 
 public class Player {
-
-    private static final Map<UUID, Player> PLAYERS = Maps.newConcurrentMap();
 
     private final UUID id;
 
@@ -23,7 +22,6 @@ public class Player {
 
     public Player(UUID id) {
         this.id = id;
-        PLAYERS.put(id, this);
     }
 
     public Game getGame() {
@@ -61,8 +59,10 @@ public class Player {
         }
     }
 
-    public static Player getPlayer(UUID id) {
-        return PLAYERS.get(id);
+    public static Player getPlayer(int clientId, UUID id) {
+        if (LocalPlayer.LOCAL_PLAYER.getId().equals(id))
+            return LocalPlayer.LOCAL_PLAYER;
+        return RemotePlayer.getOrCreatePlayer(clientId, id);
     }
 
     public enum PlayerState {

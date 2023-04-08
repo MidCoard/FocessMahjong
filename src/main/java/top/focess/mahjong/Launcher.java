@@ -56,7 +56,6 @@ public class Launcher {
         PacketPreCodec.register(SyncPlayerPacket.PACKET_ID, new SyncPlayerPacketCodec());
         PacketPreCodec.register(PlayerPacket.PACKET_ID, new PlayerPacketCodec());
     }
-    private final LocalPlayer player = new LocalPlayer();
     private final FocessMultiSocket serverSocket;
 
     public Launcher() throws IllegalPortException {
@@ -119,10 +118,6 @@ public class Launcher {
 
     public LocalGame createGame(MahjongRule rule) {
         return new LocalGame(this.serverSocket, rule);
-    }
-
-    public LocalPlayer getPlayer() {
-        return player;
     }
 
     public static void main(String[] args) {

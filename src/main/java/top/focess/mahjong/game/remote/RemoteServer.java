@@ -3,6 +3,7 @@ package top.focess.mahjong.game.remote;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
+import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
@@ -68,9 +69,8 @@ public class RemoteServer {
                     ((RemoteGame) game).update(packet.getGameData());
             });
             receiver.register(SyncPlayerPacket.class, (clientId, packet) -> {
-                Player player = Player.getPlayer(packet.getPlayerId());
-                if (player != null) {
-                    PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), player.getPlayerData());
+                if (LocalPlayer.LOCAL_PLAYER.getId().equals(packet.getPlayerId())){
+                    PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), LocalPlayer.LOCAL_PLAYER.getPlayerData());
                     receiver.sendPacket(playerPacket);
                 }
             });
