@@ -21,9 +21,9 @@ public class TerminalLauncher {
     static {
         registerGameChangeListener("gameState", Game.GameState.class, (game, oldValue, newValue) -> {
             if (newValue == Game.GameState.PLAYING)
-                System.out.println("Game " + game.getId() + " started!");
+                System.out.println("Game " + game + " started!");
             else if (newValue == Game.GameState.WAITING)
-                System.out.println("Game " + game.getId() + " stopped!");
+                System.out.println("Game " + game + " stopped!");
         });
         registerGameChangeListener("startTime", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " start time changed to " + newValue));
         registerGameChangeListener("players", List.class, (game, oldValue, newValue) -> {
@@ -36,17 +36,17 @@ public class TerminalLauncher {
                 if (!oldValue.contains(o))
                     joinPlayers.add((Player) o);
             for (Player player : joinPlayers)
-                System.out.println("Player " + player.getId() + " join game " + game.getId());
+                System.out.println("Player " + player + " join game " + game);
             for (Player player : leavePlayers)
-                System.out.println("Player " + player.getId() + " leave game " + game.getId());
+                System.out.println("Player " + player + " leave game " + game);
         });
 
 
         registerPlayerChangeListener("playerState", Player.PlayerState.class, (player, oldValue, newValue) -> {
             if (newValue == Player.PlayerState.READY && oldValue == Player.PlayerState.WAITING && player.getGame() != null)
-                System.out.println("Player " + player.getId() + " ready game " + player.getGame().getId());
+                System.out.println("Player " + player + " ready game " + player.getGame());
             else if (newValue == Player.PlayerState.WAITING && oldValue == Player.PlayerState.READY && player.getGame() != null)
-                System.out.println("Player " + player.getId() + " unready game " + player.getGame().getId());
+                System.out.println("Player " + player + " unready game " + player.getGame());
         });
     }
 

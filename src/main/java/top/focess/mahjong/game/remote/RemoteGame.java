@@ -39,8 +39,8 @@ public class RemoteGame extends Game {
                 ()-> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.JOIN)),
                 player.getId());
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
+            this.syncGameData(player);
             player.setGame(this);
-            this.syncGameData();
             return true;
         }
         return false;
@@ -83,17 +83,11 @@ public class RemoteGame extends Game {
         return false;
     }
 
-    public synchronized void syncGameData() {
+    public synchronized void syncGameData(Player player) {
         GameData gameData = this.gameRequester.request("sync",
-                () -> this.socket.getReceiver().sendPacket(new SyncGamePacket(this.getId())),
+                () -> this.socket.getReceiver().sendPacket(new SyncGamePacket(player.getId(), this.getId())),
                 this.getId());
         this.update(gameData);
-    }
-
-    @Override
-    public synchronized GameData getGameData() {
-        syncGameData();
-        return super.getGameData();
     }
 
     public synchronized void update(GameData gameData) {

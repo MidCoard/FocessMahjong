@@ -1,6 +1,7 @@
 package top.focess.mahjong.game;
 
 import com.google.common.collect.Lists;
+import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.GameSyncPacket;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
@@ -44,9 +45,13 @@ public class LocalGame extends Game {
                 int clientId = ((RemotePlayer) p).getClientId();
                 if (clientId == -1)
                     throw new IllegalStateException("Remote player " + p.getName() + " has no client id");
-                this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getGameData()));
+                this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getPartGameData(p)));
             }
         });
+    }
+
+    public synchronized GameData getPartGameData(Player player) {
+        return getGameData();//todo
     }
 
     public synchronized boolean leave(Player player) {
@@ -108,6 +113,7 @@ public class LocalGame extends Game {
             return;
         if (this.getStartTime() == 0) {
             this.task.cancel();
+            this.task = null;
             this.start();
             return;
         }
@@ -123,6 +129,13 @@ public class LocalGame extends Game {
         this.setGameState(GameState.PLAYING);
         this.players.forEach(player -> player.setPlayerState(Player.PlayerState.PLAYING));
         this.syncPlayer();
+        this.task = FOCESS_SCHEDULER.runTimer(this::tick, Duration.ZERO, Duration.ofMillis(500));
+    }
+
+    public synchronized void tick() {
+        if (this.getGameState() != GameState.PLAYING)
+            return;
+
     }
 
     private void syncPlayer() {

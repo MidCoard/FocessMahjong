@@ -17,6 +17,8 @@ public abstract class Game {
     protected static final Map<UUID, Game> GAMES = Maps.newConcurrentMap();
     protected final GameRequester gameRequester = new GameRequester();
     private int startTime = -1;
+    private int gameTime = 0;
+    private int countdown = -1;
     private GameState gameState = GameState.WAITING;
 
     private final MahjongRule rule;
@@ -92,10 +94,41 @@ public abstract class Game {
         }
     }
 
+    public int getGameTime() {
+        return gameTime;
+    }
+
+    public void setGameTime(int gameTime) {
+        if (this.gameTime != gameTime) {
+            TerminalLauncher.change("gameTime", this, this.gameTime, gameTime);
+            this.gameTime = gameTime;
+        }
+    }
+
+    public int getCountdown() {
+        return countdown;
+    }
+
+    public void setCountdown(int countdown) {
+        if (this.countdown != countdown) {
+            TerminalLauncher.change("countdown", this, this.countdown, countdown);
+            this.countdown = countdown;
+        }
+    }
+
     public enum GameState {
 
         WAITING, // setup is done, waiting for players to join and ready.
         PLAYING; // game is playing. including the shuffling tiles, dealing tiles, playing tiles, and game over.
 
+    }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "gameState=" + gameState +
+                ", rule=" + rule +
+                ", id=" + id +
+                '}' + super.toString();
     }
 }

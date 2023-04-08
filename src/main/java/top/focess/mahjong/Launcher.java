@@ -6,6 +6,7 @@ import top.focess.command.DataCollection;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
+import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.*;
@@ -99,8 +100,12 @@ public class Launcher {
         });
         receiver.register("mahjong", SyncGamePacket.class, (clientId, packet) -> {
             Game game = Game.getGame(packet.getGameId());
-            if (game instanceof LocalGame)
-                receiver.sendPacket(clientId, new GamePacket(game.getGameData()));
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                if (player == null)
+                    return;
+                receiver.sendPacket(clientId, new GamePacket(((LocalGame) game).getPartGameData(player)));
+            }
         });
         receiver.register("mahjong", PlayerPacket.class, (clientId, packet) -> {
             Game game = Game.getGame(packet.getGameId());

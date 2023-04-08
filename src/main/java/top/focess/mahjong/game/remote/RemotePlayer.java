@@ -43,6 +43,15 @@ public class RemotePlayer extends Player {
         return ret;
     }
 
+    public static RemotePlayer getPlayer(int clientId, UUID id) {
+        RemotePlayer player = PLAYERS.get(id);
+        if (player == null)
+            return null;
+        if (player.clientId == clientId || clientId == -1)
+            return player;
+        return null;
+    }
+
     public int getClientId() {
         return clientId;
     }

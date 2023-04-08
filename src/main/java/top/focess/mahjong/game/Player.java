@@ -79,4 +79,13 @@ public class Player {
         READY,
         PLAYING;
     }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", playerState=" + playerState +
+                '}' + super.toString();
+    }
 }
