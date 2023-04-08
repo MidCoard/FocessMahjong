@@ -6,7 +6,6 @@ import top.focess.command.DataCollection;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
-import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.*;
@@ -79,10 +78,10 @@ public class Launcher {
                 RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, packet.getPlayerId());
                 if (player == null)
                      return;
-                SyncPlayerPacket syncPlayerPacket = new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId());
-                this.serverSocket.getReceiver().sendPacket(clientId, syncPlayerPacket);
-                THREAD_POOL_SCHEDULER.run(()->{
-                    PlayerData playerData = game.getGameRequester().request("syncPlayer", packet.getPlayerId());
+//                THREAD_POOL_SCHEDULER.run(()->{
+                    PlayerData playerData = game.getGameRequester().request("syncPlayer",
+                            () -> this.serverSocket.getReceiver().sendPacket(clientId, new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId())),
+                            packet.getPlayerId());
                     if (playerData != null)
                         player.update(playerData);
                     boolean flag = switch (packet.getGameAction()) {
@@ -91,11 +90,11 @@ public class Launcher {
                         case LEAVE -> game.leave(player);
                         case JOIN -> game.join(player);
                     };
-                    receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+                    receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
 
-                });
+//                });
             }
-            else receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getGameId(), packet.getPlayerId(), packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
+            else receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
         });
         receiver.register("mahjong", ListGamesPacket.class, (clientId, packet) -> {
             List<GameData> gameDataList = Lists.newArrayList();
@@ -131,7 +130,10 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
-        Options options = Options.parse(args, new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE), new OptionParserClassifier("debug"));
+        Options options = Options.parse(args,
+                new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE),
+                new OptionParserClassifier("debug"),
+                new OptionParserClassifier("gui"));
         Option option = options.get("debug");
         if (option != null)
             ASocket.enableDebug();

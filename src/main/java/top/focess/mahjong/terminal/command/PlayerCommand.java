@@ -42,7 +42,6 @@ public class PlayerCommand extends Command {
             return CommandResult.ALLOW;
         }, CommandArgument.of("join"), CommandArgument.ofString());
 
-        //leave
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
             Player player = Launcher.defaultLauncher.getPlayer();
@@ -59,7 +58,6 @@ public class PlayerCommand extends Command {
             return CommandResult.ALLOW;
         }, CommandArgument.of("leave"), CommandArgument.ofString());
 
-        //ready
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
             Player player = Launcher.defaultLauncher.getPlayer();
@@ -76,7 +74,6 @@ public class PlayerCommand extends Command {
             return CommandResult.ALLOW;
         }, CommandArgument.of("ready"), CommandArgument.ofString());
 
-        //unready
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
             Player player = Launcher.defaultLauncher.getPlayer();

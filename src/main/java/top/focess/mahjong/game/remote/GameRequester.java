@@ -15,16 +15,17 @@ public class GameRequester {
     private static final Object LOCK = new Object();
 
 
-    public <T> T request(String action, Object... args) {
+    public <T> T request(String action, Runnable task, Object... args) {
         GameRequest gameRequest;
         synchronized (LOCK) {
             if (gameRequests.containsKey(action))
                 gameRequest = gameRequests.get(action);
             else {
-                gameRequest = new GameRequest(new Object(), args);
+                gameRequest = new GameRequest(args);
                 gameRequests.put(action, gameRequest);
             }
         }
+        task.run();
         synchronized (gameRequest.getLock()) {
             try {
                 System.out.println("Start lock: " + System.currentTimeMillis());
@@ -56,12 +57,11 @@ public class GameRequester {
     }
 
     public static class GameRequest {
-        private final Object lock;
+        private final Object lock = new Object();
         private final Object[] args;
         private Object response;
 
-        public GameRequest(Object lock, Object... args) {
-            this.lock = lock;
+        public GameRequest(Object... args) {
             this.args = args;
         }
 
