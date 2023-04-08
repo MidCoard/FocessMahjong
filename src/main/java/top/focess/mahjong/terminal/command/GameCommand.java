@@ -23,7 +23,7 @@ public class GameCommand extends Command {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             MahjongRule rule = dataCollection.get(MahjongRule.class);
             Game game = Launcher.defaultLauncher.createGame(rule);
-            System.out.println("Game " + game.getId() + " created!");
+            ioHandler.output("Game " + game.getId() + " created!");
             return CommandResult.ALLOW;
         }, CommandArgument.of("create"), CommandArgument.of(MahjongRuleConverter.MAHJONG_RULE_CONVERTER));
     }

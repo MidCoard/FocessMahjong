@@ -2,36 +2,36 @@ package top.focess.mahjong.game.tile;
 
 public enum TileState {
 
-    ONE_DOTS,
-    TWO_DOTS,
-    THREE_DOTS,
-    FOUR_DOTS,
-    FIVE_DOTS,
-    SIX_DOTS,
-    SEVEN_DOTS,
-    EIGHT_DOTS,
-    NINE_DOTS,
+    ONE_DOTS(TileStateCategory.DOTS),
+    TWO_DOTS(TileStateCategory.DOTS),
+    THREE_DOTS(TileStateCategory.DOTS),
+    FOUR_DOTS(TileStateCategory.DOTS),
+    FIVE_DOTS(TileStateCategory.DOTS),
+    SIX_DOTS(TileStateCategory.DOTS),
+    SEVEN_DOTS(TileStateCategory.DOTS),
+    EIGHT_DOTS(TileStateCategory.DOTS),
+    NINE_DOTS(TileStateCategory.DOTS),
 
 
-    ONE_BAMBOO,
-    TWO_BAMBOO,
-    THREE_BAMBOO,
-    FOUR_BAMBOO,
-    FIVE_BAMBOO,
-    SIX_BAMBOO,
-    SEVEN_BAMBOO,
-    EIGHT_BAMBOO,
-    NINE_BAMBOO,
+    ONE_BAMBOO(TileStateCategory.BAMBOO),
+    TWO_BAMBOO(TileStateCategory.BAMBOO),
+    THREE_BAMBOO(TileStateCategory.BAMBOO),
+    FOUR_BAMBOO(TileStateCategory.BAMBOO),
+    FIVE_BAMBOO(TileStateCategory.BAMBOO),
+    SIX_BAMBOO(TileStateCategory.BAMBOO),
+    SEVEN_BAMBOO(TileStateCategory.BAMBOO),
+    EIGHT_BAMBOO(TileStateCategory.BAMBOO),
+    NINE_BAMBOO(TileStateCategory.BAMBOO),
 
-    ONE_CHARACTERS,
-    TWO_CHARACTERS,
-    THREE_CHARACTERS,
-    FOUR_CHARACTERS,
-    FIVE_CHARACTERS,
-    SIX_CHARACTERS,
-    SEVEN_CHARACTERS,
-    EIGHT_CHARACTERS,
-    NINE_CHARACTERS,
+    ONE_CHARACTERS(TileStateCategory.CHARACTERS),
+    TWO_CHARACTERS(TileStateCategory.CHARACTERS),
+    THREE_CHARACTERS(TileStateCategory.CHARACTERS),
+    FOUR_CHARACTERS(TileStateCategory.CHARACTERS),
+    FIVE_CHARACTERS(TileStateCategory.CHARACTERS),
+    SIX_CHARACTERS(TileStateCategory.CHARACTERS),
+    SEVEN_CHARACTERS(TileStateCategory.CHARACTERS),
+    EIGHT_CHARACTERS(TileStateCategory.CHARACTERS),
+    NINE_CHARACTERS(TileStateCategory.CHARACTERS),
 
     EAST_WIND,
     SOUTH_WIND,
@@ -42,5 +42,26 @@ public enum TileState {
     GREEN_DRAGON,
     WHITE_DRAGON,
 
+
     ;
+
+    public TileStateCategory getCategory() {
+        return category;
+    }
+
+    public enum TileStateCategory {
+        DOTS,
+        BAMBOO,
+        CHARACTERS,
+    }
+
+    private final TileStateCategory category;
+
+    TileState() {
+        this(null);
+    }
+
+    TileState(TileStateCategory category) {
+        this.category = category;
+    }
 }

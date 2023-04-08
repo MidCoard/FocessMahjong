@@ -1,8 +1,11 @@
 package top.focess.mahjong.game.rule;
 
+import top.focess.mahjong.game.rule.manager.GameManager;
+import top.focess.mahjong.game.rule.manager.SiChuanGameManager;
+
 public enum MahjongRule {
 
-    SICHUAN("SiChuanMahjong",108) {
+    SICHUAN("SiChuanMahjong") {
         @Override
         public int getReadyTime(int size) {
             return switch (size) {
@@ -12,18 +15,17 @@ public enum MahjongRule {
                 default -> -1;
             };
         }
+
+        @Override
+        public GameManager getGameManager(int playerSize) {
+            return new SiChuanGameManager(playerSize);
+        }
     };
 
     private final String name;
-    private final int tileSize;
 
-    MahjongRule(String name, int tileSize) {
+    MahjongRule(String name) {
         this.name = name;
-        this.tileSize = tileSize;
-    }
-
-    public int getTileSize() {
-        return this.tileSize;
     }
 
     public boolean checkPlayerSize(int size) {
@@ -31,6 +33,8 @@ public enum MahjongRule {
     }
 
     public abstract int getReadyTime(int size);
+
+    public abstract GameManager getGameManager(int playerSize);
 
     public String getName() {
         return name;

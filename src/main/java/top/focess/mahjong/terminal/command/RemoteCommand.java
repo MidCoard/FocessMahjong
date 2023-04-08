@@ -26,7 +26,7 @@ public class RemoteCommand extends Command {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             String name = dataCollection.get();
             if (REMOTE_SERVER_MAP.containsKey(name)) {
-                System.out.println("Remote server " + name + " already exists!");
+                ioHandler.output("Remote server " + name + " already exists!");
                 return CommandResult.REFUSE;
             }
             String ip = dataCollection.get();
@@ -34,7 +34,7 @@ public class RemoteCommand extends Command {
             try {
                 RemoteServer remoteServer = RemoteServer.connect(ip, port);
                 REMOTE_SERVER_MAP.put(name, remoteServer);
-                System.out.println("Remote server " + name + " connected!");
+                ioHandler.output("Remote server " + name + " connected!");
                 return CommandResult.ALLOW;
             } catch (IllegalPortException e) {
                 return CommandResult.REFUSE;
@@ -44,13 +44,13 @@ public class RemoteCommand extends Command {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             String name = dataCollection.get();
             if (!REMOTE_SERVER_MAP.containsKey(name)) {
-                System.out.println("Remote server " + name + " not exists!");
+                ioHandler.output("Remote server " + name + " not exists!");
                 return CommandResult.REFUSE;
             }
             List<RemoteGame> games = REMOTE_SERVER_MAP.get(name).getRemoteGames();
             System.out.println("Remote server " + name + " has " + games.size() + " games");
             for (RemoteGame game : games)
-                System.out.println(game.getId() + " " + game.getRule().getName());
+                ioHandler.output(game.getId() + " " + game.getRule().getName());
             return CommandResult.ALLOW;
         }, CommandArgument.of("fetch"), CommandArgument.ofString());
     }

@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalPlayer;
+import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
+import top.focess.mahjong.terminal.TerminalLauncher;
 import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.socket.FocessClientSocket;
@@ -71,6 +73,15 @@ public class RemoteServer {
                     PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), LocalPlayer.localPlayer.getPlayerData());
                     receiver.sendPacket(playerPacket);
                 }
+            });
+            receiver.register(Change3TilesDirectionPacket.class, (clientId, packet) -> {
+                Game game = Game.getGame(packet.getGameId());
+                if (game != null)
+                    TerminalLauncher.change("changeDirection", game, -1,  packet.getDirection());
+            });
+            receiver.register(FetchTilePacket.class, (clientId, packet) -> {
+                if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId()))
+                    TerminalLauncher.change("fetchTileState", LocalPlayer.localPlayer, null, packet.getTileState());
             });
             CLIENT_SOCKET_MAP.put(Pair.of(ip, port), clientSocket);
         }

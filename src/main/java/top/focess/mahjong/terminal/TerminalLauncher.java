@@ -3,6 +3,7 @@ package top.focess.mahjong.terminal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
+import top.focess.mahjong.game.GameTileState;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.terminal.command.CommandLine;
 import top.focess.mahjong.terminal.listener.TerminalGameListener;
@@ -26,6 +27,12 @@ public class TerminalLauncher {
                 System.out.println("Game " + game + " stopped!");
         });
         registerGameChangeListener("startTime", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " start time changed to " + newValue));
+        registerGameChangeListener("countdown", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " countdown changed to " + newValue));
+        registerGameChangeListener("gameTileState", GameTileState.class, (game, oldValue, newValue) -> {
+            if (newValue == GameTileState.CHANGE_3_TILES) {
+                System.out.println("We should select three tiles to change to other tiles!");
+            }
+        });
         registerGameChangeListener("players", List.class, (game, oldValue, newValue) -> {
             List<Player> joinPlayers = Lists.newArrayList();
             List<Player> leavePlayers = Lists.newArrayList();

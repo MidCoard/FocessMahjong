@@ -53,6 +53,9 @@ public class Launcher {
         PacketPreCodec.register(GamePacket.PACKET_ID, new GamePacketCodec());
         PacketPreCodec.register(SyncPlayerPacket.PACKET_ID, new SyncPlayerPacketCodec());
         PacketPreCodec.register(PlayerPacket.PACKET_ID, new PlayerPacketCodec());
+        PacketPreCodec.register(Change3TilesPacket.PACKET_ID, new Change3TilesPacketCodec());
+        PacketPreCodec.register(Change3TilesDirectionPacket.PACKET_ID, new Change3TilesDirectionPacketCodec());
+        PacketPreCodec.register(FetchTilePacket.PACKET_ID, new FetchTilePacketCodec());
     }
     private final FocessMultiSocket serverSocket;
 
@@ -111,6 +114,13 @@ public class Launcher {
             Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame)
                 game.getGameRequester().response("syncPlayer", packet.getPlayerData(), id -> id[0].equals(packet.getPlayerData().id()));
+        });
+        receiver.register("mahjong", Change3TilesPacket.class, (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                game.doTileAction(LocalGame.TileAction.CHANGE_3_TILES, player, packet.getTile1(), packet.getTile2(), packet.getTile3());
+            }
         });
     }
 

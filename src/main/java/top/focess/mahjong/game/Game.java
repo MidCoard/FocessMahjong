@@ -72,7 +72,7 @@ public abstract class Game {
     }
 
     public GameData getGameData() {
-        return new GameData(this.getId(), this.rule, this.gameState, this.startTime,null, this.players.stream().map(Player::getPlayerData).toList());
+        return new GameData(this.getId(), this.rule, this.gameState, this.startTime, this.getGameTime(), this.getCountdown(), null, this.players.stream().map(Player::getPlayerData).toList());
     }
 
     public MahjongRule getRule() {
@@ -115,6 +115,14 @@ public abstract class Game {
             this.countdown = countdown;
         }
     }
+
+    protected void tickGameTime() {
+        this.setGameTime(this.getGameTime() + 1);
+    }
+
+    public abstract GameTileState getGameTileState();
+
+    public abstract void doTileAction(LocalGame.TileAction tileAction, Player player, Object... objects);
 
     public enum GameState {
 
