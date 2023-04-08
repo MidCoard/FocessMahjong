@@ -43,6 +43,7 @@ public class GameRequester {
         synchronized (LOCK) {
             GameRequest gameRequest = this.gameRequests.get(action);
             if (gameRequest != null && predicate.test(gameRequest.getArgs())) {
+                gameRequests.remove(action);
                 synchronized (gameRequest.getLock()) {
                     gameRequest.setResponse(arg);
                     gameRequest.getLock().notifyAll();

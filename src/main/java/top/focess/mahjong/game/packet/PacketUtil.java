@@ -26,8 +26,8 @@ public class PacketUtil {
     }
 
     public static void writePlayerData(PacketPreCodec codec, PlayerData playerData) {
-        codec.writeString(playerData.getId().toString());
-        codec.writeString(playerData.getPlayerState().name());
+        codec.writeString(playerData.id().toString());
+        codec.writeString(playerData.playerState().name());
         // todo
     }
 
@@ -49,6 +49,6 @@ public class PacketUtil {
         UUID playerId = UUID.fromString(codec.readString());
         Player.PlayerState playerState = Player.PlayerState.valueOf(codec.readString());
         // todo
-        return new PlayerData(playerId, playerState);
+        return new PlayerData(playerId, this.name, playerState);
     }
 }

@@ -31,8 +31,8 @@ public class LocalGame extends Game {
         if (player.getGame() != null || player.getPlayerState() != Player.PlayerState.WAITING)
             return false;
         List<Player> old = Lists.newArrayList(this.players);
-        TerminalLauncher.change("players", this, old, this.players);
         this.players.add(player);
+        TerminalLauncher.change("players", this, old, this.players);
         player.setGame(this);
         this.syncOtherPlayer(player);
         return true;

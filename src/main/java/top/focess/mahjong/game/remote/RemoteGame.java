@@ -106,7 +106,7 @@ public class RemoteGame extends Game {
 
         List<Player> temp = Lists.newArrayList();
         for (PlayerData playerData : gameData.getPlayerData()) {
-            Player player = Player.getPlayer(-1, playerData.getId());
+            Player player = Player.getPlayer(-1, playerData);
             if (player == null)
                 throw new IllegalArgumentException("The player is not exist.");
             if (player instanceof RemotePlayer)

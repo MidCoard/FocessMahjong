@@ -23,7 +23,7 @@ public class PlayerCommand extends Command {
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             Player player = LocalPlayer.LOCAL_PLAYER;
-            System.out.println("Local player is " + player.getId() + ".");
+            System.out.println("Local player is " + player.getName() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("local"));
 
@@ -37,9 +37,9 @@ public class PlayerCommand extends Command {
             }
             boolean flag = game.join(player);
             if (flag)
-                System.out.println("Player " + player.getId() + " joined game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " joined game " + game.getId() + ".");
             else
-                System.out.println("Player " + player.getId() + " can't join game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " can't join game " + game.getId() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("join"), CommandArgument.ofString());
 
@@ -53,9 +53,9 @@ public class PlayerCommand extends Command {
             }
             boolean flag = game.leave(player);
             if (flag)
-                System.out.println("Player " + player.getId() + " left game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " left game " + game.getId() + ".");
             else
-                System.out.println("Player " + player.getId() + " can't leave game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " can't leave game " + game.getId() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("leave"), CommandArgument.ofString());
 
@@ -69,9 +69,9 @@ public class PlayerCommand extends Command {
             }
             boolean flag = game.ready(player);
             if (flag)
-                System.out.println("Player " + player.getId() + " is ready in game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " is ready in game " + game.getId() + ".");
             else
-                System.out.println("Player " + player.getId() + " can't ready in game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " can't ready in game " + game.getId() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("ready"), CommandArgument.ofString());
 
@@ -85,9 +85,9 @@ public class PlayerCommand extends Command {
             }
             boolean flag = game.unready(player);
             if (flag)
-                System.out.println("Player " + player.getId() + " is unready in game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " is unready in game " + game.getId() + ".");
             else
-                System.out.println("Player " + player.getId() + " can't unready in game " + game.getId() + ".");
+                System.out.println("Player " + player.getName() + " can't unready in game " + game.getId() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("unready"), CommandArgument.ofString());
     }

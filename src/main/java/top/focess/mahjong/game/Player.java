@@ -11,6 +11,7 @@ import java.util.UUID;
 public class Player {
 
     private final UUID id;
+    private final String name;
 
     private Game game;
 
@@ -21,7 +22,12 @@ public class Player {
     }
 
     public Player(UUID id) {
+        this(id, "Player" + id.toString().substring(0, 4));
+    }
+
+    public Player(UUID id, String name) {
         this.id = id;
+        this.name = name;
     }
 
     public Game getGame() {
@@ -45,7 +51,7 @@ public class Player {
     }
 
     public PlayerData getPlayerData() {
-        return new PlayerData(this.id, playerState);
+        return new PlayerData(this.id, this.name, playerState);
     }
 
     public PlayerState getPlayerState() {
@@ -59,10 +65,14 @@ public class Player {
         }
     }
 
-    public static Player getPlayer(int clientId, UUID id) {
-        if (LocalPlayer.LOCAL_PLAYER.getId().equals(id))
+    public static Player getPlayer(int clientId, PlayerData playerData) {
+        if (LocalPlayer.LOCAL_PLAYER.getId().equals(playerData.id()))
             return LocalPlayer.LOCAL_PLAYER;
-        return RemotePlayer.getOrCreatePlayer(clientId, id);
+        return RemotePlayer.getOrCreatePlayer(clientId, playerData);
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public enum PlayerState {
