@@ -1,10 +1,12 @@
 package top.focess.mahjong.game;
 
+import java.util.UUID;
+
 public class LocalPlayer extends Player{
 
-    public static final LocalPlayer LOCAL_PLAYER = new LocalPlayer();
+    public static LocalPlayer localPlayer;
 
-    private LocalPlayer() {
-        super();
+    public LocalPlayer(String name) {
+        super(UUID.randomUUID(), name);
     }
 }

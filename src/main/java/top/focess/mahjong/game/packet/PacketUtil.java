@@ -14,14 +14,14 @@ import java.util.UUID;
 public class PacketUtil {
 
     public static void writeGameData(PacketPreCodec codec, GameData gameData) {
-        codec.writeString(gameData.getId().toString());
-        codec.writeString(gameData.getRule().name());
-        codec.writeString(gameData.getGameState().name());
-        codec.writeInt(gameData.getStartTime());
+        codec.writeString(gameData.id().toString());
+        codec.writeString(gameData.rule().name());
+        codec.writeString(gameData.gameState().name());
+        codec.writeInt(gameData.startTime());
         // todo tiles data
 
-        codec.writeInt(gameData.getPlayerData().size());
-        for (PlayerData playerData : gameData.getPlayerData())
+        codec.writeInt(gameData.playerData().size());
+        for (PlayerData playerData : gameData.playerData())
             writePlayerData(codec, playerData);
     }
 
@@ -29,6 +29,7 @@ public class PacketUtil {
         codec.writeString(playerData.id().toString());
         codec.writeString(playerData.name());
         codec.writeString(playerData.playerState().name());
+        codec.tryWriteString(playerData.gameId() == null ? null : playerData.gameId().toString());
     }
 
     public static GameData readGameData(PacketPreCodec codec) {
@@ -49,6 +50,8 @@ public class PacketUtil {
         UUID playerId = UUID.fromString(codec.readString());
         String name = codec.readString();
         Player.PlayerState playerState = Player.PlayerState.valueOf(codec.readString());
-        return new PlayerData(playerId, name, playerState);
+        String gameIdStr = codec.tryReadString();
+        UUID gameId = gameIdStr == null ? null : UUID.fromString(gameIdStr);
+        return new PlayerData(playerId, name, playerState, gameId);
     }
 }

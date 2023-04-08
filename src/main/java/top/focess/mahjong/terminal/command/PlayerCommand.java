@@ -5,7 +5,6 @@ import top.focess.command.Command;
 import top.focess.command.CommandArgument;
 import top.focess.command.CommandResult;
 import top.focess.command.CommandSender;
-import top.focess.mahjong.Launcher;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.Player;
@@ -22,14 +21,14 @@ public class PlayerCommand extends Command {
     @Override
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            Player player = LocalPlayer.LOCAL_PLAYER;
+            Player player = LocalPlayer.localPlayer;
             System.out.println("Local player is " + player.getName() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("local"));
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.LOCAL_PLAYER;
+            Player player = LocalPlayer.localPlayer;
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");
@@ -45,7 +44,7 @@ public class PlayerCommand extends Command {
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.LOCAL_PLAYER;
+            Player player = LocalPlayer.localPlayer;
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");
@@ -61,7 +60,7 @@ public class PlayerCommand extends Command {
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.LOCAL_PLAYER;
+            Player player = LocalPlayer.localPlayer;
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");
@@ -77,7 +76,7 @@ public class PlayerCommand extends Command {
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
             UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.LOCAL_PLAYER;
+            Player player = LocalPlayer.localPlayer;
             Game game = Game.getGame(gameId);
             if (game == null) {
                 System.out.println("Game " + gameId + " not found!");

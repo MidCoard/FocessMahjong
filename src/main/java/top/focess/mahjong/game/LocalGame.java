@@ -42,9 +42,8 @@ public class LocalGame extends Game {
         this.players.stream().filter(p -> p != player).forEach(p -> {
             if (p instanceof RemotePlayer) {
                 int clientId = ((RemotePlayer) p).getClientId();
-                if (clientId == -1) {
-                    System.out.println("Player " + p.getId() + " is not connected to server");
-                }
+                if (clientId == -1)
+                    throw new IllegalStateException("Remote player " + p.getName() + " has no client id");
                 this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getGameData()));
             }
         });

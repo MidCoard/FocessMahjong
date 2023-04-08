@@ -17,19 +17,19 @@ public class RemoteGame extends Game {
     private final FocessClientSocket socket;
 
     public RemoteGame(FocessClientSocket socket, GameData data) {
-        super(data.getId(), data.getRule());
+        super(data.id(), data.rule());
         this.socket = socket;
         this.update(data);
     }
 
     public static RemoteGame getOrCreateGame(FocessClientSocket socket, GameData data) {
-        Game game = Game.getGame(data.getId());
+        Game game = Game.getGame(data.id());
         if (game instanceof RemoteGame) {
             ((RemoteGame) game).update(data);
             return (RemoteGame) game;
         }
         if (game != null)
-            throw new IllegalArgumentException("Game " + data.getId() + " is not a remote game");
+            throw new IllegalArgumentException("Game " + data.id() + " is not a remote game");
         return new RemoteGame(socket, data);
     }
 
@@ -40,6 +40,7 @@ public class RemoteGame extends Game {
                 player.getId());
         if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
             player.setGame(this);
+            this.syncGameData();
             return true;
         }
         return false;
@@ -96,21 +97,18 @@ public class RemoteGame extends Game {
     }
 
     public synchronized void update(GameData gameData) {
-        if (!this.getId().equals(gameData.getId()) || !this.getRule().equals(gameData.getRule()))
+        if (!this.getId().equals(gameData.id()) || !this.getRule().equals(gameData.rule()))
             throw new IllegalArgumentException("The game base data is not match");
-        this.setGameState(gameData.getGameState());
-        this.setStartTime(gameData.getStartTime());
+        this.setGameState(gameData.gameState());
+        this.setStartTime(gameData.startTime());
 
 
         // todo update tiles
-
         List<Player> temp = Lists.newArrayList();
-        for (PlayerData playerData : gameData.getPlayerData()) {
+        for (PlayerData playerData : gameData.playerData()) {
             Player player = Player.getPlayer(-1, playerData);
             if (player == null)
                 throw new IllegalArgumentException("The player is not exist.");
-            if (player instanceof RemotePlayer)
-                ((RemotePlayer) player).update(playerData);
             temp.add(player);
         }
         TerminalLauncher.change("players", this, this.players, temp);

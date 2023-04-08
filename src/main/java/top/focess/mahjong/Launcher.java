@@ -5,6 +5,7 @@ import top.focess.command.Command;
 import top.focess.command.DataCollection;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
+import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.*;
@@ -27,6 +28,7 @@ import top.focess.util.option.Option;
 import top.focess.util.option.OptionParserClassifier;
 import top.focess.util.option.Options;
 import top.focess.util.option.type.IntegerOptionType;
+import top.focess.util.option.type.OptionType;
 
 import java.util.List;
 
@@ -114,13 +116,16 @@ public class Launcher {
     public LocalGame createGame(MahjongRule rule) {
         return new LocalGame(this.serverSocket, rule);
     }
-
+//
     public static void main(String[] args) {
         Options options = Options.parse(args,
+                new OptionParserClassifier("name", OptionType.DEFAULT_OPTION_TYPE),
                 new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE),
                 new OptionParserClassifier("debug"),
                 new OptionParserClassifier("gui"));
-        Option option = options.get("debug");
+        Option option = options.get("name");
+        LocalPlayer.localPlayer = new LocalPlayer(option != null ? option.get(OptionType.DEFAULT_OPTION_TYPE) : "LocalPlayer");
+        option = options.get("debug");
         if (option != null)
             ASocket.enableDebug();
         option = options.get("port");

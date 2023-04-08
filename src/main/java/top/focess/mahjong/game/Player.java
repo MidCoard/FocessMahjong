@@ -1,11 +1,9 @@
 package top.focess.mahjong.game;
 
-import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.terminal.TerminalLauncher;
 
-import java.util.Map;
 import java.util.UUID;
 
 public class Player {
@@ -51,7 +49,7 @@ public class Player {
     }
 
     public PlayerData getPlayerData() {
-        return new PlayerData(this.id, this.name, playerState);
+        return new PlayerData(this.id, this.name, playerState, this.game == null ? null : this.game.getId());
     }
 
     public PlayerState getPlayerState() {
@@ -66,8 +64,8 @@ public class Player {
     }
 
     public static Player getPlayer(int clientId, PlayerData playerData) {
-        if (LocalPlayer.LOCAL_PLAYER.getId().equals(playerData.id()))
-            return LocalPlayer.LOCAL_PLAYER;
+        if (LocalPlayer.localPlayer.getId().equals(playerData.id()))
+            return LocalPlayer.localPlayer;
         return RemotePlayer.getOrCreatePlayer(clientId, playerData);
     }
 

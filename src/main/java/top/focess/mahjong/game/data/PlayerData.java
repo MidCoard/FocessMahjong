@@ -4,4 +4,4 @@ import top.focess.mahjong.game.Player;
 
 import java.util.UUID;
 
-public record PlayerData(UUID id, String name, Player.PlayerState playerState) {}
+public record PlayerData(UUID id, String name, Player.PlayerState playerState, UUID gameId) {}

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalPlayer;
-import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
 import top.focess.net.IllegalPortException;
@@ -58,18 +57,18 @@ public class RemoteServer {
                     game.getGameRequester().response(packet.getGameAction().getName(), packet.getGameActionStatus(), id -> id[0].equals(packet.getPlayerId()));
             });
             receiver.register(GamePacket.class, (clientId, packet) -> {
-                Game game = Game.getGame(packet.getGameData().getId());
+                Game game = Game.getGame(packet.getGameData().id());
                 if (game != null)
-                    game.getGameRequester().response("sync", packet.getGameData(), id -> id[0].equals(packet.getGameData().getId()));
+                    game.getGameRequester().response("sync", packet.getGameData(), id -> id[0].equals(packet.getGameData().id()));
             });
             receiver.register(GameSyncPacket.class, (clientId, packet) -> {
-                Game game = Game.getGame(packet.getGameData().getId());
+                Game game = Game.getGame(packet.getGameData().id());
                 if (game instanceof RemoteGame)
                     ((RemoteGame) game).update(packet.getGameData());
             });
             receiver.register(SyncPlayerPacket.class, (clientId, packet) -> {
-                if (LocalPlayer.LOCAL_PLAYER.getId().equals(packet.getPlayerId())){
-                    PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), LocalPlayer.LOCAL_PLAYER.getPlayerData());
+                if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId())){
+                    PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), LocalPlayer.localPlayer.getPlayerData());
                     receiver.sendPacket(playerPacket);
                 }
             });

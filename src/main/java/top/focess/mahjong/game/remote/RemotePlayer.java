@@ -1,6 +1,7 @@
 package top.focess.mahjong.game.remote;
 
 import com.google.common.collect.Lists;
+import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.PlayerData;
 
@@ -24,7 +25,7 @@ public class RemotePlayer extends Player {
             if (player.clientId == -1 && clientId != -1)
                 player.clientId = clientId;
             if (player.clientId == clientId || clientId == -1)
-                return player;
+                return player.update(playerData);
             return null;
         }
         RemotePlayer player = new RemotePlayer(clientId, playerData);
@@ -46,9 +47,11 @@ public class RemotePlayer extends Player {
         return clientId;
     }
 
-    public void update(PlayerData playerData) {
+    public RemotePlayer update(PlayerData playerData) {
         if (!this.getId().equals(playerData.id()) || !this.getName().equals(playerData.name()))
             throw new IllegalArgumentException("The player base data is not match!");
         this.setPlayerState(playerData.playerState());
+        this.setGame(playerData.gameId() == null ? null : Game.getGame(playerData.gameId()));
+        return this;
     }
 }
