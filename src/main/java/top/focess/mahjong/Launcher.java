@@ -13,6 +13,7 @@ import top.focess.mahjong.game.packet.codec.*;
 import top.focess.mahjong.game.remote.RemoteGame;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
+import top.focess.mahjong.terminal.TerminalLauncher;
 import top.focess.mahjong.terminal.command.CommandLine;
 import top.focess.mahjong.terminal.command.GameCommand;
 import top.focess.mahjong.terminal.command.PlayerCommand;
@@ -138,15 +139,10 @@ public class Launcher {
         } catch (IllegalPortException e) {
             throw new RuntimeException(e);
         }
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String nextLine = scanner.nextLine();
-            CommandLine.execute(nextLine);
-        }
+        option = options.get("gui");
+        if (option == null)
+            TerminalLauncher.launch();
+
     }
 
-
-    public void sendPacket(int clientId, Packet packet) {
-        this.serverSocket.getReceiver().sendPacket(clientId, packet);
-    }
 }

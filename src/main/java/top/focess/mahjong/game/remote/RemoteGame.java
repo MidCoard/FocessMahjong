@@ -13,8 +13,20 @@ public class RemoteGame extends Game {
     private final FocessClientSocket socket;
 
     public RemoteGame(FocessClientSocket socket, GameData data) {
-        super(data.getId(), data.getRule(), data.getGameState());
+        super(data.getId(), data.getRule());
         this.socket = socket;
+        this.update(data);
+    }
+
+    public static RemoteGame getOrCreateGame(FocessClientSocket socket, GameData data) {
+        Game game = Game.getGame(data.getId());
+        if (game instanceof RemoteGame) {
+            ((RemoteGame) game).update(data);
+            return (RemoteGame) game;
+        }
+        if (game != null)
+            throw new IllegalArgumentException("Game " + data.getId() + " is not a remote game");
+        return new RemoteGame(socket, data);
     }
 
     @Override
@@ -80,20 +92,26 @@ public class RemoteGame extends Game {
     }
 
     public synchronized void update(GameData gameData) {
-        if (!this.getId().equals(gameData.getId()))
-            throw new IllegalArgumentException("The game id is not equal to the game data id.");
-        this.rule = gameData.getRule();
-        this.gameState = gameData.getGameState();
+        if (!this.getId().equals(gameData.getId()) || !this.getRule().equals(gameData.getRule()))
+            throw new IllegalArgumentException("The game base data is not match");
+        this.setGameState(gameData.getGameState());
+        this.setStartTime(gameData.getStartTime());
+
 
         // todo update tiles
+
         this.players.clear();
         for (PlayerData playerData : gameData.getPlayerData()) {
             Player player = Player.getPlayer(playerData.getId());
             if (player == null)
                 throw new IllegalArgumentException("The player is not exist.");
-            player.update(playerData);
+            if (player instanceof RemotePlayer)
+                ((RemotePlayer) player).update(playerData);
             this.players.add(player);
         }
     }
 
+    public void remove() {
+        GAMES.remove(this.getId());
+    }
 }

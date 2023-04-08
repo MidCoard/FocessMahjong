@@ -2,6 +2,7 @@ package top.focess.mahjong.game;
 
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.PlayerData;
+import top.focess.mahjong.terminal.TerminalLauncher;
 
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public class Player {
 
     private Game game;
 
-    protected PlayerState playerState;
+    private PlayerState playerState = PlayerState.WAITING;
 
     public Player() {
         this(UUID.randomUUID());
@@ -54,17 +55,14 @@ public class Player {
     }
 
     public void setPlayerState(PlayerState playerState) {
-        this.playerState = playerState;
+        if (this.playerState != playerState) {
+            TerminalLauncher.change("playerState", this, this.playerState, playerState);
+            this.playerState = playerState;
+        }
     }
 
     public static Player getPlayer(UUID id) {
         return PLAYERS.get(id);
-    }
-
-    public void update(PlayerData playerData) {
-        if (!this.getId().equals(playerData.getId()))
-            throw new IllegalArgumentException("The player id is not equal to the player data id.");
-        this.playerState = playerData.getPlayerState();
     }
 
     public enum PlayerState {

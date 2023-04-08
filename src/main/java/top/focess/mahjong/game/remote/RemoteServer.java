@@ -19,7 +19,6 @@ public class RemoteServer {
     private static final Map<Pair<String, Integer>, FocessClientSocket> CLIENT_SOCKET_MAP = Maps.newConcurrentMap();
     private final FocessClientSocket clientSocket;
     private final List<RemoteGame> games = Lists.newArrayList();
-
     private final Object fetchRemoteGamesLock = new Object();
 
     private RemoteServer(String ip, int port) throws IllegalPortException {
@@ -27,12 +26,26 @@ public class RemoteServer {
         if (clientSocket == null) {
             clientSocket = new FocessClientSocket("localhost", ip, port, "mahjong", true, true);
             ClientReceiver receiver = clientSocket.getReceiver();
+            receiver.setDisconnectedHandler(clientId -> {
+                synchronized (this.games) {
+                    for (RemoteGame game : games)
+                        game.remove();
+                    this.games.clear();
+                }
+            });
             FocessClientSocket finalClientSocket = clientSocket;
             receiver.register(GamesPacket.class, (clientId, packet) -> {
                 synchronized (this.games) {
+                    List<RemoteGame> temp = Lists.newArrayList();
+                    for (GameData data : packet.getGames()) {
+                        RemoteGame game = RemoteGame.getOrCreateGame(finalClientSocket, data);
+                        temp.add(game);
+                    }
+                    for (RemoteGame game : this.games)
+                        if (!temp.contains(game))
+                            game.remove();
                     this.games.clear();
-                    for (GameData data : packet.getGames())
-                        games.add(new RemoteGame(finalClientSocket, data));
+                    this.games.addAll(temp);
                 }
                 synchronized (fetchRemoteGamesLock) {
                     fetchRemoteGamesLock.notifyAll();

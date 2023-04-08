@@ -50,7 +50,7 @@ public class RemoteCommand extends Command {
             List<RemoteGame> games = REMOTE_SERVER_MAP.get(name).getRemoteGames();
             System.out.println("Remote server " + name + " has " + games.size() + " games");
             for (RemoteGame game : games)
-                System.out.println(game.getId() + " " + game.getRule());
+                System.out.println(game.getId() + " " + game.getRule().getName());
             return CommandResult.ALLOW;
         }, CommandArgument.of("fetch"), CommandArgument.ofString());
     }

@@ -17,6 +17,7 @@ public class PacketUtil {
         codec.writeString(gameData.getId().toString());
         codec.writeString(gameData.getRule().name());
         codec.writeString(gameData.getGameState().name());
+        codec.writeInt(gameData.getStartTime());
         // todo tiles data
 
         codec.writeInt(gameData.getPlayerData().size());
@@ -34,13 +35,14 @@ public class PacketUtil {
         UUID gameId = UUID.fromString(codec.readString());
         MahjongRule rule = MahjongRule.valueOf(codec.readString());
         Game.GameState gameState = Game.GameState.valueOf(codec.readString());
+        int startTime = codec.readInt();
         // todo tiles data
 
         List<PlayerData> playerData = Lists.newArrayList();
         int playerSize = codec.readInt();
         for (int j = 0; j < playerSize; j++)
             playerData.add(PacketUtil.readPlayerData(codec));
-        return new GameData(gameId, rule, gameState, null, playerData);
+        return new GameData(gameId, rule, gameState, startTime, null, playerData);
     }
 
     public static PlayerData readPlayerData(PacketPreCodec codec) {

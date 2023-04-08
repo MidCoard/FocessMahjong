@@ -11,13 +11,15 @@ public class GameData {
     private final UUID id;
     private final MahjongRule rule;
     private final Game.GameState gameState;
+    private final int startTime;
     private final TilesData tilesData;
     private final List<PlayerData> playerData;
 
-    public GameData(UUID id, MahjongRule rule, Game.GameState gameState, TilesData tilesData, List<PlayerData> playerData) {
+    public GameData(UUID id, MahjongRule rule, Game.GameState gameState, int startTime, TilesData tilesData, List<PlayerData> playerData) {
         this.id = id;
         this.rule = rule;
         this.gameState = gameState;
+        this.startTime = startTime;
         this.tilesData = tilesData;
         this.playerData = playerData;
     }
@@ -40,5 +42,9 @@ public class GameData {
 
     public List<PlayerData> getPlayerData() {
         return playerData;
+    }
+
+    public int getStartTime() {
+        return startTime;
     }
 }

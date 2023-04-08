@@ -3,6 +3,7 @@ package top.focess.mahjong.game.remote;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Player;
+import top.focess.mahjong.game.data.PlayerData;
 
 import java.util.List;
 import java.util.Map;
@@ -43,5 +44,11 @@ public class RemotePlayer extends Player {
 
     public int getClientId() {
         return clientId;
+    }
+
+    public void update(PlayerData playerData) {
+        if (!this.getId().equals(playerData.getId()))
+            throw new IllegalArgumentException("The player base data is not match!");
+        this.setPlayerState(playerData.getPlayerState());
     }
 }

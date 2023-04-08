@@ -2,7 +2,7 @@ package top.focess.mahjong.game.rule;
 
 public enum MahjongRule {
 
-    SICHUAN(108) {
+    SICHUAN("SiChuanMahjong",108) {
         @Override
         public int getReadyTime(int size) {
             return switch (size) {
@@ -14,9 +14,11 @@ public enum MahjongRule {
         }
     };
 
+    private final String name;
     private final int tileSize;
 
-    MahjongRule(int tileSize) {
+    MahjongRule(String name, int tileSize) {
+        this.name = name;
         this.tileSize = tileSize;
     }
 
@@ -29,4 +31,8 @@ public enum MahjongRule {
     }
 
     public abstract int getReadyTime(int size);
+
+    public String getName() {
+        return name;
+    }
 }
