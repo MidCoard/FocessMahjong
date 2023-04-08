@@ -1,5 +1,6 @@
 package top.focess.mahjong.game.rule;
 
+import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.rule.manager.GameManager;
 import top.focess.mahjong.game.rule.manager.SiChuanGameManager;
 
@@ -17,8 +18,8 @@ public enum MahjongRule {
         }
 
         @Override
-        public GameManager getGameManager(int playerSize) {
-            return new SiChuanGameManager(playerSize);
+        public GameManager getGameManager(LocalGame game, int playerSize) {
+            return new SiChuanGameManager(game, playerSize);
         }
     };
 
@@ -34,7 +35,7 @@ public enum MahjongRule {
 
     public abstract int getReadyTime(int size);
 
-    public abstract GameManager getGameManager(int playerSize);
+    public abstract GameManager getGameManager(LocalGame game, int playerSize);
 
     public String getName() {
         return name;

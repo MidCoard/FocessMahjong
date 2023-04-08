@@ -161,7 +161,7 @@ public class LocalGame extends Game {
         this.startPlayers.clear();
         for (Player player : this.players)
             this.startPlayers.add(player.getId());
-        this.gameManager = this.getRule().getGameManager(this.players.size());
+        this.gameManager = this.getRule().getGameManager(this, this.players.size());
         this.setCountdown(this.gameManager.getCountdown());
         this.syncPlayer();
         this.task = FOCESS_SCHEDULER.runTimer(this::tick, Duration.ZERO, Duration.ofSeconds(1));
