@@ -11,9 +11,16 @@ import java.util.Set;
 
 public class PlayerTiles {
 
+    private final Set<Tile> notDiscardTiles = Sets.newHashSet();
+
+    private final List<Tile> discardTiles = Lists.newArrayList();
+
     private final Set<Tile> tiles = Sets.newHashSet();
 
-    public void addTiles(Set<Tile> tiles) {
+    private int score = 0;
+    private boolean isHu = false;
+
+    public void addTile(Set<Tile> tiles) {
         this.tiles.addAll(tiles);
     }
 
@@ -78,5 +85,71 @@ public class PlayerTiles {
                 ret.add(tiles.get(i));
         ret.forEach(this.tiles::remove);
         return ret;
+    }
+
+    public int getTileStateCount(TileState tileState) {
+        return (int) getRawTileStates().stream().filter(tileState1 -> tileState1.equals(tileState)).count() + (int) this.notDiscardTiles.stream().filter(tile -> tile.getTileState().equals(tileState)).count();
+    }
+
+    public Set<Tile> getTiles(TileState tileState) {
+        Set<Tile> ret = Sets.newHashSet();
+        for (Tile tile : this.tiles)
+            if (tile.getTileState().equals(tileState))
+                ret.add(tile);
+        return ret;
+    }
+
+    public void kong(TileState tileState) {
+        this.notDiscardTiles.addAll(this.getTiles(tileState));
+        this.tiles.removeIf(tile -> tile.getTileState().equals(tileState));
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void addScore(int score) {
+        this.score += score;
+    }
+
+    public boolean isHu() {
+        return this.isHu;
+    }
+
+    public void discard(TileState tileState) {
+        Tile tile = this.tiles.stream().filter(tile1 -> tile1.getTileState().equals(tileState)).findFirst().orElse(null);
+        if (tile == null)
+            throw new IllegalArgumentException("No such tile");
+        this.tiles.remove(tile);
+        this.discardTiles.add(tile);
+    }
+
+    public List<TileState> getDiscardTileStates() {
+        List<TileState> tileStates = Lists.newArrayList();
+        for (Tile tile : this.discardTiles)
+            tileStates.add(tile.getTileState());
+        return tileStates;
+    }
+
+    public void addTile(Tile tile) {
+        this.tiles.add(tile);
+    }
+
+    public int getHandTileStateCount(TileState tileState) {
+        return (int) this.tiles.stream().filter(tile -> tile.getTileState().equals(tileState)).count();
+    }
+
+    public boolean huable(TileState tileState) {
+        // calc hu
+        return true;
+    }
+
+    public void hu(Tile tile) {
+        this.isHu = true;
+        this.addTile(tile);
     }
 }

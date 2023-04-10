@@ -220,8 +220,12 @@ public class LocalGame extends Game {
         return null;
     }
 
+    public UUID getPlayerId(int player) {
+        return this.startPlayers.get(player);
+    }
+
     public enum TileAction {
-        CHANGE_3_TILES
+        KONG, DISCARD_TILE, HU, CHANGE_3_TILES
 
     }
 

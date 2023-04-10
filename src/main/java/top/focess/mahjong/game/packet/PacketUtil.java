@@ -47,6 +47,9 @@ public class PacketUtil {
                 for (TileState tile : tiles)
                     codec.writeInt(tile.ordinal());
             }
+            codec.writeInt(tilesData.scores().size());
+            for (int score : tilesData.scores())
+                codec.writeInt(score);
         }
     }
 
@@ -91,7 +94,11 @@ public class PacketUtil {
                     discardTile.add(TileState.values()[codec.readInt()]);
                 discardTiles.add(discardTile);
             }
-            return new TilesData(remainTiles, tiles, gameTileState, discardTiles);
+            int scoresSize = codec.readInt();
+            List<Integer> scores = Lists.newArrayList();
+            for (int i = 0; i < scoresSize; i++)
+                scores.add(codec.readInt());
+            return new TilesData(remainTiles, tiles, gameTileState, discardTiles, scores);
         } else
             return null;
     }

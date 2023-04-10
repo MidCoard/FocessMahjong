@@ -56,6 +56,9 @@ public class Launcher {
         PacketPreCodec.register(Change3TilesPacket.PACKET_ID, new Change3TilesPacketCodec());
         PacketPreCodec.register(Change3TilesDirectionPacket.PACKET_ID, new Change3TilesDirectionPacketCodec());
         PacketPreCodec.register(FetchTilePacket.PACKET_ID, new FetchTilePacketCodec());
+        PacketPreCodec.register(KongPacket.PACKET_ID, new KongPacketCodec());
+        PacketPreCodec.register(HuPacket.PACKET_ID, new HuPacketCodec());
+        PacketPreCodec.register(DiscardTilePacket.PACKET_ID, new DiscardTilePacketCodec());
     }
     private final FocessMultiSocket serverSocket;
 
@@ -120,6 +123,27 @@ public class Launcher {
             if (game instanceof LocalGame) {
                 RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
                 game.doTileAction(LocalGame.TileAction.CHANGE_3_TILES, player, packet.getTile1(), packet.getTile2(), packet.getTile3());
+            }
+        });
+        receiver.register("mahjong", KongPacket.class, (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                game.doTileAction(LocalGame.TileAction.KONG, player, packet.getTileState());
+            }
+        });
+        receiver.register("mahjong", DiscardTilePacket.class, (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                game.doTileAction(LocalGame.TileAction.DISCARD_TILE, player, packet.getTileState());
+            }
+        });
+        receiver.register("mahjong", HuPacket.class , (clientId, packet) -> {
+            Game game = Game.getGame(packet.getGameId());
+            if (game instanceof LocalGame) {
+                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                game.doTileAction(LocalGame.TileAction.HU, player);
             }
         });
     }

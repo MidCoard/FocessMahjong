@@ -5,6 +5,6 @@ import top.focess.mahjong.game.tile.TileState;
 
 import java.util.List;
 
-public record TilesData(int remainTiles, List<TileState> tiles, GameTileState gameTileState, List<List<TileState>> discardTiles) {
+public record TilesData(int remainTiles, List<TileState> tiles, GameTileState gameTileState, List<List<TileState>> discardTiles, List<Integer> scores) {
 
 }
