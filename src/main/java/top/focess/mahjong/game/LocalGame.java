@@ -185,7 +185,7 @@ public class LocalGame extends Game {
         this.syncPlayer();
         if (this.gameManager.getGameTileState() == GameTileState.DISCARDING) {
             Player player = this.getPlayer(this.gameManager.getCurrentPlayer());
-            if (player != null)
+            if (player != null && this.gameManager.getCurrentTileState() != null)
                 if (player instanceof LocalPlayer)
                     TerminalLauncher.change("fetchTileState", player, null, this.gameManager.getCurrentTileState());
                 else if (player instanceof RemotePlayer)

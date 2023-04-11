@@ -13,7 +13,7 @@ public class GameTileActionConfirmPacket extends Packet {
     private final GameTileActionPacket.TileAction tileAction;
     private final TileState[] tileStates;
 
-    public GameTileActionConfirmPacket(UUID playerId, UUID gameId, GameTileActionPacket.TileAction tileAction, TileState[] tileStates) {
+    public GameTileActionConfirmPacket(UUID playerId, UUID gameId, GameTileActionPacket.TileAction tileAction, TileState... tileStates) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.tileAction = tileAction;

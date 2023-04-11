@@ -6,14 +6,12 @@ public enum GameTileState {
     CHANGING_3_TILES(10), // change 3 tileStates
     LARKING_1_SUIT(5),
     DISCARDING(10), // which means tileStates are discard
-    CONDITION(5), // which means tileStates are in condition (like pong, kong, chow)
-
-    WIN(3), // which means tileStates are in player's hand and player win
-    ALL_WIN(5), // which means tileStates are in player's hand and player win all
-    NO_WIN(5), // which means tileStates are in player's hand and player win no one
+    CONDITION(5), // which means tileStates are in condition (like pong, kong, chow, hu)
+    CONDITION_HU(5), // which means player can hu
+    FINISHED(20),
     WAITING(3), // which means some essential waiting for UI or other
 
-    ;
+    WAITING_HU(3) ;
 
     private final int time;
 

@@ -43,7 +43,16 @@ public class GameTileActionPacket extends Packet {
     }
 
     public enum TileAction {
-        KONG, DISCARD_TILE, HU, CHANGE_3_TILES
+        PUNG(2),KONG(1), DISCARD_TILE(-1), HU(0), CHANGE_3_TILES(-1);
 
+        private final int priority;
+
+        TileAction(int priority) {
+            this.priority = priority;
+        }
+
+        public int getPriority() {
+            return this.priority;
+        }
     }
 }

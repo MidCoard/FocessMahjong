@@ -83,6 +83,12 @@ public class RemoteServer {
                 if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId()))
                     TerminalLauncher.change("fetchTileState", LocalPlayer.localPlayer, null, packet.getTileState());
             });
+            receiver.register(GameTileActionNoticePacket.class, (clientId, packet) -> {
+                // todo
+            });
+            receiver.register(GameTileActionConfirmPacket.class, (clientId, packet) -> {
+                // todo
+            });
             CLIENT_SOCKET_MAP.put(Pair.of(ip, port), clientSocket);
         }
         this.clientSocket = clientSocket;

@@ -46,6 +46,11 @@ public class PacketUtil {
                 codec.writeInt(tileStateCategory.ordinal());
             for (int score : tilesData.scores())
                 codec.writeInt(score);
+            for (List<TileState> tiles : tilesData.noDiscardTileStates()) {
+                codec.writeInt(tiles.size());
+                for (TileState tile : tiles)
+                    codec.writeInt(tile.ordinal());
+            }
             for (List<TileState> tiles : tilesData.discardTileStates()) {
                 codec.writeInt(tiles.size());
                 for (TileState tile : tiles)
@@ -93,6 +98,14 @@ public class PacketUtil {
             List<Integer> scores = Lists.newArrayList();
             for (int i = 0; i < larkSuitSize; i++)
                 scores.add(codec.readInt());
+            List<List<TileState>> noDiscardTileStats = Lists.newArrayList();
+            for (int i = 0; i < larkSuitSize; i++) {
+                int noDiscardTileSize = codec.readInt();
+                List<TileState> noDiscardTileStatList = Lists.newArrayList();
+                for (int j = 0; j < noDiscardTileSize; j++)
+                    noDiscardTileStatList.add(TileState.values()[codec.readInt()]);
+                noDiscardTileStats.add(noDiscardTileStatList);
+            }
             List<List<TileState>> discardTileStats = Lists.newArrayList();
             for (int i = 0; i < larkSuitSize; i++) {
                 int discardTileSize = codec.readInt();
@@ -101,7 +114,7 @@ public class PacketUtil {
                     discardTileStatList.add(TileState.values()[codec.readInt()]);
                 discardTileStats.add(discardTileStatList);
             }
-            return new TilesData(remainTiles, tileStates, gameTileState, larkSuits, scores, discardTileStats);
+            return new TilesData(remainTiles, tileStates, gameTileState, larkSuits, scores, noDiscardTileStats, discardTileStats);
         } else
             return null;
     }

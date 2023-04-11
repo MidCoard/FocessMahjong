@@ -93,16 +93,13 @@ public class PlayerTiles {
         return this.isHu;
     }
 
-    public void discard(TileState tileState) {
-        Tile tile = this.tiles.stream().filter(tile1 -> tile1.getTileState().equals(tileState)).findFirst().orElse(null);
-        if (tile == null)
-            throw new IllegalArgumentException("No such tile");
+    public void discard(Tile tile) {
         this.tiles.remove(tile);
         this.discardTiles.add(tile);
     }
 
     public List<TileState> getDiscardTileStates() {
-        return this.discardTiles.stream().map(Tile::getTileState).toList();
+        return this.discardTiles.stream().filter(tile -> !tile.isDetail(Tile.KONG_TILE) && !tile.isDetail(Tile.PUNG_TILE) && !tile.isDetail(Tile.HU_TILE)).map(Tile::getTileState).toList();
     }
 
     public void addTile(Tile tile) {
@@ -112,7 +109,7 @@ public class PlayerTiles {
     }
 
     public int getHandTileStateCount(TileState tileState) {
-        return (int) this.tiles.stream().filter(tile -> tile.getTileState().equals(tileState)).count();
+        return (int) this.tiles.stream().filter(tile -> tile.getTileState() == tileState).count();
     }
 
     public boolean huable(TileState tileState) {
@@ -120,9 +117,8 @@ public class PlayerTiles {
         return true;
     }
 
-    public void hu(Tile tile) {
+    public void hu() {
         this.isHu = true;
-        this.addTile(tile);
     }
 
     public Set<Tile> getHandTiles(TileState... tileStates) {
@@ -157,5 +153,23 @@ public class PlayerTiles {
 
     public TileState.TileStateCategory getLarkSuit() {
         return larkSuit;
+    }
+
+    public int getTileScore(Tile tile) {
+        // todo
+        return 0;
+    }
+
+    public void pung(Set<Tile> tiles) {
+        this.notDiscardTiles.addAll(tiles);
+        this.tiles.removeAll(tiles);
+    }
+
+    public List<TileState> getNoDiscardTileStates() {
+        return this.notDiscardTiles.stream().map(Tile::getTileState).toList();
+    }
+
+    public void removeTile(Tile tile) {
+        this.tiles.remove(tile);
     }
 }
