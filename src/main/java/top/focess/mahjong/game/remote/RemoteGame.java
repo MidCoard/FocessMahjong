@@ -57,33 +57,16 @@ public class RemoteGame extends Game {
 		return new RemoteGame(socket, data);
 	}
 
-	public TilesData getTilesData() {
-		return this.tilesData;
+	@Override
+	public void doTileAction(final GameTileActionPacket.TileAction tileAction, final Player player, final TileState... tileStates) {
+		this.socket.getReceiver().sendPacket(new GameTileActionPacket(player.getId(), this.getId(), tileAction, tileStates));
 	}
 
-	private void setTilesData(final TilesData tilesData) {
-		if (null != this.tilesData && null != tilesData) {
-			if (this.tilesData.remainTiles() != tilesData.remainTiles())
-				TerminalLauncher.change("remainTiles", this, this.tilesData.remainTiles(), tilesData.remainTiles());
-			if (!this.tilesData.tileStates().equals(tilesData.tileStates()))
-				TerminalLauncher.change("tileStates", this, this.tilesData.tileStates(), tilesData.tileStates());
-			if (this.tilesData.gameTileState() != tilesData.gameTileState())
-				TerminalLauncher.change("gameTileState", this, this.tilesData.gameTileState(), tilesData.gameTileState());
-			if (!this.tilesData.larkSuits().equals(tilesData.larkSuits()))
-				TerminalLauncher.change("larkSuits", this, this.tilesData.larkSuits(), tilesData.larkSuits());
-			if (!this.tilesData.scores().equals(tilesData.scores()))
-				TerminalLauncher.change("scores", this, this.tilesData.scores(), tilesData.scores());
-			if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
-				TerminalLauncher.change("discardTileStates", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
-		} else if (null != this.tilesData || null != tilesData) {
-			TerminalLauncher.change("remainTiles", this, null == this.tilesData ? null : this.tilesData.remainTiles(), null == tilesData ? null : tilesData.remainTiles());
-			TerminalLauncher.change("tileStates", this, null == this.tilesData ? null : this.tilesData.tileStates(), null == tilesData ? null : tilesData.tileStates());
-			TerminalLauncher.change("gameTileState", this, null == this.tilesData ? null : this.tilesData.gameTileState(), null == tilesData ? null : tilesData.gameTileState());
-			TerminalLauncher.change("larkSuits", this, null == this.tilesData ? null : this.tilesData.larkSuits(), null == tilesData ? null : tilesData.larkSuits());
-			TerminalLauncher.change("scores", this, null == this.tilesData ? null : this.tilesData.scores(), null == tilesData ? null : tilesData.scores());
-			TerminalLauncher.change("discardTileStates", this, null == this.tilesData ? null : this.tilesData.discardTileStates(), null == tilesData ? null : tilesData.discardTileStates());
-		}
-		this.tilesData = tilesData;
+	@Override
+	public GameTileState getGameTileState() {
+		if (null == this.tilesData)
+			return null;
+		return this.tilesData.gameTileState();
 	}
 
 	@Override
@@ -99,6 +82,11 @@ public class RemoteGame extends Game {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void larkSuit(final RemotePlayer player, final TileState.TileStateCategory category) {
+		this.socket.getReceiver().sendPacket(new LarkSuitPacket(player.getId(), this.getId(), category));
 	}
 
 	@Override
@@ -138,28 +126,40 @@ public class RemoteGame extends Game {
 		return false;
 	}
 
-	@Override
-	public GameTileState getGameTileState() {
-		if (null == this.tilesData)
-			return null;
-		return this.tilesData.gameTileState();
-	}
-
-	@Override
-	public void doTileAction(final GameTileActionPacket.TileAction tileAction, final Player player, final TileState... tileStates) {
-		this.socket.getReceiver().sendPacket(new GameTileActionPacket(player.getId(), this.getId(), tileAction, tileStates));
-	}
-
-	@Override
-	public void larkSuit(final RemotePlayer player, final TileState.TileStateCategory category) {
-		this.socket.getReceiver().sendPacket(new LarkSuitPacket(player.getId(), this.getId(), category));
-	}
-
 	public synchronized void syncGameData(final Player player) {
 		final GameData gameData = this.gameRequester.request("sync",
 				() -> this.socket.getReceiver().sendPacket(new SyncGamePacket(player.getId(), this.getId())),
 				this.getId());
 		this.update(gameData);
+	}
+
+	public TilesData getTilesData() {
+		return this.tilesData;
+	}
+
+	private void setTilesData(final TilesData tilesData) {
+		if (null != this.tilesData && null != tilesData) {
+			if (this.tilesData.remainTiles() != tilesData.remainTiles())
+				TerminalLauncher.change("remainTiles", this, this.tilesData.remainTiles(), tilesData.remainTiles());
+			if (!this.tilesData.tileStates().equals(tilesData.tileStates()))
+				TerminalLauncher.change("tileStates", this, this.tilesData.tileStates(), tilesData.tileStates());
+			if (this.tilesData.gameTileState() != tilesData.gameTileState())
+				TerminalLauncher.change("gameTileState", this, this.tilesData.gameTileState(), tilesData.gameTileState());
+			if (!this.tilesData.larkSuits().equals(tilesData.larkSuits()))
+				TerminalLauncher.change("larkSuits", this, this.tilesData.larkSuits(), tilesData.larkSuits());
+			if (!this.tilesData.scores().equals(tilesData.scores()))
+				TerminalLauncher.change("scores", this, this.tilesData.scores(), tilesData.scores());
+			if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
+				TerminalLauncher.change("discardTileStates", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
+		} else if (null != this.tilesData || null != tilesData) {
+			TerminalLauncher.change("remainTiles", this, null == this.tilesData ? null : this.tilesData.remainTiles(), null == tilesData ? null : tilesData.remainTiles());
+			TerminalLauncher.change("tileStates", this, null == this.tilesData ? null : this.tilesData.tileStates(), null == tilesData ? null : tilesData.tileStates());
+			TerminalLauncher.change("gameTileState", this, null == this.tilesData ? null : this.tilesData.gameTileState(), null == tilesData ? null : tilesData.gameTileState());
+			TerminalLauncher.change("larkSuits", this, null == this.tilesData ? null : this.tilesData.larkSuits(), null == tilesData ? null : tilesData.larkSuits());
+			TerminalLauncher.change("scores", this, null == this.tilesData ? null : this.tilesData.scores(), null == tilesData ? null : tilesData.scores());
+			TerminalLauncher.change("discardTileStates", this, null == this.tilesData ? null : this.tilesData.discardTileStates(), null == tilesData ? null : tilesData.discardTileStates());
+		}
+		this.tilesData = tilesData;
 	}
 
 	public void remove() {

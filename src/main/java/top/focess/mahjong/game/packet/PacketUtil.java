@@ -16,56 +16,6 @@ import java.util.UUID;
 
 public class PacketUtil {
 
-	public static void writeGameData(final PacketPreCodec codec, final GameData gameData) {
-		codec.writeString(gameData.id().toString());
-		codec.writeString(gameData.rule().name());
-		codec.writeString(gameData.gameState().name());
-		codec.writeInt(gameData.startTime());
-		codec.writeInt(gameData.gameTime());
-		codec.writeInt(gameData.countdown());
-
-		PacketUtil.writeTilesData(codec, gameData.tilesData());
-
-		codec.writeInt(gameData.playerData().size());
-		for (final PlayerData playerData : gameData.playerData())
-			PacketUtil.writePlayerData(codec, playerData);
-	}
-
-	private static void writeTilesData(final PacketPreCodec codec, final TilesData tilesData) {
-		if (null == tilesData)
-			codec.writeBoolean(false);
-		else {
-			codec.writeBoolean(true);
-			codec.writeInt(tilesData.remainTiles());
-			codec.writeInt(tilesData.tileStates().size());
-			for (final TileState tile : tilesData.tileStates())
-				codec.writeInt(tile.ordinal());
-			codec.writeInt(tilesData.gameTileState().ordinal());
-			codec.writeInt(tilesData.larkSuits().size());
-			for (final TileState.TileStateCategory tileStateCategory : tilesData.larkSuits())
-				codec.writeInt(tileStateCategory.ordinal());
-			for (final int score : tilesData.scores())
-				codec.writeInt(score);
-			for (final List<TileState> tiles : tilesData.noDiscardTileStates()) {
-				codec.writeInt(tiles.size());
-				for (final TileState tile : tiles)
-					codec.writeInt(tile.ordinal());
-			}
-			for (final List<TileState> tiles : tilesData.discardTileStates()) {
-				codec.writeInt(tiles.size());
-				for (final TileState tile : tiles)
-					codec.writeInt(tile.ordinal());
-			}
-		}
-	}
-
-	public static void writePlayerData(final PacketPreCodec codec, final PlayerData playerData) {
-		codec.writeString(playerData.id().toString());
-		codec.writeString(playerData.name());
-		codec.writeString(playerData.playerState().name());
-		codec.tryWriteString(null == playerData.gameId() ? null : playerData.gameId().toString());
-	}
-
 	public static GameData readGameData(final PacketPreCodec codec) {
 		final UUID gameId = UUID.fromString(codec.readString());
 		final MahjongRule rule = MahjongRule.valueOf(codec.readString());
@@ -126,5 +76,55 @@ public class PacketUtil {
 		final String gameIdStr = codec.tryReadString();
 		final UUID gameId = null == gameIdStr ? null : UUID.fromString(gameIdStr);
 		return new PlayerData(playerId, name, playerState, gameId);
+	}
+
+	public static void writeGameData(final PacketPreCodec codec, final GameData gameData) {
+		codec.writeString(gameData.id().toString());
+		codec.writeString(gameData.rule().name());
+		codec.writeString(gameData.gameState().name());
+		codec.writeInt(gameData.startTime());
+		codec.writeInt(gameData.gameTime());
+		codec.writeInt(gameData.countdown());
+
+		PacketUtil.writeTilesData(codec, gameData.tilesData());
+
+		codec.writeInt(gameData.playerData().size());
+		for (final PlayerData playerData : gameData.playerData())
+			PacketUtil.writePlayerData(codec, playerData);
+	}
+
+	private static void writeTilesData(final PacketPreCodec codec, final TilesData tilesData) {
+		if (null == tilesData)
+			codec.writeBoolean(false);
+		else {
+			codec.writeBoolean(true);
+			codec.writeInt(tilesData.remainTiles());
+			codec.writeInt(tilesData.tileStates().size());
+			for (final TileState tile : tilesData.tileStates())
+				codec.writeInt(tile.ordinal());
+			codec.writeInt(tilesData.gameTileState().ordinal());
+			codec.writeInt(tilesData.larkSuits().size());
+			for (final TileState.TileStateCategory tileStateCategory : tilesData.larkSuits())
+				codec.writeInt(tileStateCategory.ordinal());
+			for (final int score : tilesData.scores())
+				codec.writeInt(score);
+			for (final List<TileState> tiles : tilesData.noDiscardTileStates()) {
+				codec.writeInt(tiles.size());
+				for (final TileState tile : tiles)
+					codec.writeInt(tile.ordinal());
+			}
+			for (final List<TileState> tiles : tilesData.discardTileStates()) {
+				codec.writeInt(tiles.size());
+				for (final TileState tile : tiles)
+					codec.writeInt(tile.ordinal());
+			}
+		}
+	}
+
+	public static void writePlayerData(final PacketPreCodec codec, final PlayerData playerData) {
+		codec.writeString(playerData.id().toString());
+		codec.writeString(playerData.name());
+		codec.writeString(playerData.playerState().name());
+		codec.tryWriteString(null == playerData.gameId() ? null : playerData.gameId().toString());
 	}
 }

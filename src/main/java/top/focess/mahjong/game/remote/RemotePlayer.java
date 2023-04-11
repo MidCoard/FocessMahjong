@@ -41,6 +41,15 @@ public class RemotePlayer extends Player {
 		return player;
 	}
 
+	public static RemotePlayer getPlayer(final int clientId, final UUID id) {
+		final RemotePlayer player = RemotePlayer.PLAYERS.get(id);
+		if (null == player)
+			return null;
+		if (player.clientId == clientId || -1 == clientId)
+			return player;
+		return null;
+	}
+
 	public static List<RemotePlayer> removePlayers(final int clientId) {
 		final List<RemotePlayer> ret = Lists.newArrayList();
 		for (final Map.Entry<UUID, RemotePlayer> entry : RemotePlayer.PLAYERS.entrySet())
@@ -49,15 +58,6 @@ public class RemotePlayer extends Player {
 				RemotePlayer.PLAYERS.remove(entry.getKey());
 			}
 		return ret;
-	}
-
-	public static RemotePlayer getPlayer(final int clientId, final UUID id) {
-		final RemotePlayer player = RemotePlayer.PLAYERS.get(id);
-		if (null == player)
-			return null;
-		if (player.clientId == clientId || -1 == clientId)
-			return player;
-		return null;
 	}
 
 	public int getClientId() {

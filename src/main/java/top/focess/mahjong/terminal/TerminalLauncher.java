@@ -57,6 +57,18 @@ public class TerminalLauncher {
 		});
 	}
 
+	public static <T> void change(final String arg, final Game game, final T oldValue, final T newValue) {
+		final TerminalGameListener<T> terminalGameListener = (TerminalGameListener<T>) TerminalLauncher.GAME_LISTENERS.get(arg);
+		if (null != terminalGameListener)
+			terminalGameListener.onChanged(game, oldValue, newValue);
+	}
+
+	public static <T> void change(final String arg, final Player player, final T oldValue, final T newValue) {
+		final TerminalPlayerListener<T> terminalPlayerListener = (TerminalPlayerListener<T>) TerminalLauncher.PLAYER_LISTENERS.get(arg);
+		if (null != terminalPlayerListener)
+			terminalPlayerListener.onChanged(player, oldValue, newValue);
+	}
+
 	public static void launch() {
 		final Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {
@@ -65,23 +77,11 @@ public class TerminalLauncher {
 		}
 	}
 
-	public static <T> void change(final String arg, final Game game, final T oldValue, final T newValue) {
-		final TerminalGameListener<T> terminalGameListener = (TerminalGameListener<T>) TerminalLauncher.GAME_LISTENERS.get(arg);
-		if (null != terminalGameListener)
-			terminalGameListener.onChanged(game, oldValue, newValue);
-	}
-
 	public static <T> void registerGameChangeListener(final String arg, final Class<T> ignored, final TerminalGameListener<T> listener) {
 		TerminalLauncher.GAME_LISTENERS.put(arg, listener);
 	}
 
 	public static <T> void registerPlayerChangeListener(final String arg, final Class<T> ignored, final TerminalPlayerListener<T> listener) {
 		TerminalLauncher.PLAYER_LISTENERS.put(arg, listener);
-	}
-
-	public static <T> void change(final String arg, final Player player, final T oldValue, final T newValue) {
-		final TerminalPlayerListener<T> terminalPlayerListener = (TerminalPlayerListener<T>) TerminalLauncher.PLAYER_LISTENERS.get(arg);
-		if (null != terminalPlayerListener)
-			terminalPlayerListener.onChanged(player, oldValue, newValue);
 	}
 }
