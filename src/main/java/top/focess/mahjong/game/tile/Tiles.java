@@ -24,7 +24,7 @@ public class Tiles {
 
     public Set<Tile> fetch(int size) {
         if (this.pointer + size > this.tiles.length)
-            throw new IndexOutOfBoundsException("The pointer is out of the tiles");
+            throw new IndexOutOfBoundsException("The pointer is out of the tileStates");
         Set<Tile> tiles = Sets.newHashSet();
         for (int i = 0; i < size; i++)
             tiles.add(this.tiles[this.pointer++]);

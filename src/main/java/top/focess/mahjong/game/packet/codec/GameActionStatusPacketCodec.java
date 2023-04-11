@@ -13,8 +13,8 @@ public class GameActionStatusPacketCodec extends PacketCodec<GameActionStatusPac
     public @Nullable GameActionStatusPacket readPacket(PacketPreCodec packetPreCodec) {
         UUID playerId = UUID.fromString(packetPreCodec.readString());
         UUID gameId = UUID.fromString(packetPreCodec.readString());
-        GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.valueOf(packetPreCodec.readString());
-        GameActionStatusPacket.GameActionStatus gameActionStatus = GameActionStatusPacket.GameActionStatus.valueOf(packetPreCodec.readString());
+        GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.values()[packetPreCodec.readInt()];
+        GameActionStatusPacket.GameActionStatus gameActionStatus = GameActionStatusPacket.GameActionStatus.values()[packetPreCodec.readInt()];
         return new GameActionStatusPacket(playerId, gameId, gameAction, gameActionStatus);
     }
 
@@ -22,7 +22,7 @@ public class GameActionStatusPacketCodec extends PacketCodec<GameActionStatusPac
     public void writePacket(GameActionStatusPacket packet, PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getPlayerId().toString());
         packetPreCodec.writeString(packet.getGameId().toString());
-        packetPreCodec.writeString(packet.getGameAction().name());
-        packetPreCodec.writeString(packet.getGameActionStatus().name());
+        packetPreCodec.writeInt(packet.getGameAction().ordinal());
+        packetPreCodec.writeInt(packet.getGameActionStatus().ordinal());
     }
 }

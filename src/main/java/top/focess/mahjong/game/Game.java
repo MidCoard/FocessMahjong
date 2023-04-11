@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.GameTileActionPacket;
 import top.focess.mahjong.game.remote.GameRequester;
+import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.mahjong.game.tile.TileState;
 import top.focess.mahjong.terminal.TerminalLauncher;
@@ -126,10 +127,12 @@ public abstract class Game {
 
     public abstract void doTileAction(GameTileActionPacket.TileAction tileAction, Player player, TileState... tileStates);
 
+    public abstract void larkSuit(RemotePlayer player, TileState.TileStateCategory category);
+
     public enum GameState {
 
         WAITING, // setup is done, waiting for players to join and ready.
-        PLAYING // game is playing. including the shuffling tiles, dealing tiles, playing tiles, and game over.
+        PLAYING // game is playing. including the shuffling tileStates, dealing tileStates, playing tileStates, and game over.
 
     }
 

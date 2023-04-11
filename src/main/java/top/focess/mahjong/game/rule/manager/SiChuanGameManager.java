@@ -28,11 +28,11 @@ public class SiChuanGameManager extends GameManager {
     private final List<PlayerTiles> playerTilesList = Lists.newArrayList();
 
 
-    // used to save the cached action like change 3 tiles
+    // used to save the cached action like change 3 tileStates
     private final List<Map<GameTileActionPacket.TileAction, List<Tile>>> cachedActions = Lists.newArrayList();
 
     // indicate current discard player
-    private int currentPlayer = -1;
+    private int currentPlayer;
 
     // indicate current fetched tile or discarded tile
     private Tile currentTile;
@@ -45,7 +45,7 @@ public class SiChuanGameManager extends GameManager {
         this.game = game;
         this.playerSize = playerSize;
 
-        // shuffling tiles
+        // shuffling tileStates
         List<TileState> tileStates = Lists.newArrayList();
         for (int i = 0; i < 27; i++)
             for (int j = 0; j < 4; j++)
@@ -61,7 +61,7 @@ public class SiChuanGameManager extends GameManager {
             this.cachedActions.add(Maps.newHashMap());
 
 
-        // we ignore the random tiles because shuffling tiles is enough
+        // we ignore the random tileStates because shuffling tileStates is enough
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < playerSize; j++)
                 this.playerTilesList.get(j).addTile(this.tiles.fetch(4));
@@ -70,6 +70,8 @@ public class SiChuanGameManager extends GameManager {
         for (int i = 1; i < playerSize; i++)
             this.playerTilesList.get(i).addTile(this.tiles.fetch(1));
         this.playerTilesList.get(0).addTile(this.tiles.fetch(1));
+        this.currentPlayer = 0;
+        this.currentTile = null;
     }
 
     public synchronized void tick() {
@@ -84,13 +86,13 @@ public class SiChuanGameManager extends GameManager {
 
     private @NonNull GameTileState calculateNextState() {
         if (this.gameTileState == GameTileState.SHUFFLING)
-            return GameTileState.CHANGE_3_TILES;
-        else if (this.gameTileState == GameTileState.CHANGE_3_TILES) {
+            return GameTileState.CHANGING_3_TILES;
+        else if (this.gameTileState == GameTileState.CHANGING_3_TILES) {
             List<Set<Tile>> tiles = Lists.newArrayList();
             for (int i = 0; i < this.playerTilesList.size(); i++) {
                 if (cachedActions.get(i).getOrDefault(GameTileActionPacket.TileAction.CHANGE_3_TILES, List.of()).size() == 0) {
                     PlayerTiles playerTiles = this.playerTilesList.get(i);
-                    TileState.TileStateCategory category = playerTiles.getLeastCategory(3);// can be fixed. if we have multiple tiles with the same category, we should choose the one with the most effective tiles
+                    TileState.TileStateCategory category = playerTiles.getLeastCategory(3);// can be fixed. if we have multiple tileStates with the same category, we should choose the one with the most effective tileStates
                     cachedActions.get(i).put(GameTileActionPacket.TileAction.CHANGE_3_TILES, playerTiles.getRandomTiles(3, category, random));
                 }
                 List<Tile> list = cachedActions.get(i).get(GameTileActionPacket.TileAction.CHANGE_3_TILES);
@@ -114,10 +116,12 @@ public class SiChuanGameManager extends GameManager {
             this.game.sendPacket(new DiscardTilePacket(this.game.getPlayerId(this.currentPlayer), this.game.getId(),  this.currentTile.getTileState()));
             return GameTileState.WAITING;
         } else if (this.gameTileState == GameTileState.WAITING) {
-            if (this.previousGameTileState == GameTileState.CHANGE_3_TILES) {
-                this.currentPlayer = (this.currentPlayer + 1) % this.playerTilesList.size();
-                this.currentTile = this.tiles.fetch();
-                return GameTileState.DISCARDING;
+            if (this.previousGameTileState == GameTileState.CHANGING_3_TILES) {
+                // after change. the dealer should lark a tile
+
+//                this.currentPlayer = (this.currentPlayer + 1) % this.playerTilesList.size();
+//                this.currentTile = this.tileStates.fetch();
+                return GameTileState.LARKING_1_SUIT;
             } else if (this.previousGameTileState == GameTileState.DISCARDING)
                 return GameTileState.CONDITION;
             else if (this.previousGameTileState == GameTileState.CONDITION)
@@ -134,7 +138,7 @@ public class SiChuanGameManager extends GameManager {
     public TilesData getTilesData(int player) {
         if (player >= this.playerTilesList.size() || player < 0)
             return null;
-        return new TilesData(this.tiles.getRemainSize(), this.playerTilesList.get(player).getRawTileStates(), this.gameTileState, this.playerTilesList.stream().map(PlayerTiles::getDiscardTileStates).toList(), this.playerTilesList.stream().map(PlayerTiles::getScore).toList());
+        return new TilesData(this.tiles.getRemainSize(), this.playerTilesList.get(player).getRawTileStates(), this.gameTileState, this.playerTilesList.stream().map(PlayerTiles::getLarkSuit).toList(), this.playerTilesList.stream().map(PlayerTiles::getScore).toList(), this.playerTilesList.stream().map(PlayerTiles::getDiscardTileStates).toList());
     }
 
     @Override
@@ -148,7 +152,7 @@ public class SiChuanGameManager extends GameManager {
             throw new IndexOutOfBoundsException("The player is out of the playerTiles");
         PlayerTiles playerTiles = this.playerTilesList.get(player);
         if (tileAction == GameTileActionPacket.TileAction.CHANGE_3_TILES) {
-            if (this.gameTileState != GameTileState.CHANGE_3_TILES)
+            if (this.gameTileState != GameTileState.CHANGING_3_TILES)
                 return;
             if (tileStates.length != 3)
                 return;
@@ -161,9 +165,9 @@ public class SiChuanGameManager extends GameManager {
                     return;
             cachedActions.get(player).put(tileAction, Lists.newArrayList(tiles));
         } else if (tileAction == GameTileActionPacket.TileAction.KONG) {
-            // discarding and 4 tiles with the same state
-            // discarding and 3 tiles with the same state and 1 tile with the same state
-            // condition and 4 tiles with the same state
+            // discarding and 4 tileStates with the same state
+            // discarding and 3 tileStates with the same state and 1 tile with the same state
+            // condition and 4 tileStates with the same state
             if (this.gameTileState != GameTileState.DISCARDING && this.gameTileState != GameTileState.CONDITION)
                 return;
             if (this.gameTileState == GameTileState.DISCARDING && this.currentPlayer != player)
@@ -241,6 +245,16 @@ public class SiChuanGameManager extends GameManager {
     @Override
     public TileState getCurrentTileState() {
         return this.currentTile.getTileState();
+    }
+
+    @Override
+    public void larkSuit(int player, TileState.TileStateCategory category) {
+        if (player >= this.playerTilesList.size() || player < 0)
+            throw new IndexOutOfBoundsException("The player is out of the playerTiles");
+        PlayerTiles playerTiles = this.playerTilesList.get(player);
+        if (this.gameTileState != GameTileState.LARKING_1_SUIT)
+            return;
+        playerTiles.setLarkSuit(category);
     }
 
     public int getDealer() {

@@ -90,16 +90,19 @@ public class RemoteGame extends Game {
 
     @Override
     public GameTileState getGameTileState() {
-        if (this.getGameState() != GameState.PLAYING || this.tilesData == null)
+        if (this.tilesData == null)
             return null;
         return this.tilesData.gameTileState();
     }
 
     @Override
     public void doTileAction(GameTileActionPacket.TileAction tileAction, Player player, TileState... tileStates) {
-        if (this.getGameState() != GameState.PLAYING)
-            return;
         this.socket.getReceiver().sendPacket(new GameTileActionPacket(player.getId(), this.getId(), tileAction, tileStates));
+    }
+
+    @Override
+    public void larkSuit(RemotePlayer player, TileState.TileStateCategory category) {
+        this.socket.getReceiver().sendPacket(new LarkSuitPacket(player.getId(), this.getId(), category));
     }
 
     public synchronized void syncGameData(Player player) {
@@ -118,7 +121,7 @@ public class RemoteGame extends Game {
         this.setCountdown(gameData.countdown());
 
 
-        // todo update tiles
+        // todo update tileStates
         this.setTilesData(gameData.tilesData());
         List<Player> temp = Lists.newArrayList();
         for (PlayerData playerData : gameData.playerData()) {
@@ -138,15 +141,18 @@ public class RemoteGame extends Game {
                 TerminalLauncher.change("gameTileState", this, this.tilesData.gameTileState(), tilesData.gameTileState());
             if (this.tilesData.remainTiles() != tilesData.remainTiles())
                 TerminalLauncher.change("remainTiles", this, this.tilesData.remainTiles(), tilesData.remainTiles());
-            if (!this.tilesData.tiles().equals(tilesData.tiles()))
-                TerminalLauncher.change("tiles", this, this.tilesData.tiles(), tilesData.tiles());
-            if (!this.tilesData.discardTiles().equals(tilesData.discardTiles()))
-                TerminalLauncher.change("doraIndicators", this, this.tilesData.discardTiles(), tilesData.discardTiles());
+            if (!this.tilesData.tileStates().equals(tilesData.tileStates()))
+                TerminalLauncher.change("tileStates", this, this.tilesData.tileStates(), tilesData.tileStates());
+            if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
+                TerminalLauncher.change("doraIndicators", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
+            if (!this.tilesData.scores().equals(tilesData.scores()))
+                TerminalLauncher.change("scores", this, this.tilesData.scores(), tilesData.scores());
         } else if (this.tilesData != null || tilesData != null) {
             TerminalLauncher.change("gameTileState", this, this.tilesData == null ? null : this.tilesData.gameTileState(), tilesData == null ? null : tilesData.gameTileState());
             TerminalLauncher.change("remainTiles", this, this.tilesData == null ? null : this.tilesData.remainTiles(), tilesData == null ? null : tilesData.remainTiles());
-            TerminalLauncher.change("tiles", this, this.tilesData == null ? null : this.tilesData.tiles(), tilesData == null ? null : tilesData.tiles());
-            TerminalLauncher.change("doraIndicators", this, this.tilesData == null ? null : this.tilesData.discardTiles(), tilesData == null ? null : tilesData.discardTiles());
+            TerminalLauncher.change("tileStates", this, this.tilesData == null ? null : this.tilesData.tileStates(), tilesData == null ? null : tilesData.tileStates());
+            TerminalLauncher.change("doraIndicators", this, this.tilesData == null ? null : this.tilesData.discardTileStates(), tilesData == null ? null : tilesData.discardTileStates());
+            TerminalLauncher.change("scores", this, this.tilesData == null ? null : this.tilesData.scores(), tilesData == null ? null : tilesData.scores());
         }
         this.tilesData = tilesData;
     }

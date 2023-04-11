@@ -11,7 +11,7 @@ public class GameActionPacketCodec extends PacketCodec<GameActionPacket> {
     public GameActionPacket readPacket(PacketPreCodec packetPreCodec) {
         UUID playerId = UUID.fromString(packetPreCodec.readString());
         UUID gameId = UUID.fromString(packetPreCodec.readString());
-        GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.valueOf(packetPreCodec.readString());
+        GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.values()[packetPreCodec.readInt()];
         return new GameActionPacket(playerId, gameId, gameAction);
     }
 
@@ -19,6 +19,6 @@ public class GameActionPacketCodec extends PacketCodec<GameActionPacket> {
     public void writePacket(GameActionPacket packet, PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getPlayerId().toString());
         packetPreCodec.writeString(packet.getGameId().toString());
-        packetPreCodec.writeString(packet.getGameAction().name());
+        packetPreCodec.writeInt(packet.getGameAction().ordinal());
     }
 }

@@ -37,19 +37,20 @@ public class PacketUtil {
         else {
             codec.writeBoolean(true);
             codec.writeInt(tilesData.remainTiles());
-            codec.writeInt(tilesData.tiles().size());
-            for (TileState state : tilesData.tiles())
-                codec.writeInt(state.ordinal());
-            codec.writeString(tilesData.gameTileState().name());
-            codec.writeInt(tilesData.discardTiles().size());
-            for (List<TileState> tiles : tilesData.discardTiles()) {
+            codec.writeInt(tilesData.tileStates().size());
+            for (TileState tile : tilesData.tileStates())
+                codec.writeInt(tile.ordinal());
+            codec.writeInt(tilesData.gameTileState().ordinal());
+            codec.writeInt(tilesData.larkSuits().size());
+            for (TileState.TileStateCategory tileStateCategory : tilesData.larkSuits())
+                codec.writeInt(tileStateCategory.ordinal());
+            for (int score : tilesData.scores())
+                codec.writeInt(score);
+            for (List<TileState> tiles : tilesData.discardTileStates()) {
                 codec.writeInt(tiles.size());
                 for (TileState tile : tiles)
                     codec.writeInt(tile.ordinal());
             }
-            codec.writeInt(tilesData.scores().size());
-            for (int score : tilesData.scores())
-                codec.writeInt(score);
         }
     }
 
@@ -74,31 +75,33 @@ public class PacketUtil {
         int playerSize = codec.readInt();
         for (int j = 0; j < playerSize; j++)
             playerData.add(PacketUtil.readPlayerData(codec));
-        return new GameData(gameId, rule, gameState, startTime,  gameTime, countdown, null, playerData);
+        return new GameData(gameId, rule, gameState, startTime,  gameTime, countdown, tilesData, playerData);
     }
 
     private static TilesData readTilesData(PacketPreCodec codec) {
         if (codec.readBoolean()) {
             int remainTiles = codec.readInt();
-            int tilesSize = codec.readInt();
-            List<TileState> tiles = Lists.newArrayList();
-            for (int i = 0; i < tilesSize; i++)
-                tiles.add(TileState.values()[codec.readInt()]);
-            GameTileState gameTileState = GameTileState.valueOf(codec.readString());
-            int discardTilesSize = codec.readInt();
-            List<List<TileState>> discardTiles = Lists.newArrayList();
-            for (int i = 0; i < discardTilesSize; i++) {
-                int discardTileSize = codec.readInt();
-                List<TileState> discardTile = Lists.newArrayList();
-                for (int j = 0; j < discardTileSize; j++)
-                    discardTile.add(TileState.values()[codec.readInt()]);
-                discardTiles.add(discardTile);
-            }
-            int scoresSize = codec.readInt();
+            int tileStateSize = codec.readInt();
+            List<TileState> tileStates = Lists.newArrayList();
+            for (int i = 0; i < tileStateSize; i++)
+                tileStates.add(TileState.values()[codec.readInt()]);
+            GameTileState gameTileState = GameTileState.values()[codec.readInt()];
+            int larkSuitSize = codec.readInt();
+            List<TileState.TileStateCategory> larkSuits = Lists.newArrayList();
+            for (int i = 0; i < larkSuitSize; i++)
+                larkSuits.add(TileState.TileStateCategory.values()[codec.readInt()]);
             List<Integer> scores = Lists.newArrayList();
-            for (int i = 0; i < scoresSize; i++)
+            for (int i = 0; i < larkSuitSize; i++)
                 scores.add(codec.readInt());
-            return new TilesData(remainTiles, tiles, gameTileState, discardTiles, scores);
+            List<List<TileState>> discardTileStats = Lists.newArrayList();
+            for (int i = 0; i < larkSuitSize; i++) {
+                int discardTileSize = codec.readInt();
+                List<TileState> discardTileStatList = Lists.newArrayList();
+                for (int j = 0; j < discardTileSize; j++)
+                    discardTileStatList.add(TileState.values()[codec.readInt()]);
+                discardTileStats.add(discardTileStatList);
+            }
+            return new TilesData(remainTiles, tileStates, gameTileState, larkSuits, scores, discardTileStats);
         } else
             return null;
     }

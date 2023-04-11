@@ -29,8 +29,8 @@ public class TerminalLauncher {
         registerGameChangeListener("startTime", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " start time changed to " + newValue));
         registerGameChangeListener("countdown", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " countdown changed to " + newValue));
         registerGameChangeListener("gameTileState", GameTileState.class, (game, oldValue, newValue) -> {
-            if (newValue == GameTileState.CHANGE_3_TILES) {
-                System.out.println("We should select three tiles to change to other tiles!");
+            if (newValue == GameTileState.CHANGING_3_TILES) {
+                System.out.println("We should select three tileStates to change to other tileStates!");
             }
         });
         registerGameChangeListener("players", List.class, (game, oldValue, newValue) -> {

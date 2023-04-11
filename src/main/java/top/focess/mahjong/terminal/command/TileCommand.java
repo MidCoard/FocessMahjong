@@ -26,12 +26,12 @@ public class TileCommand extends Command {
             TileState tileState2 = dataCollection.get(TileState.class);
             TileState tileState3 = dataCollection.get(TileState.class);
             Player player = LocalPlayer.localPlayer;
-            if (player.getGame() == null || player.getGame().getGameTileState() != GameTileState.CHANGE_3_TILES) {
-                ioHandler.output("You can't change tiles now!");
+            if (player.getGame() == null || player.getGame().getGameTileState() != GameTileState.CHANGING_3_TILES) {
+                ioHandler.output("You can't change tileStates now!");
                 return CommandResult.REFUSE;
             }
             player.getGame().doTileAction(GameTileActionPacket.TileAction.CHANGE_3_TILES, player, tileState1, tileState2, tileState3);
-            ioHandler.output("You have changed tiles!");
+            ioHandler.output("You have changed tileStates!");
             return CommandResult.ALLOW;
         }, CommandArgument.of("change"), CommandArgument.of(TileStateConverter.TILE_STATE_CONVERTER), CommandArgument.of(TileStateConverter.TILE_STATE_CONVERTER), CommandArgument.of(TileStateConverter.TILE_STATE_CONVERTER));
     }

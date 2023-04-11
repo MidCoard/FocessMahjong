@@ -140,6 +140,13 @@ public class LocalGame extends Game {
         this.gameManager.doTileAction(tileAction, this.startPlayers.indexOf(player.getId()), tileStates);
     }
 
+    @Override
+    public void larkSuit(RemotePlayer player, TileState.TileStateCategory category) {
+        if (this.gameManager == null || this.getGameState() != GameState.PLAYING)
+            return;
+        this.gameManager.larkSuit(this.startPlayers.indexOf(player.getId()), category);
+    }
+
     private synchronized void countdown() {
         if (this.getGameState() != GameState.WAITING)
             return;

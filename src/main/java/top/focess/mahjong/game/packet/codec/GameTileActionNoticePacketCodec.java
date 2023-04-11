@@ -14,11 +14,11 @@ public class GameTileActionNoticePacketCodec extends PacketCodec<GameTileActionN
     public @Nullable GameTileActionNoticePacket readPacket(PacketPreCodec packetPreCodec) {
         UUID playerId = UUID.fromString(packetPreCodec.readString());
         UUID gameId = UUID.fromString(packetPreCodec.readString());
-        GameTileActionPacket.TileAction tileAction = GameTileActionPacket.TileAction.valueOf(packetPreCodec.readString());
+        GameTileActionPacket.TileAction tileAction = GameTileActionPacket.TileAction.values()[packetPreCodec.readInt()];
         int length = packetPreCodec.readInt();
         TileState[] tileStates = new TileState[length];
         for (int i = 0; i < length; i++)
-            tileStates[i] = TileState.valueOf(packetPreCodec.readString());
+            tileStates[i] = TileState.values()[packetPreCodec.readInt()];
         return new GameTileActionNoticePacket(playerId, gameId, tileAction, tileStates);
     }
 
@@ -26,9 +26,9 @@ public class GameTileActionNoticePacketCodec extends PacketCodec<GameTileActionN
     public void writePacket(GameTileActionNoticePacket packet, PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getPlayerId().toString());
         packetPreCodec.writeString(packet.getGameId().toString());
-        packetPreCodec.writeString(packet.getTileAction().name());
+        packetPreCodec.writeInt(packet.getTileAction().ordinal());
         packetPreCodec.writeInt(packet.getTileStates().length);
         for (TileState tileState : packet.getTileStates())
-            packetPreCodec.writeString(tileState.name());
+            packetPreCodec.writeInt(tileState.ordinal());
     }
 }

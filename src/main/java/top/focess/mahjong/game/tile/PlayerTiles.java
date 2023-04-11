@@ -16,6 +16,7 @@ public class PlayerTiles {
 
     private int score = 0;
     private boolean isHu = false;
+    private TileState.TileStateCategory larkSuit;
 
     public void addTile(Set<Tile> tiles) {
         this.tiles.addAll(tiles);
@@ -143,5 +144,13 @@ public class PlayerTiles {
 
     public void removeTiles(Collection<Tile> tiles) {
         this.tiles.removeAll(tiles);
+    }
+
+    public void setLarkSuit(TileState.TileStateCategory larkSuit) {
+        this.larkSuit = larkSuit;
+    }
+
+    public TileState.TileStateCategory getLarkSuit() {
+        return larkSuit;
     }
 }
