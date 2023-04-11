@@ -1,8 +1,9 @@
 package top.focess.mahjong.game.rule.manager;
 
 import top.focess.mahjong.game.GameTileState;
-import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.data.TilesData;
+import top.focess.mahjong.game.packet.GameTileActionPacket;
+import top.focess.mahjong.game.tile.Tile;
 import top.focess.mahjong.game.tile.TileState;
 
 public abstract class GameManager {
@@ -14,9 +15,9 @@ public abstract class GameManager {
 
     public abstract GameTileState getGameTileState();
 
-    public abstract void doTileAction(LocalGame.TileAction tileAction, int i, Object... objects);
+    public abstract void doTileAction(GameTileActionPacket.TileAction tileAction, int i, TileState... tileStates);
 
-    public abstract int getCurrent();
+    public abstract int getCurrentPlayer();
 
     public abstract TileState getCurrentTileState();
 }

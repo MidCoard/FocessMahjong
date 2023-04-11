@@ -5,9 +5,11 @@ import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.TilesData;
 import top.focess.mahjong.game.packet.FetchTilePacket;
 import top.focess.mahjong.game.packet.GameSyncPacket;
+import top.focess.mahjong.game.packet.GameTileActionPacket;
 import top.focess.mahjong.game.remote.RemotePlayer;
 import top.focess.mahjong.game.rule.MahjongRule;
 import top.focess.mahjong.game.rule.manager.GameManager;
+import top.focess.mahjong.game.tile.TileState;
 import top.focess.mahjong.terminal.TerminalLauncher;
 import top.focess.net.packet.Packet;
 import top.focess.net.socket.FocessMultiSocket;
@@ -132,10 +134,10 @@ public class LocalGame extends Game {
     }
 
     @Override
-    public void doTileAction(TileAction tileAction, Player player, Object... objects) {
+    public void doTileAction(GameTileActionPacket.TileAction tileAction, Player player, TileState... tileStates) {
         if (this.gameManager == null || this.getGameState() != GameState.PLAYING)
             return;
-        this.gameManager.doTileAction(tileAction, this.startPlayers.indexOf(player.getId()), objects);
+        this.gameManager.doTileAction(tileAction, this.startPlayers.indexOf(player.getId()), tileStates);
     }
 
     private synchronized void countdown() {
@@ -175,7 +177,7 @@ public class LocalGame extends Game {
         this.setCountdown(gameManager.getCountdown());
         this.syncPlayer();
         if (this.gameManager.getGameTileState() == GameTileState.DISCARDING) {
-            Player player = this.getPlayer(this.gameManager.getCurrent());
+            Player player = this.getPlayer(this.gameManager.getCurrentPlayer());
             if (player != null)
                 if (player instanceof LocalPlayer)
                     TerminalLauncher.change("fetchTileState", player, null, this.gameManager.getCurrentTileState());
@@ -222,11 +224,6 @@ public class LocalGame extends Game {
 
     public UUID getPlayerId(int player) {
         return this.startPlayers.get(player);
-    }
-
-    public enum TileAction {
-        KONG, DISCARD_TILE, HU, CHANGE_3_TILES
-
     }
 
 }

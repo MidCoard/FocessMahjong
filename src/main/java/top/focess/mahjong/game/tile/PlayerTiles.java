@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PlayerTiles {
 
@@ -39,16 +36,8 @@ public class PlayerTiles {
         return tiles;
     }
 
-    public int getTilesSize() {
+    public int getHandSize() {
         return this.tiles.size();
-    }
-
-    public Tile getTile(int index) {
-        return getRawTiles().get(index);
-    }
-
-    public TileState getTileState(int index) {
-        return this.getTile(index).getTileState();
     }
 
     public TileState.TileStateCategory getLeastCategory(int size) {
@@ -65,26 +54,6 @@ public class PlayerTiles {
                 category = entry.getKey();
             }
         return category;
-    }
-
-    public List<Integer> getRandomIndexes(int size, TileState.TileStateCategory category) {
-        List<Integer> indexes = Lists.newArrayList();
-        List<TileState> tileStates = this.getRawTileStates();
-        for (int i = 0; i < tileStates.size(); i++)
-            if (tileStates.get(i).getCategory() == category)
-                indexes.add(i);
-        Collections.shuffle(indexes);
-        return indexes.subList(0, size);
-    }
-
-    public Set<Tile> getAndRemoveTiles(List<Integer> indexes) {
-        Set<Tile> ret = Sets.newHashSet();
-        List<Tile> tiles = this.getRawTiles();
-        for (int i = 0; i < tiles.size(); i++)
-            if (indexes.contains(i))
-                ret.add(tiles.get(i));
-        ret.forEach(this.tiles::remove);
-        return ret;
     }
 
     public int getTileStateCount(TileState tileState) {
@@ -129,10 +98,7 @@ public class PlayerTiles {
     }
 
     public List<TileState> getDiscardTileStates() {
-        List<TileState> tileStates = Lists.newArrayList();
-        for (Tile tile : this.discardTiles)
-            tileStates.add(tile.getTileState());
-        return tileStates;
+        return this.discardTiles.stream().map(Tile::getTileState).toList();
     }
 
     public void addTile(Tile tile) {
@@ -151,5 +117,31 @@ public class PlayerTiles {
     public void hu(Tile tile) {
         this.isHu = true;
         this.addTile(tile);
+    }
+
+    public Set<Tile> getHandTiles(TileState... tileStates) {
+        List<Tile> tmp = Lists.newCopyOnWriteArrayList();
+        Set<Tile> ret = Sets.newHashSet();
+        tmp.addAll(this.tiles);
+        for (Tile tile : tmp)
+            for (TileState tileState : tileStates)
+                if (tile.getTileState().equals(tileState)) {
+                    tmp.remove(tile);
+                    ret.add(tile);
+                }
+        return ret;
+    }
+
+    public List<Tile> getRandomTiles(int size, TileState.TileStateCategory category, Random random) {
+        List<Tile> tiles = Lists.newArrayList();
+        for (Tile tile : this.tiles)
+            if (tile.getTileState().getCategory().equals(category))
+                tiles.add(tile);
+        Collections.shuffle(tiles, random);
+        return tiles.subList(0, size);
+    }
+
+    public void removeTiles(Collection<Tile> tiles) {
+        this.tiles.removeAll(tiles);
     }
 }

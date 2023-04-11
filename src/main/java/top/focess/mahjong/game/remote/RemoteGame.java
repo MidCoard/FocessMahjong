@@ -3,7 +3,6 @@ package top.focess.mahjong.game.remote;
 import com.google.common.collect.Lists;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.GameTileState;
-import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
@@ -97,17 +96,10 @@ public class RemoteGame extends Game {
     }
 
     @Override
-    public void doTileAction(LocalGame.TileAction tileAction, Player player, Object... objects) {
+    public void doTileAction(GameTileActionPacket.TileAction tileAction, Player player, TileState... tileStates) {
         if (this.getGameState() != GameState.PLAYING)
             return;
-        if (tileAction == LocalGame.TileAction.CHANGE_3_TILES)
-            this.socket.getReceiver().sendPacket(new Change3TilesPacket(player.getId(), this.getId(), (int) objects[0], (int) objects[1], (int) objects[2]));
-        if (tileAction == LocalGame.TileAction.KONG)
-            this.socket.getReceiver().sendPacket(new KongPacket(player.getId(), this.getId(), (TileState) objects[0]));
-        if (tileAction == LocalGame.TileAction.DISCARD_TILE)
-            this.socket.getReceiver().sendPacket(new DiscardTilePacket(player.getId(), this.getId(), (TileState) objects[0]));
-        if (tileAction == LocalGame.TileAction.HU)
-            this.socket.getReceiver().sendPacket(new HuPacket(player.getId(), this.getId()));
+        this.socket.getReceiver().sendPacket(new GameTileActionPacket(player.getId(), this.getId(), tileAction, tileStates));
     }
 
     public synchronized void syncGameData(Player player) {

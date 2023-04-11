@@ -6,9 +6,11 @@ import top.focess.command.CommandArgument;
 import top.focess.command.CommandResult;
 import top.focess.command.CommandSender;
 import top.focess.mahjong.game.GameTileState;
-import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.Player;
+import top.focess.mahjong.game.packet.GameTileActionPacket;
+import top.focess.mahjong.game.tile.TileState;
+import top.focess.mahjong.terminal.command.converter.TileStateConverter;
 
 import java.util.List;
 
@@ -20,18 +22,18 @@ public class TileCommand extends Command {
     @Override
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            int tile1 = dataCollection.getInt();
-            int tile2 = dataCollection.getInt();
-            int tile3 = dataCollection.getInt();
+            TileState tileState1 = dataCollection.get(TileState.class);
+            TileState tileState2 = dataCollection.get(TileState.class);
+            TileState tileState3 = dataCollection.get(TileState.class);
             Player player = LocalPlayer.localPlayer;
             if (player.getGame() == null || player.getGame().getGameTileState() != GameTileState.CHANGE_3_TILES) {
                 ioHandler.output("You can't change tiles now!");
                 return CommandResult.REFUSE;
             }
-            player.getGame().doTileAction(LocalGame.TileAction.CHANGE_3_TILES, player, tile1, tile2, tile3);
+            player.getGame().doTileAction(GameTileActionPacket.TileAction.CHANGE_3_TILES, player, tileState1, tileState2, tileState3);
             ioHandler.output("You have changed tiles!");
             return CommandResult.ALLOW;
-        }, CommandArgument.of("change"), CommandArgument.ofInt(), CommandArgument.ofInt(), CommandArgument.ofInt());
+        }, CommandArgument.of("change"), CommandArgument.of(TileStateConverter.TILE_STATE_CONVERTER), CommandArgument.of(TileStateConverter.TILE_STATE_CONVERTER), CommandArgument.of(TileStateConverter.TILE_STATE_CONVERTER));
     }
 
     @Override

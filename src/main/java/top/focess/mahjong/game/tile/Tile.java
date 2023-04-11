@@ -1,9 +1,6 @@
 package top.focess.mahjong.game.tile;
 
-import com.google.common.collect.Comparators;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Comparator;
 
 public class Tile implements Comparable<Tile> {
 

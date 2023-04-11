@@ -77,7 +77,7 @@ public class Player {
 
         WAITING,
         READY,
-        PLAYING;
+        PLAYING
     }
 
     @Override

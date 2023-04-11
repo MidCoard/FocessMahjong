@@ -6,7 +6,6 @@ import top.focess.command.DataCollection;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.LocalPlayer;
-import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.data.PlayerData;
 import top.focess.mahjong.game.packet.*;
@@ -53,12 +52,10 @@ public class Launcher {
         PacketPreCodec.register(GamePacket.PACKET_ID, new GamePacketCodec());
         PacketPreCodec.register(SyncPlayerPacket.PACKET_ID, new SyncPlayerPacketCodec());
         PacketPreCodec.register(PlayerPacket.PACKET_ID, new PlayerPacketCodec());
-        PacketPreCodec.register(Change3TilesPacket.PACKET_ID, new Change3TilesPacketCodec());
+        PacketPreCodec.register(GameTileActionPacket.PACKET_ID, new GameTileActionPacketCodec());
         PacketPreCodec.register(Change3TilesDirectionPacket.PACKET_ID, new Change3TilesDirectionPacketCodec());
         PacketPreCodec.register(FetchTilePacket.PACKET_ID, new FetchTilePacketCodec());
-        PacketPreCodec.register(KongPacket.PACKET_ID, new KongPacketCodec());
-        PacketPreCodec.register(HuPacket.PACKET_ID, new HuPacketCodec());
-        PacketPreCodec.register(DiscardTilePacket.PACKET_ID, new DiscardTilePacketCodec());
+        PacketPreCodec.register(GameTileActionNoticePacket.PACKET_ID, new GameTileActionNoticePacketCodec());
     }
     private final FocessMultiSocket serverSocket;
 
@@ -118,32 +115,11 @@ public class Launcher {
             if (game instanceof LocalGame)
                 game.getGameRequester().response("syncPlayer", packet.getPlayerData(), id -> id[0].equals(packet.getPlayerData().id()));
         });
-        receiver.register("mahjong", Change3TilesPacket.class, (clientId, packet) -> {
+        receiver.register("mahjong", GameTileActionPacket.class, (clientId, packet) -> {
             Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame) {
                 RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
-                game.doTileAction(LocalGame.TileAction.CHANGE_3_TILES, player, packet.getTile1(), packet.getTile2(), packet.getTile3());
-            }
-        });
-        receiver.register("mahjong", KongPacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
-            if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
-                game.doTileAction(LocalGame.TileAction.KONG, player, packet.getTileState());
-            }
-        });
-        receiver.register("mahjong", DiscardTilePacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
-            if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
-                game.doTileAction(LocalGame.TileAction.DISCARD_TILE, player, packet.getTileState());
-            }
-        });
-        receiver.register("mahjong", HuPacket.class , (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
-            if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
-                game.doTileAction(LocalGame.TileAction.HU, player);
+                game.doTileAction(packet.getTileAction(), player, packet.getTileStates());
             }
         });
     }
