@@ -45,16 +45,6 @@ public enum TileState {
 
     ;
 
-    public TileStateCategory getCategory() {
-        return this.category;
-    }
-
-    public enum TileStateCategory {
-        DOTS,
-        BAMBOO,
-        CHARACTERS,
-    }
-
     private final TileStateCategory category;
 
     TileState() {
@@ -63,5 +53,15 @@ public enum TileState {
 
     TileState(final TileStateCategory category) {
         this.category = category;
+    }
+
+    public TileStateCategory getCategory() {
+        return this.category;
+    }
+
+    public enum TileStateCategory {
+        DOTS,
+        BAMBOO,
+        CHARACTERS,
     }
 }

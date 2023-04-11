@@ -19,15 +19,13 @@ public abstract class Game {
 
     protected static final Map<UUID, Game> GAMES = Maps.newConcurrentMap();
     protected final GameRequester gameRequester = new GameRequester();
+    protected final List<Player> players = Lists.newArrayList();
+    private final MahjongRule rule;
+    private final UUID id;
     private int startTime = -1;
     private int gameTime;
     private int countdown = -1;
     private GameState gameState = GameState.WAITING;
-
-    private final MahjongRule rule;
-    private final UUID id;
-
-    protected final List<Player> players = Lists.newArrayList();
 
     public Game(final MahjongRule rule) {
         this(UUID.randomUUID(), rule);
@@ -59,14 +57,21 @@ public abstract class Game {
         return this.gameState;
     }
 
-    public int getStartTime() {
-        return this.startTime;
-    }
-
     public void setGameState(final GameState gameState) {
         if (this.gameState != gameState) {
             TerminalLauncher.change("gameState", this, this.gameState, gameState);
             this.gameState = gameState;
+        }
+    }
+
+    public int getStartTime() {
+        return this.startTime;
+    }
+
+    protected void setStartTime(final int startTime) {
+        if (this.startTime != startTime) {
+            TerminalLauncher.change("startTime", this, this.startTime, startTime);
+            this.startTime = startTime;
         }
     }
 
@@ -88,13 +93,6 @@ public abstract class Game {
 
     protected void countdownStartTime() {
         this.setStartTime(this.getStartTime() - 1);
-    }
-
-    protected void setStartTime(final int startTime) {
-        if (this.startTime != startTime) {
-            TerminalLauncher.change("startTime",this, this.startTime, startTime);
-            this.startTime = startTime;
-        }
     }
 
     public int getGameTime() {
@@ -129,13 +127,6 @@ public abstract class Game {
 
     public abstract void larkSuit(RemotePlayer player, TileState.TileStateCategory category);
 
-    public enum GameState {
-
-        WAITING, // setup is done, waiting for players to join and ready.
-        PLAYING // game is playing. including the shuffling tileStates, dealing tileStates, playing tileStates, and game over.
-
-    }
-
     @Override
     public String toString() {
         return "Game{" +
@@ -143,5 +134,12 @@ public abstract class Game {
                 ", rule=" + this.rule +
                 ", id=" + this.id +
                 '}' + super.toString();
+    }
+
+    public enum GameState {
+
+        WAITING, // setup is done, waiting for players to join and ready.
+        PLAYING // game is playing. including the shuffling tileStates, dealing tileStates, playing tileStates, and game over.
+
     }
 }

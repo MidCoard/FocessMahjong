@@ -8,7 +8,8 @@ import java.util.List;
 
 public class CommandLine {
 
-    public static final CommandSender DEFAULT_COMMAND_SENDER = new CommandSender(CommandPermission.OWNER) {};
+    public static final CommandSender DEFAULT_COMMAND_SENDER = new CommandSender(CommandPermission.OWNER) {
+    };
 
     public static final IOHandler DEFAULT_IO_HANDLER = new IOHandler() {
         @Override

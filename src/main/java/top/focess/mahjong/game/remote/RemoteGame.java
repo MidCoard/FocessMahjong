@@ -39,7 +39,7 @@ public class RemoteGame extends Game {
     @Override
     public synchronized boolean join(final Player player) {
         final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("join",
-                ()-> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.JOIN)),
+                () -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.JOIN)),
                 player.getId());
         if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
             this.syncGameData(player);
@@ -67,7 +67,7 @@ public class RemoteGame extends Game {
     @Override
     public synchronized boolean ready(final Player player) {
         final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("ready",
-                ()->this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.READY)),
+                () -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.READY)),
                 player.getId());
         if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
             player.setPlayerState(Player.PlayerState.READY);
@@ -79,7 +79,7 @@ public class RemoteGame extends Game {
     @Override
     public synchronized boolean unready(final Player player) {
         final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("unready",
-                ()-> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.UNREADY)),
+                () -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.UNREADY)),
                 player.getId());
         if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
             player.setPlayerState(Player.PlayerState.WAITING);
@@ -133,6 +133,14 @@ public class RemoteGame extends Game {
         this.players.addAll(temp);
     }
 
+    public void remove() {
+        Game.GAMES.remove(this.getId());
+    }
+
+    public TilesData getTilesData() {
+        return this.tilesData;
+    }
+
     private void setTilesData(final TilesData tilesData) {
         if (null != this.tilesData && null != tilesData) {
             if (this.tilesData.remainTiles() != tilesData.remainTiles())
@@ -156,13 +164,5 @@ public class RemoteGame extends Game {
             TerminalLauncher.change("discardTileStates", this, null == this.tilesData ? null : this.tilesData.discardTileStates(), null == tilesData ? null : tilesData.discardTileStates());
         }
         this.tilesData = tilesData;
-    }
-
-    public void remove() {
-        Game.GAMES.remove(this.getId());
-    }
-
-    public TilesData getTilesData() {
-        return this.tilesData;
     }
 }

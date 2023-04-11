@@ -13,6 +13,10 @@ public class MahjongRuleBuffer extends DataBuffer<MahjongRule> {
         this.stringBuffer = StringBuffer.allocate(size);
     }
 
+    public static MahjongRuleBuffer allocate(final int size) {
+        return new MahjongRuleBuffer(size);
+    }
+
     @Override
     public void flip() {
         this.stringBuffer.flip();
@@ -31,9 +35,5 @@ public class MahjongRuleBuffer extends DataBuffer<MahjongRule> {
     @Override
     public @NonNull MahjongRule get(final int index) {
         return MahjongRule.valueOf(this.stringBuffer.get(index));
-    }
-
-    public static MahjongRuleBuffer allocate(final int size) {
-        return new MahjongRuleBuffer(size);
     }
 }

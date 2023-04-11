@@ -14,6 +14,7 @@ public class SyncPlayerPacket extends Packet {
         this.playerId = playerId;
         this.gameId = gameId;
     }
+
     @Override
     public int getId() {
         return SyncPlayerPacket.PACKET_ID;

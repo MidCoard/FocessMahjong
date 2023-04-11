@@ -11,7 +11,7 @@ public enum GameTileState {
     FINISHED(20),
     WAITING(3), // which means some essential waiting for UI or other
 
-    WAITING_HU(3) ;
+    WAITING_HU(3);
 
     private final int time;
 

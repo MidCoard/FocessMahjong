@@ -12,5 +12,6 @@ public class ListGamesPacketCodec extends PacketCodec<ListGamesPacket> {
     }
 
     @Override
-    public void writePacket(final ListGamesPacket packet, final PacketPreCodec packetPreCodec) {}
+    public void writePacket(final ListGamesPacket packet, final PacketPreCodec packetPreCodec) {
+    }
 }

@@ -27,12 +27,12 @@ public class Tile implements Comparable<Tile> {
         return this.number;
     }
 
-    public void setTileState(final TileState tileState) {
-        this.tileState = tileState;
-    }
-
     public TileState getTileState() {
         return this.tileState;
+    }
+
+    public void setTileState(final TileState tileState) {
+        this.tileState = tileState;
     }
 
     @Override

@@ -24,10 +24,9 @@ public class LocalGame extends Game {
 
     private static final FocessScheduler FOCESS_SCHEDULER = new FocessScheduler("GameTicker", true);
     private final FocessMultiSocket serverSocket;
+    private final List<UUID> startPlayers = Lists.newArrayList();
     private Task task;
     private GameManager gameManager;
-
-    private final List<UUID> startPlayers = Lists.newArrayList();
 
     public LocalGame(final FocessMultiSocket serverSocket, final MahjongRule rule) {
         super(rule);
@@ -189,7 +188,7 @@ public class LocalGame extends Game {
                 if (player instanceof LocalPlayer)
                     TerminalLauncher.change("fetchTileState", player, null, this.gameManager.getCurrentTileState());
                 else if (player instanceof RemotePlayer)
-                    this.serverSocket.getReceiver().sendPacket(((RemotePlayer) player).getClientId(), new FetchTilePacket(player.getId(), this.getId(),  this.gameManager.getCurrentTileState()));
+                    this.serverSocket.getReceiver().sendPacket(((RemotePlayer) player).getClientId(), new FetchTilePacket(player.getId(), this.getId(), this.gameManager.getCurrentTileState()));
         }
     }
 
@@ -212,7 +211,7 @@ public class LocalGame extends Game {
 
     public void sendPacket(final Packet packet) {
         this.players.forEach(player -> {
-            if (player instanceof  RemotePlayer) {
+            if (player instanceof RemotePlayer) {
                 final int clientId = ((RemotePlayer) player).getClientId();
                 if (-1 == clientId)
                     throw new IllegalStateException("Remote player " + player.getName() + " has no client id");

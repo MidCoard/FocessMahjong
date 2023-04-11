@@ -14,7 +14,7 @@ public class FetchTilePacketCodec extends PacketCodec<FetchTilePacket> {
         final UUID playerId = UUID.fromString(packetPreCodec.readString());
         final UUID gameId = UUID.fromString(packetPreCodec.readString());
         final TileState tileState = TileState.values()[packetPreCodec.readInt()];
-        return new FetchTilePacket(playerId,gameId,tileState);
+        return new FetchTilePacket(playerId, gameId, tileState);
     }
 
     @Override

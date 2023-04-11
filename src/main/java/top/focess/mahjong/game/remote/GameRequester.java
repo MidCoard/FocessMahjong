@@ -1,19 +1,14 @@
 package top.focess.mahjong.game.remote;
 
 import com.google.common.collect.Maps;
-import top.focess.mahjong.game.packet.GameActionStatusPacket;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class GameRequester {
 
-    private final Map<String, GameRequest> gameRequests = Maps.newHashMap();
-
     private static final Object LOCK = new Object();
-
+    private final Map<String, GameRequest> gameRequests = Maps.newHashMap();
 
     public <T> T request(final String action, final Runnable task, final Object... args) {
         final GameRequest gameRequest;
@@ -64,12 +59,13 @@ public class GameRequester {
         public Object getLock() {
             return this.lock;
         }
-        public void setResponse(final Object arg) {
-            this.response = arg;
-        }
 
         public <T> T getResponse() {
             return (T) this.response;
+        }
+
+        public void setResponse(final Object arg) {
+            this.response = arg;
         }
 
         public Object[] getArgs() {

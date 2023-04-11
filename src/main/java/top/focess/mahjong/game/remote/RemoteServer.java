@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalPlayer;
-import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
 import top.focess.mahjong.terminal.TerminalLauncher;
@@ -69,7 +68,7 @@ public class RemoteServer {
                     ((RemoteGame) game).update(packet.getGameData());
             });
             receiver.register(SyncPlayerPacket.class, (clientId, packet) -> {
-                if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId())){
+                if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId())) {
                     final PlayerPacket playerPacket = new PlayerPacket(packet.getGameId(), LocalPlayer.localPlayer.getPlayerData());
                     receiver.sendPacket(playerPacket);
                 }
@@ -77,7 +76,7 @@ public class RemoteServer {
             receiver.register(Change3TilesDirectionPacket.class, (clientId, packet) -> {
                 final Game game = Game.getGame(packet.getGameId());
                 if (null != game)
-                    TerminalLauncher.change("changeDirection", game, -1,  packet.getDirection());
+                    TerminalLauncher.change("changeDirection", game, -1, packet.getDirection());
             });
             receiver.register(FetchTilePacket.class, (clientId, packet) -> {
                 if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId()))
@@ -103,7 +102,8 @@ public class RemoteServer {
             this.clientSocket.getReceiver().sendPacket(new ListGamesPacket());
             try {
                 this.fetchRemoteGamesLock.wait(5000);
-            } catch (final InterruptedException ignored) {}
+            } catch (final InterruptedException ignored) {
+            }
         }
         return this.games;
     }

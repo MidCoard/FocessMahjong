@@ -59,6 +59,7 @@ public class Launcher {
         PacketPreCodec.register(LarkSuitPacket.PACKET_ID, new LarkSuitPacketCodec());
         PacketPreCodec.register(GameTileActionConfirmPacket.PACKET_ID, new GameTileActionConfirmPacketCodec());
     }
+
     private final FocessMultiSocket serverSocket;
 
     public Launcher() throws IllegalPortException {
@@ -90,9 +91,9 @@ public class Launcher {
                     case LEAVE -> game.leave(player);
                     case JOIN -> game.join(player);
                 };
-                receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
-            }
-            else receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
+                receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(), packet.getGameId(), packet.getGameAction(), flag ? GameActionStatusPacket.GameActionStatus.SUCCESS : GameActionStatusPacket.GameActionStatus.FAILURE));
+            } else
+                receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(), packet.getGameId(), packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
         });
         receiver.register("mahjong", ListGamesPacket.class, (clientId, packet) -> {
             final List<GameData> gameDataList = Lists.newArrayList();
@@ -133,14 +134,7 @@ public class Launcher {
         });
     }
 
-    public void exit() {
-        this.serverSocket.close();
-    }
-
-    public LocalGame createGame(final MahjongRule rule) {
-        return new LocalGame(this.serverSocket, rule);
-    }
-//
+    //
     public static void main(final String[] args) {
         final Options options = Options.parse(args,
                 new OptionParserClassifier("name", OptionType.DEFAULT_OPTION_TYPE),
@@ -161,6 +155,14 @@ public class Launcher {
         option = options.get("gui");
         if (null == option)
             TerminalLauncher.launch();
+    }
+
+    public void exit() {
+        this.serverSocket.close();
+    }
+
+    public LocalGame createGame(final MahjongRule rule) {
+        return new LocalGame(this.serverSocket, rule);
     }
 
 }

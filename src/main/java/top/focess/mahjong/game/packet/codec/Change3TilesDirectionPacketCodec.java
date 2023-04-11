@@ -12,7 +12,7 @@ public class Change3TilesDirectionPacketCodec extends PacketCodec<Change3TilesDi
     public @Nullable Change3TilesDirectionPacket readPacket(final PacketPreCodec packetPreCodec) {
         final UUID gameId = UUID.fromString(packetPreCodec.readString());
         final int direction = packetPreCodec.readInt();
-        return new Change3TilesDirectionPacket(gameId,direction);
+        return new Change3TilesDirectionPacket(gameId, direction);
     }
 
     @Override

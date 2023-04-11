@@ -28,6 +28,12 @@ public class Player {
         this.name = name;
     }
 
+    public static Player getPlayer(final int clientId, final PlayerData playerData) {
+        if (LocalPlayer.localPlayer.getId().equals(playerData.id()))
+            return LocalPlayer.localPlayer;
+        return RemotePlayer.getOrCreatePlayer(clientId, playerData);
+    }
+
     public Game getGame() {
         return this.game;
     }
@@ -63,21 +69,8 @@ public class Player {
         }
     }
 
-    public static Player getPlayer(final int clientId, final PlayerData playerData) {
-        if (LocalPlayer.localPlayer.getId().equals(playerData.id()))
-            return LocalPlayer.localPlayer;
-        return RemotePlayer.getOrCreatePlayer(clientId, playerData);
-    }
-
     public String getName() {
         return this.name;
-    }
-
-    public enum PlayerState {
-
-        WAITING,
-        READY,
-        PLAYING
     }
 
     @Override
@@ -87,5 +80,12 @@ public class Player {
                 ", name='" + this.name + '\'' +
                 ", playerState=" + this.playerState +
                 '}' + super.toString();
+    }
+
+    public enum PlayerState {
+
+        WAITING,
+        READY,
+        PLAYING
     }
 }

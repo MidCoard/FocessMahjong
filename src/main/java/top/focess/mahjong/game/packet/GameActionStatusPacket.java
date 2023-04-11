@@ -1,7 +1,5 @@
 package top.focess.mahjong.game.packet;
 
-import top.focess.mahjong.game.packet.codec.GameActionStatusPacketCodec;
-import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 
 import java.util.UUID;

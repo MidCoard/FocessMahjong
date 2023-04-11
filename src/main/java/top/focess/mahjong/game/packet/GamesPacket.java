@@ -1,8 +1,6 @@
 package top.focess.mahjong.game.packet;
 
 import top.focess.mahjong.game.data.GameData;
-import top.focess.mahjong.game.packet.codec.GamesPacketCodec;
-import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 
 import java.util.List;

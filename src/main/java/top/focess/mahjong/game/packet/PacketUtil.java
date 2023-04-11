@@ -80,7 +80,7 @@ public class PacketUtil {
         final int playerSize = codec.readInt();
         for (int j = 0; j < playerSize; j++)
             playerData.add(PacketUtil.readPlayerData(codec));
-        return new GameData(gameId, rule, gameState, startTime,  gameTime, countdown, tilesData, playerData);
+        return new GameData(gameId, rule, gameState, startTime, gameTime, countdown, tilesData, playerData);
     }
 
     private static TilesData readTilesData(final PacketPreCodec codec) {

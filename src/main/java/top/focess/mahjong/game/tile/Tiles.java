@@ -2,7 +2,6 @@ package top.focess.mahjong.game.tile;
 
 import com.google.common.collect.Sets;
 
-import java.util.List;
 import java.util.Set;
 
 public class Tiles {
