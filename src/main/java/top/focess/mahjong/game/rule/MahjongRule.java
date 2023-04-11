@@ -19,7 +19,24 @@ public enum MahjongRule {
 
         @Override
         public GameManager getGameManager(LocalGame game, int playerSize) {
-            return new SiChuanGameManager(game, playerSize);
+            return new SiChuanGameManager(game, playerSize, score -> score + 1);
+        }
+    },
+
+    SICHUAN2("SiChuanMahjong") {
+        @Override
+        public int getReadyTime(int size) {
+            return switch (size) {
+                case 2 -> 10;
+                case 3 -> 15;
+                case 4 -> 20;
+                default -> -1;
+            };
+        }
+
+        @Override
+        public GameManager getGameManager(LocalGame game, int playerSize) {
+            return new SiChuanGameManager(game, playerSize, score -> score == 16 ? 16 : score * 2);
         }
     };
 

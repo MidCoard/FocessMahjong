@@ -14,6 +14,8 @@ public class PlayerTiles {
 
     private final Set<Tile> tiles = Sets.newHashSet();
 
+    private final Set<Tile> huableTiles = Sets.newHashSet();
+
     private int score = 0;
     private boolean isHu = false;
     private TileState.TileStateCategory larkSuit;
@@ -35,10 +37,6 @@ public class PlayerTiles {
         tiles.addAll(this.tiles);
         Collections.sort(tiles);
         return tiles;
-    }
-
-    public int getHandSize() {
-        return this.tiles.size();
     }
 
     public TileState.TileStateCategory getLeastCategory(int size) {
@@ -81,10 +79,6 @@ public class PlayerTiles {
         return score;
     }
 
-    public void setScore(int score) {
-        this.score = score;
-    }
-
     public void addScore(int score) {
         this.score += score;
     }
@@ -96,6 +90,7 @@ public class PlayerTiles {
     public void discard(Tile tile) {
         this.tiles.remove(tile);
         this.discardTiles.add(tile);
+        this.huableTiles.clear();
     }
 
     public List<TileState> getDiscardTileStates() {
@@ -103,6 +98,7 @@ public class PlayerTiles {
     }
 
     public void addTile(Tile tile) {
+        this.huableTiles.clear();
         if (tile == null)
             return;
         this.tiles.add(tile);
@@ -112,7 +108,9 @@ public class PlayerTiles {
         return (int) this.tiles.stream().filter(tile -> tile.getTileState() == tileState).count();
     }
 
-    public boolean huable(TileState tileState) {
+    public boolean huable(Tile tile) {
+        if (this.huableTiles.contains(tile))
+            return false;
         // todo calc hu
         return true;
     }
@@ -156,8 +154,9 @@ public class PlayerTiles {
     }
 
     public int getTileScore(Tile tile) {
+        int score = 1;
         // todo
-        return 0;
+        return Math.min(score, 16);
     }
 
     public void pung(Set<Tile> tiles) {
@@ -169,7 +168,12 @@ public class PlayerTiles {
         return this.notDiscardTiles.stream().map(Tile::getTileState).toList();
     }
 
-    public void removeTile(Tile tile) {
-        this.tiles.remove(tile);
+    public void markHu(Tile tile) {
+        if (this.huable(tile))
+            this.huableTiles.add(tile);
+    }
+
+    public Set<Tile> getHuableTiles() {
+        return this.huableTiles;
     }
 }
