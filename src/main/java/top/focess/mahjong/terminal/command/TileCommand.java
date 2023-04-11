@@ -22,11 +22,11 @@ public class TileCommand extends Command {
     @Override
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            TileState tileState1 = dataCollection.get(TileState.class);
-            TileState tileState2 = dataCollection.get(TileState.class);
-            TileState tileState3 = dataCollection.get(TileState.class);
-            Player player = LocalPlayer.localPlayer;
-            if (player.getGame() == null || player.getGame().getGameTileState() != GameTileState.CHANGING_3_TILES) {
+            final TileState tileState1 = dataCollection.get(TileState.class);
+            final TileState tileState2 = dataCollection.get(TileState.class);
+            final TileState tileState3 = dataCollection.get(TileState.class);
+            final Player player = LocalPlayer.localPlayer;
+            if (null == player.getGame() || GameTileState.CHANGING_3_TILES != player.getGame().getGameTileState()) {
                 ioHandler.output("You can't change tileStates now!");
                 return CommandResult.REFUSE;
             }
@@ -37,7 +37,7 @@ public class TileCommand extends Command {
     }
 
     @Override
-    public @NotNull List<String> usage(CommandSender sender) {
+    public @NotNull List<String> usage(final CommandSender sender) {
         return List.of("tile change <1> <2> <3>", "tile discard <1>", "tile condition <condition>");
     }
 }

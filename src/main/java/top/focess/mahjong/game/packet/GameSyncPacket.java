@@ -9,16 +9,16 @@ public class GameSyncPacket extends Packet {
 
     private final GameData gameData;
 
-    public GameSyncPacket(GameData gameData) {
+    public GameSyncPacket(final GameData gameData) {
         this.gameData = gameData;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return GameSyncPacket.PACKET_ID;
     }
 
     public GameData getGameData() {
-        return gameData;
+        return this.gameData;
     }
 }

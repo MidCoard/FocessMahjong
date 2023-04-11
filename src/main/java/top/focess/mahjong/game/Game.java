@@ -20,7 +20,7 @@ public abstract class Game {
     protected static final Map<UUID, Game> GAMES = Maps.newConcurrentMap();
     protected final GameRequester gameRequester = new GameRequester();
     private int startTime = -1;
-    private int gameTime = 0;
+    private int gameTime;
     private int countdown = -1;
     private GameState gameState = GameState.WAITING;
 
@@ -29,22 +29,22 @@ public abstract class Game {
 
     protected final List<Player> players = Lists.newArrayList();
 
-    public Game(MahjongRule rule) {
+    public Game(final MahjongRule rule) {
         this(UUID.randomUUID(), rule);
     }
 
-    public Game(UUID id,MahjongRule rule) {
+    public Game(final UUID id, final MahjongRule rule) {
         this.id = id;
         this.rule = rule;
-        GAMES.put(id, this);
+        Game.GAMES.put(id, this);
     }
 
-    public static Game getGame(UUID gameId) {
-        return GAMES.get(gameId);
+    public static Game getGame(final UUID gameId) {
+        return Game.GAMES.get(gameId);
     }
 
     public static List<Game> getGames() {
-        return Collections.unmodifiableList(Lists.newArrayList(GAMES.values()));
+        return Collections.unmodifiableList(Lists.newArrayList(Game.GAMES.values()));
     }
 
     public abstract boolean join(Player player);
@@ -56,14 +56,14 @@ public abstract class Game {
     public abstract boolean unready(Player player);
 
     public GameState getGameState() {
-        return gameState;
+        return this.gameState;
     }
 
     public int getStartTime() {
-        return startTime;
+        return this.startTime;
     }
 
-    public void setGameState(GameState gameState) {
+    public void setGameState(final GameState gameState) {
         if (this.gameState != gameState) {
             TerminalLauncher.change("gameState", this, this.gameState, gameState);
             this.gameState = gameState;
@@ -90,7 +90,7 @@ public abstract class Game {
         this.setStartTime(this.getStartTime() - 1);
     }
 
-    protected void setStartTime(int startTime) {
+    protected void setStartTime(final int startTime) {
         if (this.startTime != startTime) {
             TerminalLauncher.change("startTime",this, this.startTime, startTime);
             this.startTime = startTime;
@@ -98,10 +98,10 @@ public abstract class Game {
     }
 
     public int getGameTime() {
-        return gameTime;
+        return this.gameTime;
     }
 
-    public void setGameTime(int gameTime) {
+    public void setGameTime(final int gameTime) {
         if (this.gameTime != gameTime) {
             TerminalLauncher.change("gameTime", this, this.gameTime, gameTime);
             this.gameTime = gameTime;
@@ -109,10 +109,10 @@ public abstract class Game {
     }
 
     public int getCountdown() {
-        return countdown;
+        return this.countdown;
     }
 
-    public void setCountdown(int countdown) {
+    public void setCountdown(final int countdown) {
         if (this.countdown != countdown) {
             TerminalLauncher.change("countdown", this, this.countdown, countdown);
             this.countdown = countdown;
@@ -139,9 +139,9 @@ public abstract class Game {
     @Override
     public String toString() {
         return "Game{" +
-                "gameState=" + gameState +
-                ", rule=" + rule +
-                ", id=" + id +
+                "gameState=" + this.gameState +
+                ", rule=" + this.rule +
+                ", id=" + this.id +
                 '}' + super.toString();
     }
 }

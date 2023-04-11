@@ -46,7 +46,7 @@ public enum TileState {
     ;
 
     public TileStateCategory getCategory() {
-        return category;
+        return this.category;
     }
 
     public enum TileStateCategory {
@@ -61,7 +61,7 @@ public enum TileState {
         this(null);
     }
 
-    TileState(TileStateCategory category) {
+    TileState(final TileStateCategory category) {
         this.category = category;
     }
 }

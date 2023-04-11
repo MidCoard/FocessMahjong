@@ -12,18 +12,18 @@ import java.util.List;
 
 public class GamesPacketCodec extends PacketCodec<GamesPacket> {
     @Override
-    public @Nullable GamesPacket readPacket(PacketPreCodec packetPreCodec) {
-        List<GameData> games = Lists.newArrayList();
-        int size = packetPreCodec.readInt();
+    public @Nullable GamesPacket readPacket(final PacketPreCodec packetPreCodec) {
+        final List<GameData> games = Lists.newArrayList();
+        final int size = packetPreCodec.readInt();
         for (int i = 0; i < size; i++)
             games.add(PacketUtil.readGameData(packetPreCodec));
         return new GamesPacket(games);
     }
 
     @Override
-    public void writePacket(GamesPacket packet, PacketPreCodec packetPreCodec) {
+    public void writePacket(final GamesPacket packet, final PacketPreCodec packetPreCodec) {
         packetPreCodec.writeInt(packet.getGames().size());
-        for (GameData gameData : packet.getGames())
+        for (final GameData gameData : packet.getGames())
             PacketUtil.writeGameData(packetPreCodec, gameData);
     }
 }

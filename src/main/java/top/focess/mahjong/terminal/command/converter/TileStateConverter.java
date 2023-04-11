@@ -8,7 +8,7 @@ public class TileStateConverter extends ExceptionDataConverter<TileState> {
     public static final TileStateConverter TILE_STATE_CONVERTER = new TileStateConverter();
 
     @Override
-    public TileState convert(String arg) {
+    public TileState convert(final String arg) {
         return TileState.valueOf(arg.toUpperCase());
     }
 

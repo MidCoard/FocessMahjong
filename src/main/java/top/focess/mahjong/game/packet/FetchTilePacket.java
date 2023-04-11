@@ -12,26 +12,26 @@ public class FetchTilePacket extends Packet {
     private final UUID gameId;
     private final TileState tileState;
 
-    public FetchTilePacket(UUID playerId, UUID gameId, TileState tileState) {
+    public FetchTilePacket(final UUID playerId, final UUID gameId, final TileState tileState) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.tileState = tileState;
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public TileState getTileState() {
-        return tileState;
+        return this.tileState;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return FetchTilePacket.PACKET_ID;
     }
 }

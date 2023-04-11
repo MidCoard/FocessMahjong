@@ -11,14 +11,14 @@ import java.util.UUID;
 
 public class PlayerPacketCodec extends PacketCodec<PlayerPacket> {
     @Override
-    public @Nullable PlayerPacket readPacket(PacketPreCodec packetPreCodec) {
-        UUID gameId = UUID.fromString(packetPreCodec.readString());
-        PlayerData playerData = PacketUtil.readPlayerData(packetPreCodec);
+    public @Nullable PlayerPacket readPacket(final PacketPreCodec packetPreCodec) {
+        final UUID gameId = UUID.fromString(packetPreCodec.readString());
+        final PlayerData playerData = PacketUtil.readPlayerData(packetPreCodec);
         return new PlayerPacket(gameId, playerData);
     }
 
     @Override
-    public void writePacket(PlayerPacket packet, PacketPreCodec packetPreCodec) {
+    public void writePacket(final PlayerPacket packet, final PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getGameId().toString());
         PacketUtil.writePlayerData(packetPreCodec, packet.getPlayerData());
     }

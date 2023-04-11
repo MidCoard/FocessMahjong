@@ -14,7 +14,7 @@ public class GameTileActionPacket extends Packet {
     private final TileState[] tileStates;
 
 
-    public GameTileActionPacket(UUID playerId, UUID gameId, TileAction tileAction, TileState... tileStates) {
+    public GameTileActionPacket(final UUID playerId, final UUID gameId, final TileAction tileAction, final TileState... tileStates) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.tileAction = tileAction;
@@ -22,24 +22,24 @@ public class GameTileActionPacket extends Packet {
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public TileAction getTileAction() {
-        return tileAction;
+        return this.tileAction;
     }
 
     public TileState[] getTileStates() {
-        return tileStates;
+        return this.tileStates;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return GameTileActionPacket.PACKET_ID;
     }
 
     public enum TileAction {
@@ -47,7 +47,7 @@ public class GameTileActionPacket extends Packet {
 
         private final int priority;
 
-        TileAction(int priority) {
+        TileAction(final int priority) {
             this.priority = priority;
         }
 

@@ -10,17 +10,17 @@ public class Change3TilesDirectionPacket extends Packet {
     private final UUID gameId;
     private final int direction;
 
-    public Change3TilesDirectionPacket(UUID gameId, int direction) {
+    public Change3TilesDirectionPacket(final UUID gameId, final int direction) {
         this.gameId = gameId;
         this.direction = direction;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public int getDirection() {
-        return direction;
+        return this.direction;
     }
 
     @Override

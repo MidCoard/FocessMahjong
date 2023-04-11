@@ -14,7 +14,7 @@ public class GameActionStatusPacket extends Packet {
     private final GameActionPacket.GameAction gameAction;
     private final GameActionStatus gameActionStatus;
 
-    public GameActionStatusPacket(UUID playerId, UUID gameId, GameActionPacket.GameAction gameAction, GameActionStatus gameActionStatus) {
+    public GameActionStatusPacket(final UUID playerId, final UUID gameId, final GameActionPacket.GameAction gameAction, final GameActionStatus gameActionStatus) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.gameAction = gameAction;
@@ -22,24 +22,24 @@ public class GameActionStatusPacket extends Packet {
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public GameActionPacket.GameAction getGameAction() {
-        return gameAction;
+        return this.gameAction;
     }
 
     public GameActionStatus getGameActionStatus() {
-        return gameActionStatus;
+        return this.gameActionStatus;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return GameActionStatusPacket.PACKET_ID;
     }
 
     public enum GameActionStatus {

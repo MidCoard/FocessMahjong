@@ -7,10 +7,10 @@ import top.focess.net.packet.PacketCodec;
 
 public class ListGamesPacketCodec extends PacketCodec<ListGamesPacket> {
     @Override
-    public @Nullable ListGamesPacket readPacket(PacketPreCodec packetPreCodec) {
+    public @Nullable ListGamesPacket readPacket(final PacketPreCodec packetPreCodec) {
         return new ListGamesPacket();
     }
 
     @Override
-    public void writePacket(ListGamesPacket packet, PacketPreCodec packetPreCodec) {}
+    public void writePacket(final ListGamesPacket packet, final PacketPreCodec packetPreCodec) {}
 }

@@ -8,7 +8,7 @@ public enum MahjongRule {
 
     SICHUAN("SiChuanMahjong") {
         @Override
-        public int getReadyTime(int size) {
+        public int getReadyTime(final int size) {
             return switch (size) {
                 case 2 -> 10;
                 case 3 -> 15;
@@ -18,14 +18,14 @@ public enum MahjongRule {
         }
 
         @Override
-        public GameManager getGameManager(LocalGame game, int playerSize) {
+        public GameManager getGameManager(final LocalGame game, final int playerSize) {
             return new SiChuanGameManager(game, playerSize, score -> score + 1);
         }
     },
 
     SICHUAN2("SiChuanMahjong") {
         @Override
-        public int getReadyTime(int size) {
+        public int getReadyTime(final int size) {
             return switch (size) {
                 case 2 -> 10;
                 case 3 -> 15;
@@ -35,19 +35,19 @@ public enum MahjongRule {
         }
 
         @Override
-        public GameManager getGameManager(LocalGame game, int playerSize) {
-            return new SiChuanGameManager(game, playerSize, score -> score == 16 ? 16 : score * 2);
+        public GameManager getGameManager(final LocalGame game, final int playerSize) {
+            return new SiChuanGameManager(game, playerSize, score -> 16 == score ? 16 : score * 2);
         }
     };
 
     private final String name;
 
-    MahjongRule(String name) {
+    MahjongRule(final String name) {
         this.name = name;
     }
 
-    public boolean checkPlayerSize(int size) {
-        return size <= 4;
+    public boolean checkPlayerSize(final int size) {
+        return 4 >= size;
     }
 
     public abstract int getReadyTime(int size);
@@ -55,6 +55,6 @@ public enum MahjongRule {
     public abstract GameManager getGameManager(LocalGame game, int playerSize);
 
     public String getName() {
-        return name;
+        return this.name;
     }
 }

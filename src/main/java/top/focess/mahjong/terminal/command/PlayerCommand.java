@@ -21,20 +21,20 @@ public class PlayerCommand extends Command {
     @Override
     public void init() {
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            Player player = LocalPlayer.localPlayer;
+            final Player player = LocalPlayer.localPlayer;
             ioHandler.output("Local player is " + player.getName() + ".");
             return CommandResult.ALLOW;
         }, CommandArgument.of("local"));
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.localPlayer;
-            Game game = Game.getGame(gameId);
-            if (game == null) {
+            final UUID gameId = UUID.fromString(dataCollection.get());
+            final Player player = LocalPlayer.localPlayer;
+            final Game game = Game.getGame(gameId);
+            if (null == game) {
                 ioHandler.output("Game " + gameId + " not found!");
                 return CommandResult.REFUSE;
             }
-            boolean flag = game.join(player);
+            final boolean flag = game.join(player);
             if (flag)
                 ioHandler.output("Player " + player.getName() + " joined game " + game.getId() + ".");
             else
@@ -43,14 +43,14 @@ public class PlayerCommand extends Command {
         }, CommandArgument.of("join"), CommandArgument.ofString());
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.localPlayer;
-            Game game = Game.getGame(gameId);
-            if (game == null) {
+            final UUID gameId = UUID.fromString(dataCollection.get());
+            final Player player = LocalPlayer.localPlayer;
+            final Game game = Game.getGame(gameId);
+            if (null == game) {
                 ioHandler.output("Game " + gameId + " not found!");
                 return CommandResult.REFUSE;
             }
-            boolean flag = game.leave(player);
+            final boolean flag = game.leave(player);
             if (flag)
                 ioHandler.output("Player " + player.getName() + " left game " + game.getId() + ".");
             else
@@ -59,14 +59,14 @@ public class PlayerCommand extends Command {
         }, CommandArgument.of("leave"), CommandArgument.ofString());
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.localPlayer;
-            Game game = Game.getGame(gameId);
-            if (game == null) {
+            final UUID gameId = UUID.fromString(dataCollection.get());
+            final Player player = LocalPlayer.localPlayer;
+            final Game game = Game.getGame(gameId);
+            if (null == game) {
                 ioHandler.output("Game " + gameId + " not found!");
                 return CommandResult.REFUSE;
             }
-            boolean flag = game.ready(player);
+            final boolean flag = game.ready(player);
             if (flag)
                 ioHandler.output("Player " + player.getName() + " is ready in game " + game.getId() + ".");
             else
@@ -75,14 +75,14 @@ public class PlayerCommand extends Command {
         }, CommandArgument.of("ready"), CommandArgument.ofString());
 
         this.addExecutor((sender, dataCollection, ioHandler) -> {
-            UUID gameId = UUID.fromString(dataCollection.get());
-            Player player = LocalPlayer.localPlayer;
-            Game game = Game.getGame(gameId);
-            if (game == null) {
+            final UUID gameId = UUID.fromString(dataCollection.get());
+            final Player player = LocalPlayer.localPlayer;
+            final Game game = Game.getGame(gameId);
+            if (null == game) {
                 ioHandler.output("Game " + gameId + " not found!");
                 return CommandResult.REFUSE;
             }
-            boolean flag = game.unready(player);
+            final boolean flag = game.unready(player);
             if (flag)
                 ioHandler.output("Player " + player.getName() + " is unready in game " + game.getId() + ".");
             else
@@ -92,7 +92,7 @@ public class PlayerCommand extends Command {
     }
 
     @Override
-    public @NotNull List<String> usage(CommandSender sender) {
+    public @NotNull List<String> usage(final CommandSender sender) {
         return List.of("player local", "player join <game>", "player leave <game>", "player ready <game>", "player unready <game>");
     }
 }

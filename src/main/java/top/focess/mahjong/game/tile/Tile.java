@@ -17,49 +17,49 @@ public class Tile implements Comparable<Tile> {
 
     private TileState tileState;
 
-    private int detail = 0;
+    private int detail;
 
-    public Tile(int number) {
+    public Tile(final int number) {
         this.number = number;
     }
 
     public int getNumber() {
-        return number;
+        return this.number;
     }
 
-    public void setTileState(TileState tileState) {
+    public void setTileState(final TileState tileState) {
         this.tileState = tileState;
     }
 
     public TileState getTileState() {
-        return tileState;
+        return this.tileState;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (null == o || this.getClass() != o.getClass()) return false;
 
-        Tile tile = (Tile) o;
+        final Tile tile = (Tile) o;
 
-        return number == tile.number;
+        return this.number == tile.number;
     }
 
     @Override
     public int hashCode() {
-        return number;
+        return this.number;
     }
 
     @Override
-    public int compareTo(@NotNull Tile o) {
+    public int compareTo(@NotNull final Tile o) {
         return this.getTileState().compareTo(o.getTileState());
     }
 
-    public void addDetail(int detail) {
+    public void addDetail(final int detail) {
         this.detail |= detail;
     }
 
-    public boolean isDetail(int detail) {
-        return (this.detail & detail) != 0;
+    public boolean isDetail(final int detail) {
+        return 0 != (this.detail & detail);
     }
 }

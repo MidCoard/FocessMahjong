@@ -16,38 +16,38 @@ public class PlayerTiles {
 
     private final Set<Tile> huableTiles = Sets.newHashSet();
 
-    private int score = 0;
-    private boolean isHu = false;
+    private int score;
+    private boolean isHu;
     private TileState.TileStateCategory larkSuit;
 
-    public void addTile(Set<Tile> tiles) {
+    public void addTile(final Set<Tile> tiles) {
         this.tiles.addAll(tiles);
     }
 
     public List<TileState> getRawTileStates() {
-        List<TileState> tiles = Lists.newArrayList();
-        for (Tile tile : this.tiles)
+        final List<TileState> tiles = Lists.newArrayList();
+        for (final Tile tile : this.tiles)
             tiles.add(tile.getTileState());
         Collections.sort(tiles);
         return tiles;
     }
 
     public List<Tile> getRawTiles() {
-        List<Tile> tiles = Lists.newArrayList();
+        final List<Tile> tiles = Lists.newArrayList();
         tiles.addAll(this.tiles);
         Collections.sort(tiles);
         return tiles;
     }
 
-    public TileState.TileStateCategory getLeastCategory(int size) {
-        Map<TileState.TileStateCategory, Integer> map = Maps.newHashMap();
-        for (Tile tile : this.tiles) {
-            TileState.TileStateCategory category = tile.getTileState().getCategory();
-            map.compute(category, (k, v) -> v == null ? 1 : v + 1);
+    public TileState.TileStateCategory getLeastCategory(final int size) {
+        final Map<TileState.TileStateCategory, Integer> map = Maps.newHashMap();
+        for (final Tile tile : this.tiles) {
+            final TileState.TileStateCategory category = tile.getTileState().getCategory();
+            map.compute(category, (k, v) -> null == v ? 1 : v + 1);
         }
         int min = Integer.MAX_VALUE;
         TileState.TileStateCategory category = null;
-        for (Map.Entry<TileState.TileStateCategory, Integer> entry : map.entrySet())
+        for (final Map.Entry<TileState.TileStateCategory, Integer> entry : map.entrySet())
             if (entry.getValue() >= size && entry.getValue() < min) {
                 min = entry.getValue();
                 category = entry.getKey();
@@ -55,31 +55,31 @@ public class PlayerTiles {
         return category;
     }
 
-    public int getTileStateCount(TileState tileState) {
-        return (int) getRawTileStates().stream().filter(tileState1 -> tileState1.equals(tileState)).count() + (int) this.notDiscardTiles.stream().filter(tile -> tile.getTileState().equals(tileState)).count();
+    public int getTileStateCount(final TileState tileState) {
+        return (int) this.getRawTileStates().stream().filter(tileState1 -> tileState1 == tileState).count() + (int) this.notDiscardTiles.stream().filter(tile -> tile.getTileState() == tileState).count();
     }
 
-    public Set<Tile> getTiles(TileState tileState) {
-        Set<Tile> ret = Sets.newHashSet();
-        for (Tile tile : this.tiles)
-            if (tile.getTileState().equals(tileState))
+    public Set<Tile> getTiles(final TileState tileState) {
+        final Set<Tile> ret = Sets.newHashSet();
+        for (final Tile tile : this.tiles)
+            if (tile.getTileState() == tileState)
                 ret.add(tile);
-        for (Tile tile : this.notDiscardTiles)
-            if (tile.getTileState().equals(tileState))
+        for (final Tile tile : this.notDiscardTiles)
+            if (tile.getTileState() == tileState)
                 ret.add(tile);
         return ret;
     }
 
-    public void kong(Set<Tile> tiles) {
+    public void kong(final Set<Tile> tiles) {
         this.notDiscardTiles.addAll(tiles);
         this.tiles.removeAll(tiles);
     }
 
     public int getScore() {
-        return score;
+        return this.score;
     }
 
-    public void addScore(int score) {
+    public void addScore(final int score) {
         this.score += score;
     }
 
@@ -87,7 +87,7 @@ public class PlayerTiles {
         return this.isHu;
     }
 
-    public void discard(Tile tile) {
+    public void discard(final Tile tile) {
         this.tiles.remove(tile);
         this.discardTiles.add(tile);
         this.huableTiles.clear();
@@ -97,69 +97,67 @@ public class PlayerTiles {
         return this.discardTiles.stream().filter(tile -> !tile.isDetail(Tile.KONG_TILE) && !tile.isDetail(Tile.PUNG_TILE) && !tile.isDetail(Tile.HU_TILE)).map(Tile::getTileState).toList();
     }
 
-    public void addTile(Tile tile) {
+    public void addTile(final Tile tile) {
         this.huableTiles.clear();
-        if (tile == null)
+        if (null == tile)
             return;
         this.tiles.add(tile);
     }
 
-    public int getHandTileStateCount(TileState tileState) {
+    public int getHandTileStateCount(final TileState tileState) {
         return (int) this.tiles.stream().filter(tile -> tile.getTileState() == tileState).count();
     }
 
-    public boolean huable(Tile tile) {
-        if (this.huableTiles.contains(tile))
-            return false;
+    public boolean huable(final Tile tile) {
+        return !this.huableTiles.contains(tile);
         // todo calc hu
-        return true;
     }
 
     public void hu() {
         this.isHu = true;
     }
 
-    public Set<Tile> getHandTiles(TileState... tileStates) {
-        List<Tile> tmp = Lists.newCopyOnWriteArrayList();
-        Set<Tile> ret = Sets.newHashSet();
+    public Set<Tile> getHandTiles(final TileState... tileStates) {
+        final List<Tile> tmp = Lists.newCopyOnWriteArrayList();
+        final Set<Tile> ret = Sets.newHashSet();
         tmp.addAll(this.tiles);
-        for (Tile tile : tmp)
-            for (TileState tileState : tileStates)
-                if (tile.getTileState().equals(tileState)) {
+        for (final Tile tile : tmp)
+            for (final TileState tileState : tileStates)
+                if (tile.getTileState() == tileState) {
                     tmp.remove(tile);
                     ret.add(tile);
                 }
         return ret;
     }
 
-    public Set<Tile> getRandomTiles(int size, TileState.TileStateCategory category, Random random) {
-        List<Tile> tiles = Lists.newArrayList();
-        for (Tile tile : this.tiles)
-            if (tile.getTileState().getCategory().equals(category))
+    public Set<Tile> getRandomTiles(final int size, final TileState.TileStateCategory category, final Random random) {
+        final List<Tile> tiles = Lists.newArrayList();
+        for (final Tile tile : this.tiles)
+            if (tile.getTileState().getCategory() == category)
                 tiles.add(tile);
         Collections.shuffle(tiles, random);
         return Sets.newHashSet(tiles.subList(0, size));
     }
 
-    public void removeTiles(Collection<Tile> tiles) {
+    public void removeTiles(final Collection<Tile> tiles) {
         this.tiles.removeAll(tiles);
     }
 
-    public void setLarkSuit(TileState.TileStateCategory larkSuit) {
+    public void setLarkSuit(final TileState.TileStateCategory larkSuit) {
         this.larkSuit = larkSuit;
     }
 
     public TileState.TileStateCategory getLarkSuit() {
-        return larkSuit;
+        return this.larkSuit;
     }
 
-    public int getTileScore(Tile tile) {
-        int score = 1;
+    public int getTileScore(final Tile tile) {
+        final int score = 1;
         // todo
         return Math.min(score, 16);
     }
 
-    public void pung(Set<Tile> tiles) {
+    public void pung(final Set<Tile> tiles) {
         this.notDiscardTiles.addAll(tiles);
         this.tiles.removeAll(tiles);
     }
@@ -168,7 +166,7 @@ public class PlayerTiles {
         return this.notDiscardTiles.stream().map(Tile::getTileState).toList();
     }
 
-    public void markHu(Tile tile) {
+    public void markHu(final Tile tile) {
         if (this.huable(tile))
             this.huableTiles.add(tile);
     }

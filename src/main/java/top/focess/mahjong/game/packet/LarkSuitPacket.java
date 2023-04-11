@@ -12,26 +12,26 @@ public class LarkSuitPacket extends Packet {
     private final UUID gameId;
     private final TileState.TileStateCategory category;
 
-    public LarkSuitPacket(UUID playerId, UUID gameId, TileState.TileStateCategory category) {
+    public LarkSuitPacket(final UUID playerId, final UUID gameId, final TileState.TileStateCategory category) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.category = category;
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public TileState.TileStateCategory getCategory() {
-        return category;
+        return this.category;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return LarkSuitPacket.PACKET_ID;
     }
 }

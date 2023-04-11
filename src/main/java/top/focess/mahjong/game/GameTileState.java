@@ -15,11 +15,11 @@ public enum GameTileState {
 
     private final int time;
 
-    GameTileState(int time) {
+    GameTileState(final int time) {
         this.time = time;
     }
 
     public int getTime() {
-        return time;
+        return this.time;
     }
 }

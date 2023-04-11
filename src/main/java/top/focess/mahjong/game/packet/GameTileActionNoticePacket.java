@@ -13,7 +13,7 @@ public class GameTileActionNoticePacket extends Packet {
     private final GameTileActionPacket.TileAction tileAction;
     private final TileState[] tileStates;
 
-    public GameTileActionNoticePacket(UUID playerId, UUID gameId, GameTileActionPacket.TileAction tileAction, TileState... tileStates) {
+    public GameTileActionNoticePacket(final UUID playerId, final UUID gameId, final GameTileActionPacket.TileAction tileAction, final TileState... tileStates) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.tileAction = tileAction;
@@ -21,23 +21,23 @@ public class GameTileActionNoticePacket extends Packet {
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public GameTileActionPacket.TileAction getTileAction() {
-        return tileAction;
+        return this.tileAction;
     }
 
     public TileState[] getTileStates() {
-        return tileStates;
+        return this.tileStates;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return GameTileActionNoticePacket.PACKET_ID;
     }
 }

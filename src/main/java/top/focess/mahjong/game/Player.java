@@ -19,11 +19,11 @@ public class Player {
         this(UUID.randomUUID());
     }
 
-    public Player(UUID id) {
+    public Player(final UUID id) {
         this(id, "Player" + id.toString().substring(0, 4));
     }
 
-    public Player(UUID id, String name) {
+    public Player(final UUID id, final String name) {
         this.id = id;
         this.name = name;
     }
@@ -32,15 +32,15 @@ public class Player {
         return this.game;
     }
 
-    public void setGame(Game game) {
+    public void setGame(final Game game) {
         this.game = game;
     }
 
     public boolean leave() {
-        return this.getGame() != null && this.getGame().leave(this);
+        return null != this.getGame() && this.getGame().leave(this);
     }
 
-    public boolean join(Game game) {
+    public boolean join(final Game game) {
         return game.join(this);
     }
 
@@ -49,21 +49,21 @@ public class Player {
     }
 
     public PlayerData getPlayerData() {
-        return new PlayerData(this.id, this.name, playerState, this.game == null ? null : this.game.getId());
+        return new PlayerData(this.id, this.name, this.playerState, null == this.game ? null : this.game.getId());
     }
 
     public PlayerState getPlayerState() {
-        return playerState;
+        return this.playerState;
     }
 
-    public void setPlayerState(PlayerState playerState) {
+    public void setPlayerState(final PlayerState playerState) {
         if (this.playerState != playerState) {
             TerminalLauncher.change("playerState", this, this.playerState, playerState);
             this.playerState = playerState;
         }
     }
 
-    public static Player getPlayer(int clientId, PlayerData playerData) {
+    public static Player getPlayer(final int clientId, final PlayerData playerData) {
         if (LocalPlayer.localPlayer.getId().equals(playerData.id()))
             return LocalPlayer.localPlayer;
         return RemotePlayer.getOrCreatePlayer(clientId, playerData);
@@ -83,9 +83,9 @@ public class Player {
     @Override
     public String toString() {
         return "Player{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", playerState=" + playerState +
+                "id=" + this.id +
+                ", name='" + this.name + '\'' +
+                ", playerState=" + this.playerState +
                 '}' + super.toString();
     }
 }

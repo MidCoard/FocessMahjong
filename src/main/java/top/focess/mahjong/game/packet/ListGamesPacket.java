@@ -9,6 +9,6 @@ public class ListGamesPacket extends Packet {
     public static final int PACKET_ID = 120;
     @Override
     public int getId() {
-        return PACKET_ID;
+        return ListGamesPacket.PACKET_ID;
     }
 }

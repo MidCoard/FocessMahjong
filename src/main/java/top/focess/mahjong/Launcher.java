@@ -65,26 +65,26 @@ public class Launcher {
         this(0);
     }
 
-    public Launcher(int serverPort) throws IllegalPortException {
+    public Launcher(final int serverPort) throws IllegalPortException {
         this.serverSocket = new FocessMultiSocket(serverPort);
-        ServerMultiReceiver receiver = this.serverSocket.getReceiver();
+        final ServerMultiReceiver receiver = this.serverSocket.getReceiver();
         receiver.setDisconnectedHandler(clientId -> {
-            List<RemotePlayer> players = RemotePlayer.removePlayers(clientId);
-            for (RemotePlayer player : players)
+            final List<RemotePlayer> players = RemotePlayer.removePlayers(clientId);
+            for (final RemotePlayer player : players)
                 player.getGame().leave(player);
         });
         receiver.register("mahjong", GameActionPacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
+            final Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame) {
-                PlayerData playerData = game.getGameRequester().request("syncPlayer",
+                final PlayerData playerData = game.getGameRequester().request("syncPlayer",
                         () -> this.serverSocket.getReceiver().sendPacket(clientId, new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId())),
                         packet.getPlayerId());
-                if (playerData == null)
+                if (null == playerData)
                     return;
-                RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, playerData);
-                if (player == null)
+                final RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, playerData);
+                if (null == player)
                     return;
-                boolean flag = switch (packet.getGameAction()) {
+                final boolean flag = switch (packet.getGameAction()) {
                     case READY -> game.ready(player);
                     case UNREADY -> game.unready(player);
                     case LEAVE -> game.leave(player);
@@ -95,8 +95,8 @@ public class Launcher {
             else receiver.sendPacket(clientId, new GameActionStatusPacket(packet.getPlayerId(),packet.getGameId(),  packet.getGameAction(), GameActionStatusPacket.GameActionStatus.FAILURE));
         });
         receiver.register("mahjong", ListGamesPacket.class, (clientId, packet) -> {
-            List<GameData> gameDataList = Lists.newArrayList();
-            for (Game game : Game.getGames()) {
+            final List<GameData> gameDataList = Lists.newArrayList();
+            for (final Game game : Game.getGames()) {
                 if (game instanceof RemoteGame)
                     continue;
                 gameDataList.add(game.getGameData());
@@ -104,30 +104,30 @@ public class Launcher {
             receiver.sendPacket(clientId, new GamesPacket(gameDataList));
         });
         receiver.register("mahjong", SyncGamePacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
+            final Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
-                if (player == null)
+                final RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                if (null == player)
                     return;
                 receiver.sendPacket(clientId, new GamePacket(((LocalGame) game).getPartGameData(player)));
             }
         });
         receiver.register("mahjong", PlayerPacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
+            final Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame)
                 game.getGameRequester().response("syncPlayer", packet.getPlayerData(), id -> id[0].equals(packet.getPlayerData().id()));
         });
         receiver.register("mahjong", GameTileActionPacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
+            final Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                final RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
                 game.doTileAction(packet.getTileAction(), player, packet.getTileStates());
             }
         });
         receiver.register("mahjong", LarkSuitPacket.class, (clientId, packet) -> {
-            Game game = Game.getGame(packet.getGameId());
+            final Game game = Game.getGame(packet.getGameId());
             if (game instanceof LocalGame) {
-                RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+                final RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
                 game.larkSuit(player, packet.getCategory());
             }
         });
@@ -137,29 +137,29 @@ public class Launcher {
         this.serverSocket.close();
     }
 
-    public LocalGame createGame(MahjongRule rule) {
+    public LocalGame createGame(final MahjongRule rule) {
         return new LocalGame(this.serverSocket, rule);
     }
 //
-    public static void main(String[] args) {
-        Options options = Options.parse(args,
+    public static void main(final String[] args) {
+        final Options options = Options.parse(args,
                 new OptionParserClassifier("name", OptionType.DEFAULT_OPTION_TYPE),
                 new OptionParserClassifier("port", IntegerOptionType.INTEGER_OPTION_TYPE),
                 new OptionParserClassifier("debug"),
                 new OptionParserClassifier("gui"));
         Option option = options.get("name");
-        LocalPlayer.localPlayer = new LocalPlayer(option != null ? option.get(OptionType.DEFAULT_OPTION_TYPE) : "LocalPlayer");
+        LocalPlayer.localPlayer = new LocalPlayer(null != option ? option.get(OptionType.DEFAULT_OPTION_TYPE) : "LocalPlayer");
         option = options.get("debug");
-        if (option != null)
+        if (null != option)
             ASocket.enableDebug();
         option = options.get("port");
         try {
-            defaultLauncher = new Launcher(option != null ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : DEFAULT_PORT);
-        } catch (IllegalPortException e) {
+            Launcher.defaultLauncher = new Launcher(null != option ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : Launcher.DEFAULT_PORT);
+        } catch (final IllegalPortException e) {
             throw new RuntimeException(e);
         }
         option = options.get("gui");
-        if (option == null)
+        if (null == option)
             TerminalLauncher.launch();
     }
 

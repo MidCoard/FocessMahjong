@@ -8,7 +8,7 @@ public class MahjongRuleConverter extends ExceptionDataConverter<MahjongRule> {
     public static final MahjongRuleConverter MAHJONG_RULE_CONVERTER = new MahjongRuleConverter();
 
     @Override
-    public MahjongRule convert(String arg) {
+    public MahjongRule convert(final String arg) {
         return MahjongRule.valueOf(arg.toUpperCase());
     }
 

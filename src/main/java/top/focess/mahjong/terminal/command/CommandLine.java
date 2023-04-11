@@ -12,26 +12,26 @@ public class CommandLine {
 
     public static final IOHandler DEFAULT_IO_HANDLER = new IOHandler() {
         @Override
-        public void output(String output) {
+        public void output(final String output) {
             System.out.println(output);
         }
     };
 
-    public static CommandResult execute(String command) {
-        List<String> args = splitCommand(command);
-        if (args.size() == 0)
+    public static CommandResult execute(final String command) {
+        final List<String> args = CommandLine.splitCommand(command);
+        if (0 == args.size())
             return CommandResult.NONE;
-        String commandName = args.get(0);
+        final String commandName = args.get(0);
         args.remove(0);
-        return execute(commandName, args.toArray(new String[0]));
+        return CommandLine.execute(commandName, args.toArray(new String[0]));
     }
 
-    public static CommandResult execute(String command, String[] args) {
+    public static CommandResult execute(final String command, final String[] args) {
         for (final Command com : Command.getCommands())
             if (com.getName().equalsIgnoreCase(command) || com.getAliases().stream().anyMatch(i -> i.equalsIgnoreCase(command)))
                 try {
-                    return com.execute(DEFAULT_COMMAND_SENDER, args, DEFAULT_IO_HANDLER);
-                } catch (Exception e) {
+                    return com.execute(CommandLine.DEFAULT_COMMAND_SENDER, args, CommandLine.DEFAULT_IO_HANDLER);
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
         return CommandResult.NONE;
@@ -83,25 +83,25 @@ public class CommandLine {
                         stringBuilder.append(c);
                         break;
                 }
-            } else if (c == '\\')
+            } else if ('\\' == c)
                 ignore = true;
-            else if (c == ' ') {
+            else if (' ' == c) {
                 if (!stack) {
-                    if (stringBuilder.length() > 0) {
+                    if (0 < stringBuilder.length()) {
                         args.add(stringBuilder.toString());
                         stringBuilder.delete(0, stringBuilder.length());
                     }
                 } else
                     stringBuilder.append(' ');
-            } else if (c == '"')
+            } else if ('"' == c)
                 stack = !stack;
-            else if (c == '@' && !stack && last != null && last == ' ') {
+            else if ('@' == c && !stack && null != last && ' ' == last) {
                 stringBuilder.append('"');
                 stringBuilder.append('@');
             } else stringBuilder.append(c);
             last = c;
         }
-        if (stringBuilder.length() != 0)
+        if (0 != stringBuilder.length())
             args.add(stringBuilder.toString());
         return args;
     }

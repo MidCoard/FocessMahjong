@@ -10,22 +10,22 @@ public class Tiles {
 
     private final Tile[] tiles;
 
-    private int pointer = 0;
+    private int pointer;
 
-    public Tiles(int tileSize) {
+    public Tiles(final int tileSize) {
         this.tiles = new Tile[tileSize];
         for (int i = 0; i < tileSize; i++)
             this.tiles[i] = new Tile(i + 1);
     }
 
-    public Tile getTile(int i) {
+    public Tile getTile(final int i) {
         return this.tiles[i];
     }
 
-    public Set<Tile> fetch(int size) {
+    public Set<Tile> fetch(final int size) {
         if (this.pointer + size > this.tiles.length)
             throw new IndexOutOfBoundsException("The pointer is out of the tileStates");
-        Set<Tile> tiles = Sets.newHashSet();
+        final Set<Tile> tiles = Sets.newHashSet();
         for (int i = 0; i < size; i++)
             tiles.add(this.tiles[this.pointer++]);
         return tiles;

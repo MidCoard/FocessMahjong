@@ -10,16 +10,16 @@ import java.util.UUID;
 
 public class GameActionStatusPacketCodec extends PacketCodec<GameActionStatusPacket> {
     @Override
-    public @Nullable GameActionStatusPacket readPacket(PacketPreCodec packetPreCodec) {
-        UUID playerId = UUID.fromString(packetPreCodec.readString());
-        UUID gameId = UUID.fromString(packetPreCodec.readString());
-        GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.values()[packetPreCodec.readInt()];
-        GameActionStatusPacket.GameActionStatus gameActionStatus = GameActionStatusPacket.GameActionStatus.values()[packetPreCodec.readInt()];
+    public @Nullable GameActionStatusPacket readPacket(final PacketPreCodec packetPreCodec) {
+        final UUID playerId = UUID.fromString(packetPreCodec.readString());
+        final UUID gameId = UUID.fromString(packetPreCodec.readString());
+        final GameActionPacket.GameAction gameAction = GameActionPacket.GameAction.values()[packetPreCodec.readInt()];
+        final GameActionStatusPacket.GameActionStatus gameActionStatus = GameActionStatusPacket.GameActionStatus.values()[packetPreCodec.readInt()];
         return new GameActionStatusPacket(playerId, gameId, gameAction, gameActionStatus);
     }
 
     @Override
-    public void writePacket(GameActionStatusPacket packet, PacketPreCodec packetPreCodec) {
+    public void writePacket(final GameActionStatusPacket packet, final PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getPlayerId().toString());
         packetPreCodec.writeString(packet.getGameId().toString());
         packetPreCodec.writeInt(packet.getGameAction().ordinal());

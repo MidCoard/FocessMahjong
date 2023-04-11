@@ -15,35 +15,35 @@ public class GameRequester {
     private static final Object LOCK = new Object();
 
 
-    public <T> T request(String action, Runnable task, Object... args) {
-        GameRequest gameRequest;
-        synchronized (LOCK) {
-            if (gameRequests.containsKey(action))
-                gameRequest = gameRequests.get(action);
+    public <T> T request(final String action, final Runnable task, final Object... args) {
+        final GameRequest gameRequest;
+        synchronized (GameRequester.LOCK) {
+            if (this.gameRequests.containsKey(action))
+                gameRequest = this.gameRequests.get(action);
             else {
                 gameRequest = new GameRequest(args);
-                gameRequests.put(action, gameRequest);
+                this.gameRequests.put(action, gameRequest);
             }
         }
         task.run();
         synchronized (gameRequest.getLock()) {
             try {
                 gameRequest.getLock().wait(5000, 0);
-            } catch (InterruptedException ignored) {
+            } catch (final InterruptedException ignored) {
             }
             return gameRequest.getResponse();
         }
     }
 
-    public void response(String action, Object arg) {
-        response(action, arg, objects -> true);
+    public void response(final String action, final Object arg) {
+        this.response(action, arg, objects -> true);
     }
 
-    public void response(String action, Object arg, Predicate<Object[]> predicate) {
-        synchronized (LOCK) {
-            GameRequest gameRequest = this.gameRequests.get(action);
-            if (gameRequest != null && predicate.test(gameRequest.getArgs())) {
-                gameRequests.remove(action);
+    public void response(final String action, final Object arg, final Predicate<Object[]> predicate) {
+        synchronized (GameRequester.LOCK) {
+            final GameRequest gameRequest = this.gameRequests.get(action);
+            if (null != gameRequest && predicate.test(gameRequest.getArgs())) {
+                this.gameRequests.remove(action);
                 synchronized (gameRequest.getLock()) {
                     gameRequest.setResponse(arg);
                     gameRequest.getLock().notifyAll();
@@ -57,23 +57,23 @@ public class GameRequester {
         private final Object[] args;
         private Object response;
 
-        public GameRequest(Object... args) {
+        public GameRequest(final Object... args) {
             this.args = args;
         }
 
         public Object getLock() {
-            return lock;
+            return this.lock;
         }
-        public void setResponse(Object arg) {
+        public void setResponse(final Object arg) {
             this.response = arg;
         }
 
         public <T> T getResponse() {
-            return (T) response;
+            return (T) this.response;
         }
 
         public Object[] getArgs() {
-            return args;
+            return this.args;
         }
     }
 }

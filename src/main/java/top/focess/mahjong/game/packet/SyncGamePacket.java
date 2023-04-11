@@ -10,21 +10,21 @@ public class SyncGamePacket extends Packet {
     private final UUID gameId;
     private final UUID playerId;
 
-    public SyncGamePacket(UUID playerId, UUID gameId) {
+    public SyncGamePacket(final UUID playerId, final UUID gameId) {
         this.playerId = playerId;
         this.gameId = gameId;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return SyncGamePacket.PACKET_ID;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 }

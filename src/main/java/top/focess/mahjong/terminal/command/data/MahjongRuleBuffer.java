@@ -9,31 +9,31 @@ public class MahjongRuleBuffer extends DataBuffer<MahjongRule> {
 
     private final StringBuffer stringBuffer;
 
-    private MahjongRuleBuffer(int size) {
+    private MahjongRuleBuffer(final int size) {
         this.stringBuffer = StringBuffer.allocate(size);
     }
 
     @Override
     public void flip() {
-        stringBuffer.flip();
+        this.stringBuffer.flip();
     }
 
     @Override
-    public void put(MahjongRule rule) {
-        stringBuffer.put(rule.name());
+    public void put(final MahjongRule rule) {
+        this.stringBuffer.put(rule.name());
     }
 
     @Override
     public @NonNull MahjongRule get() {
-        return MahjongRule.valueOf(stringBuffer.get());
+        return MahjongRule.valueOf(this.stringBuffer.get());
     }
 
     @Override
-    public @NonNull MahjongRule get(int index) {
-        return MahjongRule.valueOf(stringBuffer.get(index));
+    public @NonNull MahjongRule get(final int index) {
+        return MahjongRule.valueOf(this.stringBuffer.get(index));
     }
 
-    public static MahjongRuleBuffer allocate(int size) {
+    public static MahjongRuleBuffer allocate(final int size) {
         return new MahjongRuleBuffer(size);
     }
 }

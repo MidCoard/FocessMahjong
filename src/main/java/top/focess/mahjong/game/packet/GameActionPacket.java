@@ -14,27 +14,27 @@ public class GameActionPacket extends Packet {
     private final UUID gameId;
     private final GameAction gameAction;
 
-    public GameActionPacket(UUID playerId, UUID gameId, GameAction gameAction) {
+    public GameActionPacket(final UUID playerId, final UUID gameId, final GameAction gameAction) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.gameAction = gameAction;
     }
 
     public UUID getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     public GameAction getGameAction() {
-        return gameAction;
+        return this.gameAction;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return GameActionPacket.PACKET_ID;
     }
 
     public enum GameAction {
@@ -45,12 +45,12 @@ public class GameActionPacket extends Packet {
 
         private final String name;
 
-        GameAction(String name) {
+        GameAction(final String name) {
             this.name = name;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
     }
 }

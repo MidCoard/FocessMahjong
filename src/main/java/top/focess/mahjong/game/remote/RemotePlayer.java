@@ -13,54 +13,54 @@ public class RemotePlayer extends Player {
 
     private int clientId;
 
-    public RemotePlayer(int clientId, PlayerData playerData) {
+    public RemotePlayer(final int clientId, final PlayerData playerData) {
         super(playerData.id(), playerData.name());
         this.clientId = clientId;
         this.update(playerData);
     }
 
-    public synchronized static RemotePlayer getOrCreatePlayer(int clientId, PlayerData playerData) {
-        if (PLAYERS.containsKey(playerData.id())) {
-            RemotePlayer player = PLAYERS.get(playerData.id());
-            if (player.clientId == -1 && clientId != -1)
+    public static synchronized RemotePlayer getOrCreatePlayer(final int clientId, final PlayerData playerData) {
+        if (RemotePlayer.PLAYERS.containsKey(playerData.id())) {
+            final RemotePlayer player = RemotePlayer.PLAYERS.get(playerData.id());
+            if (-1 == player.clientId && -1 != clientId)
                 player.clientId = clientId;
-            if (player.clientId == clientId || clientId == -1)
+            if (player.clientId == clientId || -1 == clientId)
                 return player.update(playerData);
             return null;
         }
-        RemotePlayer player = new RemotePlayer(clientId, playerData);
-        PLAYERS.put(playerData.id(), player);
+        final RemotePlayer player = new RemotePlayer(clientId, playerData);
+        RemotePlayer.PLAYERS.put(playerData.id(), player);
         return player;
     }
 
-    public static List<RemotePlayer> removePlayers(int clientId) {
-        List<RemotePlayer> ret = Lists.newArrayList();
-        for (Map.Entry<UUID, RemotePlayer> entry : PLAYERS.entrySet())
+    public static List<RemotePlayer> removePlayers(final int clientId) {
+        final List<RemotePlayer> ret = Lists.newArrayList();
+        for (final Map.Entry<UUID, RemotePlayer> entry : RemotePlayer.PLAYERS.entrySet())
             if (entry.getValue().clientId == clientId) {
                 ret.add(entry.getValue());
-                PLAYERS.remove(entry.getKey());
+                RemotePlayer.PLAYERS.remove(entry.getKey());
             }
         return ret;
     }
 
-    public static RemotePlayer getPlayer(int clientId, UUID id) {
-        RemotePlayer player = PLAYERS.get(id);
-        if (player == null)
+    public static RemotePlayer getPlayer(final int clientId, final UUID id) {
+        final RemotePlayer player = RemotePlayer.PLAYERS.get(id);
+        if (null == player)
             return null;
-        if (player.clientId == clientId || clientId == -1)
+        if (player.clientId == clientId || -1 == clientId)
             return player;
         return null;
     }
 
     public int getClientId() {
-        return clientId;
+        return this.clientId;
     }
 
-    public RemotePlayer update(PlayerData playerData) {
+    public RemotePlayer update(final PlayerData playerData) {
         if (!this.getId().equals(playerData.id()) || !this.getName().equals(playerData.name()))
             throw new IllegalArgumentException("The player base data is not match!");
         this.setPlayerState(playerData.playerState());
-        this.setGame(playerData.gameId() == null ? null : Game.getGame(playerData.gameId()));
+        this.setGame(null == playerData.gameId() ? null : Game.getGame(playerData.gameId()));
         return this;
     }
 }

@@ -6,7 +6,7 @@ public class LocalPlayer extends Player{
 
     public static LocalPlayer localPlayer;
 
-    public LocalPlayer(String name) {
+    public LocalPlayer(final String name) {
         super(UUID.randomUUID(), name);
     }
 }

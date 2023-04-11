@@ -11,21 +11,21 @@ public class PlayerPacket extends Packet {
     private final UUID gameId;
     private final PlayerData playerData;
 
-    public PlayerPacket(UUID gameId, PlayerData playerData) {
+    public PlayerPacket(final UUID gameId, final PlayerData playerData) {
         this.gameId = gameId;
         this.playerData = playerData;
     }
 
     @Override
     public int getId() {
-        return PACKET_ID;
+        return PlayerPacket.PACKET_ID;
     }
 
     public PlayerData getPlayerData() {
-        return playerData;
+        return this.playerData;
     }
 
     public UUID getGameId() {
-        return gameId;
+        return this.gameId;
     }
 }

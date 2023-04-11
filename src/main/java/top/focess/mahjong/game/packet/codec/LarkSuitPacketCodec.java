@@ -10,15 +10,15 @@ import java.util.UUID;
 
 public class LarkSuitPacketCodec extends PacketCodec<LarkSuitPacket> {
     @Override
-    public @Nullable LarkSuitPacket readPacket(PacketPreCodec packetPreCodec) {
-        UUID playerId = UUID.fromString(packetPreCodec.readString());
-        UUID gameId = UUID.fromString(packetPreCodec.readString());
-        TileState.TileStateCategory category = TileState.TileStateCategory.values()[packetPreCodec.readInt()];
+    public @Nullable LarkSuitPacket readPacket(final PacketPreCodec packetPreCodec) {
+        final UUID playerId = UUID.fromString(packetPreCodec.readString());
+        final UUID gameId = UUID.fromString(packetPreCodec.readString());
+        final TileState.TileStateCategory category = TileState.TileStateCategory.values()[packetPreCodec.readInt()];
         return new LarkSuitPacket(playerId, gameId, category);
     }
 
     @Override
-    public void writePacket(LarkSuitPacket packet, PacketPreCodec packetPreCodec) {
+    public void writePacket(final LarkSuitPacket packet, final PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getPlayerId().toString());
         packetPreCodec.writeString(packet.getGameId().toString());
         packetPreCodec.writeInt(packet.getCategory().ordinal());
