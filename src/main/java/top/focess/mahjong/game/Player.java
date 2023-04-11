@@ -8,84 +8,84 @@ import java.util.UUID;
 
 public class Player {
 
-    private final UUID id;
-    private final String name;
+	private final UUID id;
+	private final String name;
 
-    private Game game;
+	private Game game;
 
-    private PlayerState playerState = PlayerState.WAITING;
+	private PlayerState playerState = PlayerState.WAITING;
 
-    public Player() {
-        this(UUID.randomUUID());
-    }
+	public Player() {
+		this(UUID.randomUUID());
+	}
 
-    public Player(final UUID id) {
-        this(id, "Player" + id.toString().substring(0, 4));
-    }
+	public Player(final UUID id) {
+		this(id, "Player" + id.toString().substring(0, 4));
+	}
 
-    public Player(final UUID id, final String name) {
-        this.id = id;
-        this.name = name;
-    }
+	public Player(final UUID id, final String name) {
+		this.id = id;
+		this.name = name;
+	}
 
-    public static Player getPlayer(final int clientId, final PlayerData playerData) {
-        if (LocalPlayer.localPlayer.getId().equals(playerData.id()))
-            return LocalPlayer.localPlayer;
-        return RemotePlayer.getOrCreatePlayer(clientId, playerData);
-    }
+	public static Player getPlayer(final int clientId, final PlayerData playerData) {
+		if (LocalPlayer.localPlayer.getId().equals(playerData.id()))
+			return LocalPlayer.localPlayer;
+		return RemotePlayer.getOrCreatePlayer(clientId, playerData);
+	}
 
-    public Game getGame() {
-        return this.game;
-    }
+	public UUID getId() {
+		return this.id;
+	}
 
-    public void setGame(final Game game) {
-        this.game = game;
-    }
+	public String getName() {
+		return this.name;
+	}
 
-    public boolean leave() {
-        return null != this.getGame() && this.getGame().leave(this);
-    }
+	public PlayerData getPlayerData() {
+		return new PlayerData(this.id, this.name, this.playerState, null == this.game ? null : this.game.getId());
+	}
 
-    public boolean join(final Game game) {
-        return game.join(this);
-    }
+	public PlayerState getPlayerState() {
+		return this.playerState;
+	}
 
-    public UUID getId() {
-        return this.id;
-    }
+	public void setPlayerState(final PlayerState playerState) {
+		if (this.playerState != playerState) {
+			TerminalLauncher.change("playerState", this, this.playerState, playerState);
+			this.playerState = playerState;
+		}
+	}
 
-    public PlayerData getPlayerData() {
-        return new PlayerData(this.id, this.name, this.playerState, null == this.game ? null : this.game.getId());
-    }
+	public boolean join(final Game game) {
+		return game.join(this);
+	}
 
-    public PlayerState getPlayerState() {
-        return this.playerState;
-    }
+	public boolean leave() {
+		return null != this.getGame() && this.getGame().leave(this);
+	}
 
-    public void setPlayerState(final PlayerState playerState) {
-        if (this.playerState != playerState) {
-            TerminalLauncher.change("playerState", this, this.playerState, playerState);
-            this.playerState = playerState;
-        }
-    }
+	public Game getGame() {
+		return this.game;
+	}
 
-    public String getName() {
-        return this.name;
-    }
+	public void setGame(final Game game) {
+		this.game = game;
+	}
 
-    @Override
-    public String toString() {
-        return "Player{" +
-                "id=" + this.id +
-                ", name='" + this.name + '\'' +
-                ", playerState=" + this.playerState +
-                '}' + super.toString();
-    }
+	@Override
+	public String toString() {
+		return "Player{" +
+				"id=" + this.id +
+				", name='" + this.name + '\'' +
+				", playerState=" + this.playerState +
+				'}' + super.toString();
+	}
 
-    public enum PlayerState {
+	public enum PlayerState {
 
-        WAITING,
-        READY,
-        PLAYING
-    }
+		WAITING,
+		READY,
+		PLAYING
+	}
 }

@@ -4,5 +4,5 @@ import top.focess.mahjong.game.Player;
 
 public interface TerminalPlayerListener<T> {
 
-    void onChanged(Player player, T oldValue, T newValue);
+	void onChanged(Player player, T oldValue, T newValue);
 }

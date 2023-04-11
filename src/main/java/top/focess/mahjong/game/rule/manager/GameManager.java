@@ -6,19 +6,19 @@ import top.focess.mahjong.game.packet.GameTileActionPacket;
 import top.focess.mahjong.game.tile.TileState;
 
 public abstract class GameManager {
-    public abstract void tick();
+	public abstract void doTileAction(GameTileActionPacket.TileAction tileAction, int i, TileState... tileStates);
 
-    public abstract int getCountdown();
+	public abstract int getCountdown();
 
-    public abstract TilesData getTilesData(int player);
+	public abstract int getCurrentPlayer();
 
-    public abstract GameTileState getGameTileState();
+	public abstract TileState getCurrentTileState();
 
-    public abstract void doTileAction(GameTileActionPacket.TileAction tileAction, int i, TileState... tileStates);
+	public abstract GameTileState getGameTileState();
 
-    public abstract int getCurrentPlayer();
+	public abstract TilesData getTilesData(int player);
 
-    public abstract TileState getCurrentTileState();
+	public abstract void larkSuit(int player, TileState.TileStateCategory category);
 
-    public abstract void larkSuit(int player, TileState.TileStateCategory category);
+	public abstract void tick();
 }

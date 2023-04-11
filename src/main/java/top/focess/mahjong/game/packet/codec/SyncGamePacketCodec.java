@@ -9,16 +9,16 @@ import java.util.UUID;
 
 public class SyncGamePacketCodec extends PacketCodec<SyncGamePacket> {
 
-    @Override
-    public @Nullable SyncGamePacket readPacket(final PacketPreCodec packetPreCodec) {
-        final UUID playerId = UUID.fromString(packetPreCodec.readString());
-        final UUID gameId = UUID.fromString(packetPreCodec.readString());
-        return new SyncGamePacket(playerId, gameId);
-    }
+	@Override
+	public @Nullable SyncGamePacket readPacket(final PacketPreCodec packetPreCodec) {
+		final UUID playerId = UUID.fromString(packetPreCodec.readString());
+		final UUID gameId = UUID.fromString(packetPreCodec.readString());
+		return new SyncGamePacket(playerId, gameId);
+	}
 
-    @Override
-    public void writePacket(final SyncGamePacket packet, final PacketPreCodec packetPreCodec) {
-        packetPreCodec.writeString(packet.getPlayerId().toString());
-        packetPreCodec.writeString(packet.getGameId().toString());
-    }
+	@Override
+	public void writePacket(final SyncGamePacket packet, final PacketPreCodec packetPreCodec) {
+		packetPreCodec.writeString(packet.getPlayerId().toString());
+		packetPreCodec.writeString(packet.getGameId().toString());
+	}
 }

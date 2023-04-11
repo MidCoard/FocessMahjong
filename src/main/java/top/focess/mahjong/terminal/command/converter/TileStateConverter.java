@@ -5,15 +5,15 @@ import top.focess.mahjong.game.tile.TileState;
 
 public class TileStateConverter extends ExceptionDataConverter<TileState> {
 
-    public static final TileStateConverter TILE_STATE_CONVERTER = new TileStateConverter();
+	public static final TileStateConverter TILE_STATE_CONVERTER = new TileStateConverter();
 
-    @Override
-    public TileState convert(final String arg) {
-        return TileState.valueOf(arg.toUpperCase());
-    }
+	@Override
+	public TileState convert(final String arg) {
+		return TileState.valueOf(arg.toUpperCase());
+	}
 
-    @Override
-    protected Class<TileState> getTargetClass() {
-        return TileState.class;
-    }
+	@Override
+	protected Class<TileState> getTargetClass() {
+		return TileState.class;
+	}
 }

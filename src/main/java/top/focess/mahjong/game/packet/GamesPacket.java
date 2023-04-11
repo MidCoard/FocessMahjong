@@ -7,19 +7,19 @@ import java.util.List;
 
 public class GamesPacket extends Packet {
 
-    public static final int PACKET_ID = 121;
-    private final List<GameData> games;
+	public static final int PACKET_ID = 121;
+	private final List<GameData> games;
 
-    public GamesPacket(final List<GameData> games) {
-        this.games = games;
-    }
+	public GamesPacket(final List<GameData> games) {
+		this.games = games;
+	}
 
-    @Override
-    public int getId() {
-        return GamesPacket.PACKET_ID;
-    }
+	public List<GameData> getGames() {
+		return this.games;
+	}
 
-    public List<GameData> getGames() {
-        return this.games;
-    }
+	@Override
+	public int getId() {
+		return GamesPacket.PACKET_ID;
+	}
 }

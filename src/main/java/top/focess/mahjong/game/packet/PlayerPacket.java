@@ -6,26 +6,26 @@ import top.focess.net.packet.Packet;
 import java.util.UUID;
 
 public class PlayerPacket extends Packet {
-    public static final int PACKET_ID = 125;
+	public static final int PACKET_ID = 125;
 
-    private final UUID gameId;
-    private final PlayerData playerData;
+	private final UUID gameId;
+	private final PlayerData playerData;
 
-    public PlayerPacket(final UUID gameId, final PlayerData playerData) {
-        this.gameId = gameId;
-        this.playerData = playerData;
-    }
+	public PlayerPacket(final UUID gameId, final PlayerData playerData) {
+		this.gameId = gameId;
+		this.playerData = playerData;
+	}
 
-    @Override
-    public int getId() {
-        return PlayerPacket.PACKET_ID;
-    }
+	public UUID getGameId() {
+		return this.gameId;
+	}
 
-    public PlayerData getPlayerData() {
-        return this.playerData;
-    }
+	@Override
+	public int getId() {
+		return PlayerPacket.PACKET_ID;
+	}
 
-    public UUID getGameId() {
-        return this.gameId;
-    }
+	public PlayerData getPlayerData() {
+		return this.playerData;
+	}
 }

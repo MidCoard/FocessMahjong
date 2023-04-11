@@ -5,20 +5,20 @@ import top.focess.net.packet.Packet;
 
 public class GameSyncPacket extends Packet {
 
-    public static final int PACKET_ID = 102;
+	public static final int PACKET_ID = 102;
 
-    private final GameData gameData;
+	private final GameData gameData;
 
-    public GameSyncPacket(final GameData gameData) {
-        this.gameData = gameData;
-    }
+	public GameSyncPacket(final GameData gameData) {
+		this.gameData = gameData;
+	}
 
-    @Override
-    public int getId() {
-        return GameSyncPacket.PACKET_ID;
-    }
+	public GameData getGameData() {
+		return this.gameData;
+	}
 
-    public GameData getGameData() {
-        return this.gameData;
-    }
+	@Override
+	public int getId() {
+		return GameSyncPacket.PACKET_ID;
+	}
 }

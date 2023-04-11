@@ -6,25 +6,25 @@ import java.util.UUID;
 
 public class SyncPlayerPacket extends Packet {
 
-    public static final int PACKET_ID = 124;
-    private final UUID playerId;
-    private final UUID gameId;
+	public static final int PACKET_ID = 124;
+	private final UUID playerId;
+	private final UUID gameId;
 
-    public SyncPlayerPacket(final UUID playerId, final UUID gameId) {
-        this.playerId = playerId;
-        this.gameId = gameId;
-    }
+	public SyncPlayerPacket(final UUID playerId, final UUID gameId) {
+		this.playerId = playerId;
+		this.gameId = gameId;
+	}
 
-    @Override
-    public int getId() {
-        return SyncPlayerPacket.PACKET_ID;
-    }
+	public UUID getGameId() {
+		return this.gameId;
+	}
 
-    public UUID getPlayerId() {
-        return this.playerId;
-    }
+	@Override
+	public int getId() {
+		return SyncPlayerPacket.PACKET_ID;
+	}
 
-    public UUID getGameId() {
-        return this.gameId;
-    }
+	public UUID getPlayerId() {
+		return this.playerId;
+	}
 }

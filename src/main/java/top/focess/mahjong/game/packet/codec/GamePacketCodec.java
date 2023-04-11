@@ -8,14 +8,14 @@ import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.PacketCodec;
 
 public class GamePacketCodec extends PacketCodec<GamePacket> {
-    @Override
-    public @Nullable GamePacket readPacket(final PacketPreCodec packetPreCodec) {
-        final GameData gameData = PacketUtil.readGameData(packetPreCodec);
-        return new GamePacket(gameData);
-    }
+	@Override
+	public @Nullable GamePacket readPacket(final PacketPreCodec packetPreCodec) {
+		final GameData gameData = PacketUtil.readGameData(packetPreCodec);
+		return new GamePacket(gameData);
+	}
 
-    @Override
-    public void writePacket(final GamePacket packet, final PacketPreCodec packetPreCodec) {
-        PacketUtil.writeGameData(packetPreCodec, packet.getGameData());
-    }
+	@Override
+	public void writePacket(final GamePacket packet, final PacketPreCodec packetPreCodec) {
+		PacketUtil.writeGameData(packetPreCodec, packet.getGameData());
+	}
 }
