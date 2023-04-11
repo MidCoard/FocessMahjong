@@ -120,8 +120,6 @@ public class RemoteGame extends Game {
         this.setGameTime(gameData.gameTime());
         this.setCountdown(gameData.countdown());
 
-
-        // todo update tileStates
         this.setTilesData(gameData.tilesData());
         List<Player> temp = Lists.newArrayList();
         for (PlayerData playerData : gameData.playerData()) {
@@ -137,22 +135,25 @@ public class RemoteGame extends Game {
 
     private void setTilesData(TilesData tilesData) {
         if (this.tilesData != null && tilesData != null) {
-            if (this.tilesData.gameTileState() != tilesData.gameTileState())
-                TerminalLauncher.change("gameTileState", this, this.tilesData.gameTileState(), tilesData.gameTileState());
             if (this.tilesData.remainTiles() != tilesData.remainTiles())
                 TerminalLauncher.change("remainTiles", this, this.tilesData.remainTiles(), tilesData.remainTiles());
             if (!this.tilesData.tileStates().equals(tilesData.tileStates()))
                 TerminalLauncher.change("tileStates", this, this.tilesData.tileStates(), tilesData.tileStates());
-            if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
-                TerminalLauncher.change("doraIndicators", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
+            if (this.tilesData.gameTileState() != tilesData.gameTileState())
+                TerminalLauncher.change("gameTileState", this, this.tilesData.gameTileState(), tilesData.gameTileState());
+            if (!this.tilesData.larkSuits().equals(tilesData.larkSuits()))
+                TerminalLauncher.change("larkSuits", this, this.tilesData.larkSuits(), tilesData.larkSuits());
             if (!this.tilesData.scores().equals(tilesData.scores()))
                 TerminalLauncher.change("scores", this, this.tilesData.scores(), tilesData.scores());
+            if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
+                TerminalLauncher.change("discardTileStates", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
         } else if (this.tilesData != null || tilesData != null) {
-            TerminalLauncher.change("gameTileState", this, this.tilesData == null ? null : this.tilesData.gameTileState(), tilesData == null ? null : tilesData.gameTileState());
             TerminalLauncher.change("remainTiles", this, this.tilesData == null ? null : this.tilesData.remainTiles(), tilesData == null ? null : tilesData.remainTiles());
             TerminalLauncher.change("tileStates", this, this.tilesData == null ? null : this.tilesData.tileStates(), tilesData == null ? null : tilesData.tileStates());
-            TerminalLauncher.change("doraIndicators", this, this.tilesData == null ? null : this.tilesData.discardTileStates(), tilesData == null ? null : tilesData.discardTileStates());
+            TerminalLauncher.change("gameTileState", this, this.tilesData == null ? null : this.tilesData.gameTileState(), tilesData == null ? null : tilesData.gameTileState());
+            TerminalLauncher.change("larkSuits", this, this.tilesData == null ? null : this.tilesData.larkSuits(), tilesData == null ? null : tilesData.larkSuits());
             TerminalLauncher.change("scores", this, this.tilesData == null ? null : this.tilesData.scores(), tilesData == null ? null : tilesData.scores());
+            TerminalLauncher.change("discardTileStates", this, this.tilesData == null ? null : this.tilesData.discardTileStates(), tilesData == null ? null : tilesData.discardTileStates());
         }
         this.tilesData = tilesData;
     }

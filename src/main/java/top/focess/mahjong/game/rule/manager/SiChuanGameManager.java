@@ -4,10 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import top.focess.mahjong.game.GameTileState;
 import top.focess.mahjong.game.LocalGame;
 import top.focess.mahjong.game.data.TilesData;
 import top.focess.mahjong.game.packet.Change3TilesDirectionPacket;
+import top.focess.mahjong.game.packet.GameTileActionPreNoticePacket;
 import top.focess.mahjong.game.packet.GameTileActionPacket;
 import top.focess.mahjong.game.tile.PlayerTiles;
 import top.focess.mahjong.game.tile.Tile;
@@ -35,7 +37,7 @@ public class SiChuanGameManager extends GameManager {
     private int currentPlayer;
 
     // indicate current fetched tile or discarded tile
-    private Tile currentTile;
+    @Nullable private Tile currentTile;
 
     private final int dealer = -1;
 
@@ -93,7 +95,7 @@ public class SiChuanGameManager extends GameManager {
                 if (cachedActions.get(i).getOrDefault(GameTileActionPacket.TileAction.CHANGE_3_TILES, List.of()).size() == 0) {
                     PlayerTiles playerTiles = this.playerTilesList.get(i);
                     TileState.TileStateCategory category = playerTiles.getLeastCategory(3);// can be fixed. if we have multiple tileStates with the same category, we should choose the one with the most effective tileStates
-                    cachedActions.get(i).put(GameTileActionPacket.TileAction.CHANGE_3_TILES, playerTiles.getRandomTiles(3, category, random));
+                    cachedActions.get(i).put(GameTileActionPacket.TileAction.CHANGE_3_TILES, Lists.newArrayList(playerTiles.getRandomTiles(3, category, random)));
                 }
                 List<Tile> list = cachedActions.get(i).get(GameTileActionPacket.TileAction.CHANGE_3_TILES);
                 this.playerTilesList.get(i).removeTiles(list);
@@ -115,17 +117,28 @@ public class SiChuanGameManager extends GameManager {
         } else if (this.gameTileState == GameTileState.DISCARDING) {
             this.game.sendPacket(new DiscardTilePacket(this.game.getPlayerId(this.currentPlayer), this.game.getId(),  this.currentTile.getTileState()));
             return GameTileState.WAITING;
-        } else if (this.gameTileState == GameTileState.WAITING) {
-            if (this.previousGameTileState == GameTileState.CHANGING_3_TILES) {
-                // after change. the dealer should lark a tile
+        } else if (this.gameTileState == GameTileState.LARKING_1_SUIT) {
+            for (PlayerTiles playerTiles : this.playerTilesList)
+                if (playerTiles.getLarkSuit() == null)
+                    playerTiles.setLarkSuit(playerTiles.getLeastCategory(0));
+            return GameTileState.WAITING;
+        }
 
-//                this.currentPlayer = (this.currentPlayer + 1) % this.playerTilesList.size();
-//                this.currentTile = this.tileStates.fetch();
+
+
+
+        else if (this.gameTileState == GameTileState.WAITING) {
+            if (this.previousGameTileState == GameTileState.CHANGING_3_TILES)
                 return GameTileState.LARKING_1_SUIT;
-            } else if (this.previousGameTileState == GameTileState.DISCARDING)
-                return GameTileState.CONDITION;
-            else if (this.previousGameTileState == GameTileState.CONDITION)
+            else if (this.previousGameTileState == GameTileState.LARKING_1_SUIT)
                 return GameTileState.DISCARDING;
+            else if (this.previousGameTileState == GameTileState.DISCARDING)
+                return GameTileState.CONDITION;
+            else if (this.previousGameTileState == GameTileState.CONDITION) {
+                this.currentPlayer = (this.currentPlayer + 1) % this.playerSize;
+                this.currentTile = this.tiles.fetch();
+                return GameTileState.DISCARDING;
+            }
         }
         throw new IllegalStateException("The gameTileState is illegal");
     }
@@ -176,32 +189,53 @@ public class SiChuanGameManager extends GameManager {
                 return;
             if (tileStates.length != 1)
                 return;
-            int count = this.playerTilesList.get(player).getTileStateCount(tileStates[0]);
+            int count = playerTiles.getTileStateCount(tileStates[0]);
             if (count < 3)
+                return;
+            if (count < 4 && this.currentTile == null)
                 return;
             if (count < 4 && this.currentTile.getTileState() != tileStates[0])
                 return;
-            // force stop discarding or condition
-
+            if (playerTiles.getHandTileStateCount(tileStates[0]) == 0)
+                return;
             // push to stack wait other players action
+            Set<Tile> tiles = playerTiles.getTiles(tileStates[0]);
+            if (this.currentTile != null && this.currentTile.getTileState() == tileStates[0])
+                tiles.add(this.currentTile);
             if (this.gameTileState == GameTileState.DISCARDING) {
-                if (this.playerTilesList.get(player).getHandTileStateCount(tileStates[0]) >= 3) {
-                    this.playerTilesList.get(player).addScore((int) (this.playerTilesList.stream().filter(PlayerTiles::isHu).count() * 2));
-                    this.playerTilesList.stream().filter(PlayerTiles::isHu).forEach(playerTiles -> playerTiles.addScore(-2));
+                // no wait
+                if (playerTiles.getHandTileStateCount(tileStates[0]) >= 3) {
+                    playerTiles.addScore((int) (this.playerTilesList.stream().filter(i -> !i.isHu()).count() * 2));
+                    this.playerTilesList.stream().filter(i -> !i.isHu()).filter(i -> i != playerTiles).forEach(t -> t.addScore(-2));
                 } else {
-                    this.playerTilesList.get(player).addScore((int) (this.playerTilesList.stream().filter(PlayerTiles::isHu).count()));
-                    this.playerTilesList.stream().filter(PlayerTiles::isHu).forEach(playerTiles -> playerTiles.addScore(-1));
+                    playerTiles.addScore((int) (this.playerTilesList.stream().filter(PlayerTiles::isHu).count()));
+                    this.playerTilesList.stream().filter(i -> !i.isHu()).filter(i -> i != playerTiles).forEach(t -> t.addScore(-1));
                 }
+                playerTiles.addTile(this.currentTile);
+                playerTiles.kong(tiles);
             } else {
-                this.playerTilesList.get(player).addScore(2);
-                this.playerTilesList.get(this.currentPlayer).addScore(-2);
+                // condition wait other players action
+                cachedActions.get(player).put(tileAction, Lists.newArrayList(tiles));
+                this.game.sendPacket(new GameTileActionPreNoticePacket(this.game.getId(), this.game.getPlayerId(player), tileAction, tileStates));
             }
-            this.playerTilesList.get(player).addTile(this.currentTile);
-            this.playerTilesList.get(player).kong(tileStates[0]);
-            this.game.sendPacket(new KongPacket(this.game.getId(), this.game.getPlayerId(player), (TileState) tileStates[0]));
-            this.previousGameTileState = this.gameTileState;
-            this.gameTileState = GameTileState.WAITING;
-            this.countdown = gameTileState.getTime();
+//            if (this.gameTileState == GameTileState.DISCARDING) {
+//                if (this.playerTilesList.get(player).getHandTileStateCount(tileStates[0]) >= 3) {
+//                    this.playerTilesList.get(player).addScore((int) (this.playerTilesList.stream().filter(PlayerTiles::isHu).count() * 2));
+//                    this.playerTilesList.stream().filter(PlayerTiles::isHu).forEach(playerTiles -> playerTiles.addScore(-2));
+//                } else {
+//                    this.playerTilesList.get(player).addScore((int) (this.playerTilesList.stream().filter(PlayerTiles::isHu).count()));
+//                    this.playerTilesList.stream().filter(PlayerTiles::isHu).forEach(playerTiles -> playerTiles.addScore(-1));
+//                }
+//            } else {
+//                this.playerTilesList.get(player).addScore(2);
+//                this.playerTilesList.get(this.currentPlayer).addScore(-2);
+//            }
+//            this.playerTilesList.get(player).addTile(this.currentTile);
+//            this.playerTilesList.get(player).kong(tileStates[0]);
+//            this.game.sendPacket(new KongPacket(this.game.getId(), this.game.getPlayerId(player), (TileState) tileStates[0]));
+//            this.previousGameTileState = this.gameTileState;
+//            this.gameTileState = GameTileState.WAITING;
+//            this.countdown = gameTileState.getTime();
         } else if (tileAction == GameTileActionPacket.TileAction.DISCARD_TILE) {
             if (this.gameTileState != GameTileState.DISCARDING)
                 return;

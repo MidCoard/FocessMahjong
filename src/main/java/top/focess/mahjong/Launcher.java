@@ -55,8 +55,9 @@ public class Launcher {
         PacketPreCodec.register(GameTileActionPacket.PACKET_ID, new GameTileActionPacketCodec());
         PacketPreCodec.register(Change3TilesDirectionPacket.PACKET_ID, new Change3TilesDirectionPacketCodec());
         PacketPreCodec.register(FetchTilePacket.PACKET_ID, new FetchTilePacketCodec());
-        PacketPreCodec.register(GameTileActionNoticePacket.PACKET_ID, new GameTileActionNoticePacketCodec());
+        PacketPreCodec.register(GameTileActionPreNoticePacket.PACKET_ID, new GameTileActionPreNoticePacketCodec());
         PacketPreCodec.register(LarkSuitPacket.PACKET_ID, new LarkSuitPacketCodec());
+        PacketPreCodec.register(GameTileActionConfirmPacket.PACKET_ID, new GameTileActionConfirmPacketCodec());
     }
     private final FocessMultiSocket serverSocket;
 

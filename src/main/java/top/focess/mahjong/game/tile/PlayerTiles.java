@@ -66,12 +66,15 @@ public class PlayerTiles {
         for (Tile tile : this.tiles)
             if (tile.getTileState().equals(tileState))
                 ret.add(tile);
+        for (Tile tile : this.notDiscardTiles)
+            if (tile.getTileState().equals(tileState))
+                ret.add(tile);
         return ret;
     }
 
-    public void kong(TileState tileState) {
-        this.notDiscardTiles.addAll(this.getTiles(tileState));
-        this.tiles.removeIf(tile -> tile.getTileState().equals(tileState));
+    public void kong(Set<Tile> tiles) {
+        this.notDiscardTiles.addAll(tiles);
+        this.tiles.removeAll(tiles);
     }
 
     public int getScore() {
@@ -103,6 +106,8 @@ public class PlayerTiles {
     }
 
     public void addTile(Tile tile) {
+        if (tile == null)
+            return;
         this.tiles.add(tile);
     }
 
@@ -111,7 +116,7 @@ public class PlayerTiles {
     }
 
     public boolean huable(TileState tileState) {
-        // calc hu
+        // todo calc hu
         return true;
     }
 
@@ -133,13 +138,13 @@ public class PlayerTiles {
         return ret;
     }
 
-    public List<Tile> getRandomTiles(int size, TileState.TileStateCategory category, Random random) {
+    public Set<Tile> getRandomTiles(int size, TileState.TileStateCategory category, Random random) {
         List<Tile> tiles = Lists.newArrayList();
         for (Tile tile : this.tiles)
             if (tile.getTileState().getCategory().equals(category))
                 tiles.add(tile);
         Collections.shuffle(tiles, random);
-        return tiles.subList(0, size);
+        return Sets.newHashSet(tiles.subList(0, size));
     }
 
     public void removeTiles(Collection<Tile> tiles) {

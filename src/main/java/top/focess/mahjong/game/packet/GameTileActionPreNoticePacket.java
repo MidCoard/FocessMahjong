@@ -5,7 +5,7 @@ import top.focess.net.packet.Packet;
 
 import java.util.UUID;
 
-public class GameTileActionNoticePacket extends Packet {
+public class GameTileActionPreNoticePacket extends Packet {
 
     public static final int PACKET_ID = 133;
     private final UUID playerId;
@@ -13,7 +13,7 @@ public class GameTileActionNoticePacket extends Packet {
     private final GameTileActionPacket.TileAction tileAction;
     private final TileState[] tileStates;
 
-    public GameTileActionNoticePacket(UUID playerId, UUID gameId, GameTileActionPacket.TileAction tileAction, TileState... tileStates) {
+    public GameTileActionPreNoticePacket(UUID playerId, UUID gameId, GameTileActionPacket.TileAction tileAction, TileState... tileStates) {
         this.playerId = playerId;
         this.gameId = gameId;
         this.tileAction = tileAction;
