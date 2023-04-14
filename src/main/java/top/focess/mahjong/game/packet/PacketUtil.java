@@ -64,7 +64,9 @@ public class PacketUtil {
 					discardTileStatList.add(TileState.values()[codec.readInt()]);
 				discardTileStats.add(discardTileStatList);
 			}
-			return new TilesData(remainTiles, tileStates, gameTileState, larkSuits, scores, noDiscardTileStats, discardTileStats);
+			final UUID currentPlayerId = UUID.fromString(codec.readString());
+			final TileState currentTileState = TileState.values()[codec.readInt()];
+			return new TilesData(remainTiles, tileStates, gameTileState, larkSuits, scores, noDiscardTileStats, discardTileStats, currentPlayerId, currentTileState);
 		} else
 			return null;
 	}
@@ -118,6 +120,8 @@ public class PacketUtil {
 				for (final TileState tile : tiles)
 					codec.writeInt(tile.ordinal());
 			}
+			codec.writeString(tilesData.currentPlayerId().toString());
+			codec.writeInt(tilesData.currentTileState().ordinal());
 		}
 	}
 

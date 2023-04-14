@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.GameTileState;
+import top.focess.mahjong.game.LocalPlayer;
 import top.focess.mahjong.game.Player;
+import top.focess.mahjong.game.packet.GameTileActionPacket;
+import top.focess.mahjong.game.tile.TileState;
 import top.focess.mahjong.terminal.command.CommandLine;
 import top.focess.mahjong.terminal.listener.TerminalGameListener;
 import top.focess.mahjong.terminal.listener.TerminalPlayerListener;
@@ -29,9 +32,24 @@ public class TerminalLauncher {
 		TerminalLauncher.registerGameChangeListener("startTime", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " start time changed to " + newValue));
 		TerminalLauncher.registerGameChangeListener("countdown", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " countdown changed to " + newValue));
 		TerminalLauncher.registerGameChangeListener("gameTileState", GameTileState.class, (game, oldValue, newValue) -> {
-			if (GameTileState.CHANGING_3_TILES == newValue) {
+			if (GameTileState.CHANGING_3_TILES == newValue)
 				System.out.println("We should select three tileStates to change to other tileStates!");
-			}
+			else if (GameTileState.FINISHED == newValue)
+				System.out.println("Game " + game.getId() + " finished!");
+			else if (GameTileState.CONDITION == newValue)
+				System.out.println("Game " + game.getId() + " condition! You can pung, kong, hu the tile!");
+			else if (GameTileState.CONDITION_HU == newValue)
+				System.out.println("Game " + game.getId() + " condition! You can hu the tile!");
+			else if (GameTileState.LARKING_1_SUIT == newValue)
+				System.out.println("Game " + game.getId() + " larking 1 suit! You can lark the tile!");
+			else if (GameTileState.DISCARDING == newValue)
+				System.out.println("Game " + game.getId() + " discarding! Someone should discard a tile!");
+			else if (GameTileState.SHUFFLING == newValue)
+				System.out.println("Game " + game.getId() + " shuffling! You can't do anything!");
+			else if (GameTileState.WAITING == newValue)
+				System.out.println("Game " + game.getId() + " waiting! You can't do anything!");
+			else if (GameTileState.WAITING_HU == newValue)
+				System.out.println("Game " + game.getId() + " waiting hu! You can't do anything!");
 		});
 		TerminalLauncher.registerGameChangeListener("players", List.class, (game, oldValue, newValue) -> {
 			final List<Player> joinPlayers = Lists.newArrayList();
@@ -49,11 +67,30 @@ public class TerminalLauncher {
 		});
 
 
+
+		for (final GameTileActionPacket.TileAction tileAction : GameTileActionPacket.TileAction.values())
+			TerminalLauncher.registerPlayerChangeListener(tileAction.getName() + "_notice", List.class, (player, oldValue, newValue) -> {
+				if (null != player.getGame())
+					System.out.println("Notice: Player " + player + " " + tileAction.getName() + " " + newValue + " in game " + player.getGame());
+			});
+
+		for (final GameTileActionPacket.TileAction tileAction : GameTileActionPacket.TileAction.values())
+			TerminalLauncher.registerPlayerChangeListener(tileAction.getName() + "_confirm", List.class, (player, oldValue, newValue) -> {
+				if (null != player.getGame())
+					System.out.println("Confirm: Player " + player + " " + tileAction.getName() + " " + newValue + " in game " + player.getGame());
+			});
+
+
 		TerminalLauncher.registerPlayerChangeListener("playerState", Player.PlayerState.class, (player, oldValue, newValue) -> {
 			if (Player.PlayerState.READY == newValue && Player.PlayerState.WAITING == oldValue && null != player.getGame())
 				System.out.println("Player " + player + " ready game " + player.getGame());
 			else if (Player.PlayerState.WAITING == newValue && Player.PlayerState.READY == oldValue && null != player.getGame())
 				System.out.println("Player " + player + " unready game " + player.getGame());
+		});
+		TerminalLauncher.registerPlayerChangeListener("fetchTileState", TileState.class, (player, oldValue, newValue) -> {
+			if (LocalPlayer.localPlayer.getId().equals(player.getId()))
+				System.out.println("Player " + player + " fetch tile " + newValue + " in game " + player.getGame());
+			else throw new RuntimeException("Player " + player + " fetch tile " + newValue + " in game " + player.getGame());
 		});
 	}
 

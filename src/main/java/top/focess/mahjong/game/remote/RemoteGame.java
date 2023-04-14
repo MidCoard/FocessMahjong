@@ -151,6 +151,10 @@ public class RemoteGame extends Game {
 				TerminalLauncher.change("scores", this, this.tilesData.scores(), tilesData.scores());
 			if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
 				TerminalLauncher.change("discardTileStates", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
+			if (!this.tilesData.currentPlayerId().equals(tilesData.currentPlayerId()))
+				TerminalLauncher.change("currentPlayerId", this, this.tilesData.currentPlayerId(), tilesData.currentPlayerId());
+			if (this.tilesData.currentTileState() != tilesData.currentTileState())
+				TerminalLauncher.change("currentTileState", this, this.tilesData.currentTileState(), tilesData.currentTileState());
 		} else if (null != this.tilesData || null != tilesData) {
 			TerminalLauncher.change("remainTiles", this, null == this.tilesData ? null : this.tilesData.remainTiles(), null == tilesData ? null : tilesData.remainTiles());
 			TerminalLauncher.change("tileStates", this, null == this.tilesData ? null : this.tilesData.tileStates(), null == tilesData ? null : tilesData.tileStates());
@@ -158,6 +162,7 @@ public class RemoteGame extends Game {
 			TerminalLauncher.change("larkSuits", this, null == this.tilesData ? null : this.tilesData.larkSuits(), null == tilesData ? null : tilesData.larkSuits());
 			TerminalLauncher.change("scores", this, null == this.tilesData ? null : this.tilesData.scores(), null == tilesData ? null : tilesData.scores());
 			TerminalLauncher.change("discardTileStates", this, null == this.tilesData ? null : this.tilesData.discardTileStates(), null == tilesData ? null : tilesData.discardTileStates());
+			TerminalLauncher.change("currentPlayerId", this, null == this.tilesData ? null : this.tilesData.currentPlayerId(), null == tilesData ? null : tilesData.currentPlayerId());
 		}
 		this.tilesData = tilesData;
 	}

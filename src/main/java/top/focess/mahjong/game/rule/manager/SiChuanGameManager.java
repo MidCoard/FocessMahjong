@@ -253,7 +253,7 @@ public class SiChuanGameManager extends GameManager {
 	public TilesData getTilesData(final int player) {
 		if (player >= this.playerTilesList.size() || 0 > player)
 			return null;
-		return new TilesData(this.tiles.getRemainSize(), this.playerTilesList.get(player).getRawTileStates(), this.gameTileState, this.playerTilesList.stream().map(PlayerTiles::getLarkSuit).toList(), this.playerTilesList.stream().map(PlayerTiles::getScore).toList(), this.playerTilesList.stream().map(PlayerTiles::getNoDiscardTileStates).toList(), this.playerTilesList.stream().map(PlayerTiles::getDiscardTileStates).toList());
+		return new TilesData(this.tiles.getRemainSize(), this.playerTilesList.get(player).getRawTileStates(), this.gameTileState, this.playerTilesList.stream().map(PlayerTiles::getLarkSuit).toList(), this.playerTilesList.stream().map(PlayerTiles::getScore).toList(), this.playerTilesList.stream().map(PlayerTiles::getNoDiscardTileStates).toList(), this.playerTilesList.stream().map(PlayerTiles::getDiscardTileStates).toList(), this.game.getPlayerId(this.currentPlayer), (GameTileState.DISCARDING == this.gameTileState || null == this.currentTile) ? null : this.currentTile.getTileState());
 	}
 
 	@Override
