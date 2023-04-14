@@ -17,6 +17,7 @@ import top.focess.mahjong.terminal.TerminalLauncher;
 import top.focess.mahjong.terminal.command.GameCommand;
 import top.focess.mahjong.terminal.command.PlayerCommand;
 import top.focess.mahjong.terminal.command.RemoteCommand;
+import top.focess.mahjong.terminal.command.TileCommand;
 import top.focess.mahjong.terminal.command.converter.MahjongRuleConverter;
 import top.focess.mahjong.terminal.command.data.MahjongRuleBuffer;
 import top.focess.net.IllegalPortException;
@@ -43,6 +44,7 @@ public class Launcher {
 		Command.register(new GameCommand());
 		Command.register(new RemoteCommand());
 		Command.register(new PlayerCommand());
+		Command.register(new TileCommand());
 		PacketPreCodec.register(GameActionPacket.PACKET_ID, new GameActionPacketCodec());
 		PacketPreCodec.register(GameActionStatusPacket.PACKET_ID, new GameActionStatusPacketCodec());
 		PacketPreCodec.register(GameSyncPacket.PACKET_ID, new GameSyncPacketCodec());

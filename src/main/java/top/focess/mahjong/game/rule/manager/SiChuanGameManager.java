@@ -151,7 +151,7 @@ public class SiChuanGameManager extends GameManager {
 				this.cachedActions.get(player).put(tileAction, tiles);
 				this.game.sendPacket(new GameTileActionNoticePacket(this.game.getPlayerId(player), this.game.getId(), tileAction, tileStates));
 			}
-		} else if (tileAction == GameTileActionPacket.TileAction.DISCARD_TILE) {
+		} else if (tileAction == GameTileActionPacket.TileAction.DISCARD) {
 			if (this.gameTileState != GameTileState.DISCARDING)
 				return;
 			if (this.currentPlayer != player)
@@ -218,13 +218,11 @@ public class SiChuanGameManager extends GameManager {
 				return;
 			if (this.currentPlayer == player)
 				return;
-			if (tileStates.length != 1)
+			if (tileStates.length != 0)
 				return;
-			if (playerTiles.getHandTileStateCount(tileStates[0]) < 2)
+			if (playerTiles.getHandTileStateCount(this.currentTile.getTileState()) < 2)
 				return;
-			if (this.currentTile.getTileState() != tileStates[0])
-				return;
-			final Set<Tile> tiles = playerTiles.getHandTiles(tileStates[0]);
+			final Set<Tile> tiles = playerTiles.getHandTiles(this.currentTile.getTileState());
 			tiles.add(this.currentTile);
 			this.cachedActions.get(player).put(GameTileActionPacket.TileAction.PUNG, tiles);
 			this.game.sendPacket(new GameTileActionNoticePacket(this.game.getPlayerId(player), this.game.getId(), tileAction, tileStates));
@@ -322,7 +320,7 @@ public class SiChuanGameManager extends GameManager {
 				tile.addDetail(Tile.AFTER_KONG_DISCARDED_TILE);
 			final Tile finalTile = tile;
 			this.playerTilesList.stream().filter(i -> !i.isHu()).forEach(i -> i.markHu(finalTile));
-			this.game.sendPacket(new GameTileActionConfirmPacket(this.game.getPlayerId(this.currentPlayer), this.game.getId(), GameTileActionPacket.TileAction.DISCARD_TILE, tile.getTileState()));
+			this.game.sendPacket(new GameTileActionConfirmPacket(this.game.getPlayerId(this.currentPlayer), this.game.getId(), GameTileActionPacket.TileAction.DISCARD, tile.getTileState()));
 			return GameTileState.WAITING;
 		} else if (this.gameTileState == GameTileState.CONDITION) {
 			final List<Pair<GameTileActionPacket.TileAction, Pair<Integer, Set<Tile>>>> pairs = Lists.newArrayList();

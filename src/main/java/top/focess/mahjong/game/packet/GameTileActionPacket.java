@@ -43,7 +43,7 @@ public class GameTileActionPacket extends Packet {
 	}
 
 	public enum TileAction {
-		PUNG("pung", 2), KONG("kong", 1), DISCARD_TILE("discard",-1), HU("hu",0), CHANGE_3_TILES("change",-1);
+		PUNG("pung", 2), KONG("kong", 1), DISCARD("discard",-1), HU("hu",0), CHANGE_3_TILES("change",-1);
 
 		private final String name;
 		private final int priority;
