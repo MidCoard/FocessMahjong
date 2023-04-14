@@ -41,7 +41,9 @@ public class HuAlgorithm {
 			score *= 2;
 		if ((type & HuAlgorithm.HU_TYPE_DRAWING_THE_KONG) != 0)
 			score *= 2;
-		final int rootCount = type & HuAlgorithm.HU_TYPE_ROOT_AREA;
+		if ((type & HuAlgorithm.HU_TYPE_LAST_TILE) != 0)
+			score *= 2;
+		final int rootCount = (type & HuAlgorithm.HU_TYPE_ROOT_AREA) >> 8;
 		for (int i = 0; i < rootCount; i++)
 			score *= 2;
 		return score;
@@ -91,7 +93,7 @@ public class HuAlgorithm {
 				type |= HuAlgorithm.HU_TYPE_LAST_TILE;
 		}
 		final int rootCount = (int) map.values().stream().filter(i -> i == 4).count();
-		type |= (rootCount << 7);
+		type |= (rootCount << 8);
 		return type;
 	}
 
@@ -138,24 +140,6 @@ public class HuAlgorithm {
 			}
 		}
 		return false;
-	}
-
-	public static void main(final String[] args) {
-		// test huable
-		final Set<Tile> tiles = Sets.newHashSet();
-		final Set<Tile> noDiscardTiles = Sets.newHashSet();
-
-		for (int i = 0;i < 12;i++) {
-
-		}
-
-		final Tile tile = new Tile(1);
-		tile.setTileState(TileState.NINE_BAMBOO);
-
-		final int type = HuAlgorithm.calculateHuType(tiles, noDiscardTiles, tile);
-		System.out.println(type);
-		final int score = HuAlgorithm.calculateHuScore(type);
-		System.out.println(score);
 	}
 
 	public static class MutablePair<T, U> {

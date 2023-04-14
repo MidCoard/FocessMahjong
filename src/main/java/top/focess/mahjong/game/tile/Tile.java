@@ -21,6 +21,11 @@ public class Tile implements Comparable<Tile> {
 		this.number = number;
 	}
 
+	public Tile(final int number, final TileState tileState) {
+		this.number = number;
+		this.tileState = tileState;
+	}
+
 	public void addDetail(final int detail) {
 		this.detail |= detail;
 	}
