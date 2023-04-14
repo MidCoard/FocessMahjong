@@ -2,6 +2,7 @@ package top.focess.mahjong.game.algorithm;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import top.focess.mahjong.game.tile.Tile;
 import top.focess.mahjong.game.tile.TileState;
 import top.focess.util.Pair;
@@ -24,21 +25,21 @@ public class HuAlgorithm {
 	public static final int HU_TYPE_ROOT_AREA =    0b11100000000;
 
 
-	public static int calculateHuScore(int type) {
+	public static int calculateHuScore(final int type) {
 		int score = 0;
-		if (0 != (type & HuAlgorithm.HU_TYPE_LOW))
+		if ((type & HuAlgorithm.HU_TYPE_LOW) != 0)
 			score = 1;
-		if (0 != (type & HuAlgorithm.HU_TYPE_ALL_TRIPLETS))
+		if ((type & HuAlgorithm.HU_TYPE_ALL_TRIPLETS) != 0)
 			score = 2;
-		if (0 != (type & HuAlgorithm.HU_TYPE_SEVEN_PAIRS))
+		if ((type & HuAlgorithm.HU_TYPE_SEVEN_PAIRS) != 0)
 			score = 4;
-		if (0 != (type & HuAlgorithm.HU_TYPE_ONE_FISH))
+		if ((type & HuAlgorithm.HU_TYPE_ONE_FISH) != 0)
 			score = 4;
-		if (0 != (type & HuAlgorithm.HU_TYPE_ONE_SUIT))
+		if ((type & HuAlgorithm.HU_TYPE_ONE_SUIT) != 0)
 			score *= 4;
-		if (0 != (type & HuAlgorithm.HU_TYPE_ROBBING_THE_KONG))
+		if ((type & HuAlgorithm.HU_TYPE_ROBBING_THE_KONG) != 0)
 			score *= 2;
-		if (0 != (type & HuAlgorithm.HU_TYPE_DRAWING_THE_KONG))
+		if ((type & HuAlgorithm.HU_TYPE_DRAWING_THE_KONG) != 0)
 			score *= 2;
 		final int rootCount = type & HuAlgorithm.HU_TYPE_ROOT_AREA;
 		for (int i = 0; i < rootCount; i++)
@@ -56,32 +57,32 @@ public class HuAlgorithm {
 		}
 		for (final Tile t : noDiscardTiles)
 			tileStateList.add(t.getTileState());
-		if (null != tile) {
+		if (tile != null) {
 			tileStateList.add(tile.getTileState());
 			handTileStateList.add(tile.getTileState());
 		}
-		if (3 == tileStateList.stream().map(TileState::getCategory).distinct().count())
+		if (tileStateList.stream().map(TileState::getCategory).distinct().count() == 3)
 			return type;
 		final Map<TileState, Integer> map = Maps.newHashMap();
 		final Map<TileState, Integer> handMap = Maps.newTreeMap();
 		for (final TileState tileState : tileStateList)
-			map.compute(tileState, (__, integer) -> null == integer ? 1 : integer + 1);
+			map.compute(tileState, (__, integer) -> integer == null ? 1 : integer + 1);
 		for (final TileState tileState : handTileStateList)
-			handMap.compute(tileState, (__, integer) -> null == integer ? 1 : integer + 1);
+			handMap.compute(tileState, (__, integer) -> integer == null ? 1 : integer + 1);
 		if (!HuAlgorithm.calcHuable(handMap))
-			if (14 != handTileStateList.size() || !handMap.values().stream().allMatch(i -> 4 == i || 2 == i))
+			if (handTileStateList.size() != 14 || !handMap.values().stream().allMatch(i -> i == 4 || i == 2))
 				return type;
-		if (1 == handMap.size() && handMap.values().stream().allMatch(i -> 2 == i))
+		if (handMap.size() == 1 && handMap.values().stream().allMatch(i -> i == 2))
 			type |= HuAlgorithm.HU_TYPE_ONE_FISH;
-		else if (handMap.values().stream().allMatch(i -> 3 == i || 2 == i))
+		else if (handMap.values().stream().allMatch(i -> i == 3 || i == 2))
 			type |= HuAlgorithm.HU_TYPE_ALL_TRIPLETS;
-		else if (14 == handMap.size() && handMap.values().stream().allMatch(i -> 4 == i || 2 == i))
+		else if (handMap.size() == 14 && handMap.values().stream().allMatch(i -> i == 4 || i == 2))
 			type |= HuAlgorithm.HU_TYPE_SEVEN_PAIRS;
 		else type |= HuAlgorithm.HU_TYPE_LOW;
 		final TileState.TileStateCategory category = tileStateList.stream().findAny().get().getCategory();
 		if (tileStateList.stream().allMatch(i -> i.getCategory() == category))
 			type |= HuAlgorithm.HU_TYPE_ONE_SUIT;
-		if (null != tile) {
+		if (tile != null) {
 			if (tile.isDetail(Tile.AFTER_KONG_FETCHED_TILE) || tile.isDetail(Tile.AFTER_KONG_DISCARDED_TILE))
 				type |= HuAlgorithm.HU_TYPE_DRAWING_THE_KONG;
 			if (tile.isDetail(Tile.NORMAL_KONG_TILE))
@@ -89,7 +90,7 @@ public class HuAlgorithm {
 			if (tile.isDetail(Tile.LAST_TILE))
 				type |= HuAlgorithm.HU_TYPE_LAST_TILE;
 		}
-		final int rootCount = (int) map.values().stream().filter(i -> 4 == i).count();
+		final int rootCount = (int) map.values().stream().filter(i -> i == 4).count();
 		type |= (rootCount << 7);
 		return type;
 	}
@@ -105,11 +106,11 @@ public class HuAlgorithm {
 	}
 
 	private static boolean dfsCalcHuable(final List<MutablePair<TileState, Integer>> list, final int pairs, final int sequences) {
-		if (0 == pairs && 0 == sequences)
+		if (pairs == 0 && sequences == 0)
 			return true;
 		for (int i = 0;i < list.size();i++) {
 			final MutablePair<TileState, Integer> pair = list.get(i);
-			if (1 <= pair.getSecond() && 0 < sequences) {
+			if (pair.getSecond() >= 1 && sequences > 0) {
 				if (i + 2 < list.size()) {
 					if (list.get(i + 1).getSecond() > 0 && list.get(i + 2).getSecond() > 0) {
 						pair.setSecond(pair.getSecond() - 1);
@@ -123,13 +124,13 @@ public class HuAlgorithm {
 					}
 				}
 			}
-			if (2 <= pair.getSecond() && 0 < pairs) {
+			if (pair.getSecond() >= 2 && pairs > 0) {
 				pair.setSecond(pair.getSecond() - 2);
 				if (HuAlgorithm.dfsCalcHuable(list, pairs - 1, sequences))
 					return true;
 				pair.setSecond(pair.getSecond() + 2);
 			}
-			if (3 <= pair.getSecond() && 0 < sequences) {
+			if (pair.getSecond() >= 3 && sequences > 0) {
 				pair.setSecond(pair.getSecond() - 3);
 				if (HuAlgorithm.dfsCalcHuable(list, pairs, sequences - 1))
 					return true;
@@ -139,9 +140,22 @@ public class HuAlgorithm {
 		return false;
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		// test huable
+		final Set<Tile> tiles = Sets.newHashSet();
+		final Set<Tile> noDiscardTiles = Sets.newHashSet();
 
+		for (int i = 0;i < 12;i++) {
+
+		}
+
+		final Tile tile = new Tile(1);
+		tile.setTileState(TileState.NINE_BAMBOO);
+
+		final int type = HuAlgorithm.calculateHuType(tiles, noDiscardTiles, tile);
+		System.out.println(type);
+		final int score = HuAlgorithm.calculateHuScore(type);
+		System.out.println(score);
 	}
 
 	public static class MutablePair<T, U> {

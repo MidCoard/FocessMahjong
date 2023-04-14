@@ -23,17 +23,17 @@ public class RemotePlayer extends Player {
 		if (!this.getId().equals(playerData.id()) || !this.getName().equals(playerData.name()))
 			throw new IllegalArgumentException("The player base data is not match!");
 		this.setPlayerState(playerData.playerState());
-		this.setGame(null == playerData.gameId() ? null : Game.getGame(playerData.gameId()));
+		this.setGame(playerData.gameId() == null ? null : Game.getGame(playerData.gameId()));
 		return this;
 	}
 
 	public static synchronized RemotePlayer getOrCreatePlayer(final int clientId, final PlayerData playerData) {
 		if (RemotePlayer.PLAYERS.containsKey(playerData.id())) {
-			assert -1 != clientId;//todo
+			assert clientId != -1;//todo
 			final RemotePlayer player = RemotePlayer.PLAYERS.get(playerData.id());
-			if (-1 == player.clientId && -1 != clientId)
+			if (player.clientId == -1 && clientId != -1)
 				player.clientId = clientId;
-			if (player.clientId == clientId || -1 == clientId)
+			if (player.clientId == clientId || clientId == -1)
 				return player.update(playerData);
 			return null;
 		}
@@ -44,9 +44,9 @@ public class RemotePlayer extends Player {
 
 	public static RemotePlayer getPlayer(final int clientId, final UUID id) {
 		final RemotePlayer player = RemotePlayer.PLAYERS.get(id);
-		if (null == player)
+		if (player == null)
 			return null;
-		if (player.clientId == clientId || -1 == clientId)
+		if (player.clientId == clientId || clientId == -1)
 			return player;
 		return null;
 	}

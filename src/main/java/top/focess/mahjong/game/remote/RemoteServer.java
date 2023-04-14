@@ -25,7 +25,7 @@ public class RemoteServer {
 
 	private RemoteServer(final String ip, final int port) throws IllegalPortException {
 		FocessClientSocket clientSocket = RemoteServer.CLIENT_SOCKET_MAP.get(Pair.of(ip, port));
-		if (null == clientSocket) {
+		if (clientSocket == null) {
 			clientSocket = new FocessClientSocket("localhost", ip, port, "mahjong", true, true);
 			final ClientReceiver receiver = clientSocket.getReceiver();
 			receiver.setDisconnectedHandler(clientId -> {
@@ -55,12 +55,12 @@ public class RemoteServer {
 			});
 			receiver.register(GameActionStatusPacket.class, (clientId, packet) -> {
 				final Game game = Game.getGame(packet.getGameId());
-				if (null != game)
+				if (game != null)
 					game.getGameRequester().response(packet.getGameAction().getName(), packet.getGameActionStatus(), id -> id[0].equals(packet.getPlayerId()));
 			});
 			receiver.register(GamePacket.class, (clientId, packet) -> {
 				final Game game = Game.getGame(packet.getGameData().id());
-				if (null != game)
+				if (game != null)
 					game.getGameRequester().response("sync", packet.getGameData(), id -> id[0].equals(packet.getGameData().id()));
 			});
 			receiver.register(GameSyncPacket.class, (clientId, packet) -> {
@@ -76,7 +76,7 @@ public class RemoteServer {
 			});
 			receiver.register(Change3TilesDirectionPacket.class, (clientId, packet) -> {
 				final Game game = Game.getGame(packet.getGameId());
-				if (null != game)
+				if (game != null)
 					TerminalLauncher.change("changeDirection", game, -1, packet.getDirection());
 			});
 			receiver.register(FetchTilePacket.class, (clientId, packet) -> {

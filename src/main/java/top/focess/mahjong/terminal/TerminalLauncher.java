@@ -24,31 +24,31 @@ public class TerminalLauncher {
 
 	static {
 		TerminalLauncher.registerGameChangeListener("gameState", Game.GameState.class, (game, oldValue, newValue) -> {
-			if (Game.GameState.PLAYING == newValue)
+			if (newValue == Game.GameState.PLAYING)
 				System.out.println("Game " + game + " started!");
-			else if (Game.GameState.WAITING == newValue)
+			else if (newValue == Game.GameState.WAITING)
 				System.out.println("Game " + game + " stopped!");
 		});
 		TerminalLauncher.registerGameChangeListener("startTime", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " start time changed to " + newValue));
 		TerminalLauncher.registerGameChangeListener("countdown", Integer.class, (game, oldValue, newValue) -> System.out.println("Game " + game.getId() + " countdown changed to " + newValue));
 		TerminalLauncher.registerGameChangeListener("gameTileState", GameTileState.class, (game, oldValue, newValue) -> {
-			if (GameTileState.CHANGING_3_TILES == newValue)
+			if (newValue == GameTileState.CHANGING_3_TILES)
 				System.out.println("We should select three tileStates to change to other tileStates!");
-			else if (GameTileState.FINISHED == newValue)
+			else if (newValue == GameTileState.FINISHED)
 				System.out.println("Game " + game.getId() + " finished!");
-			else if (GameTileState.CONDITION == newValue)
+			else if (newValue == GameTileState.CONDITION)
 				System.out.println("Game " + game.getId() + " condition! You can pung, kong, hu the tile!");
-			else if (GameTileState.CONDITION_HU == newValue)
+			else if (newValue == GameTileState.CONDITION_HU)
 				System.out.println("Game " + game.getId() + " condition! You can hu the tile!");
-			else if (GameTileState.LARKING_1_SUIT == newValue)
+			else if (newValue == GameTileState.LARKING_1_SUIT)
 				System.out.println("Game " + game.getId() + " larking 1 suit! You can lark the tile!");
-			else if (GameTileState.DISCARDING == newValue)
+			else if (newValue == GameTileState.DISCARDING)
 				System.out.println("Game " + game.getId() + " discarding! Someone should discard a tile!");
-			else if (GameTileState.SHUFFLING == newValue)
+			else if (newValue == GameTileState.SHUFFLING)
 				System.out.println("Game " + game.getId() + " shuffling! You can't do anything!");
-			else if (GameTileState.WAITING == newValue)
+			else if (newValue == GameTileState.WAITING)
 				System.out.println("Game " + game.getId() + " waiting! You can't do anything!");
-			else if (GameTileState.WAITING_HU == newValue)
+			else if (newValue == GameTileState.WAITING_HU)
 				System.out.println("Game " + game.getId() + " waiting hu! You can't do anything!");
 		});
 		TerminalLauncher.registerGameChangeListener("players", List.class, (game, oldValue, newValue) -> {
@@ -70,21 +70,21 @@ public class TerminalLauncher {
 
 		for (final GameTileActionPacket.TileAction tileAction : GameTileActionPacket.TileAction.values())
 			TerminalLauncher.registerPlayerChangeListener(tileAction.getName() + "_notice", List.class, (player, oldValue, newValue) -> {
-				if (null != player.getGame())
+				if (player.getGame() != null)
 					System.out.println("Notice: Player " + player + " " + tileAction.getName() + " " + newValue + " in game " + player.getGame());
 			});
 
 		for (final GameTileActionPacket.TileAction tileAction : GameTileActionPacket.TileAction.values())
 			TerminalLauncher.registerPlayerChangeListener(tileAction.getName() + "_confirm", List.class, (player, oldValue, newValue) -> {
-				if (null != player.getGame())
+				if (player.getGame() != null)
 					System.out.println("Confirm: Player " + player + " " + tileAction.getName() + " " + newValue + " in game " + player.getGame());
 			});
 
 
 		TerminalLauncher.registerPlayerChangeListener("playerState", Player.PlayerState.class, (player, oldValue, newValue) -> {
-			if (Player.PlayerState.READY == newValue && Player.PlayerState.WAITING == oldValue && null != player.getGame())
+			if (newValue == Player.PlayerState.READY && oldValue == Player.PlayerState.WAITING && player.getGame() != null)
 				System.out.println("Player " + player + " ready game " + player.getGame());
-			else if (Player.PlayerState.WAITING == newValue && Player.PlayerState.READY == oldValue && null != player.getGame())
+			else if (newValue == Player.PlayerState.WAITING && oldValue == Player.PlayerState.READY && player.getGame() != null)
 				System.out.println("Player " + player + " unready game " + player.getGame());
 		});
 		TerminalLauncher.registerPlayerChangeListener("fetchTileState", TileState.class, (player, oldValue, newValue) -> {
@@ -96,13 +96,13 @@ public class TerminalLauncher {
 
 	public static <T> void change(final String arg, final Game game, final T oldValue, final T newValue) {
 		final TerminalGameListener<T> terminalGameListener = (TerminalGameListener<T>) TerminalLauncher.GAME_LISTENERS.get(arg);
-		if (null != terminalGameListener)
+		if (terminalGameListener != null)
 			terminalGameListener.onChanged(game, oldValue, newValue);
 	}
 
 	public static <T> void change(final String arg, final Player player, final T oldValue, final T newValue) {
 		final TerminalPlayerListener<T> terminalPlayerListener = (TerminalPlayerListener<T>) TerminalLauncher.PLAYER_LISTENERS.get(arg);
-		if (null != terminalPlayerListener)
+		if (terminalPlayerListener != null)
 			terminalPlayerListener.onChanged(player, oldValue, newValue);
 	}
 

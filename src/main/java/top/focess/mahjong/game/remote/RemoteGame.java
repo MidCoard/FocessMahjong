@@ -37,7 +37,7 @@ public class RemoteGame extends Game {
 		final List<Player> temp = Lists.newArrayList();
 		for (final PlayerData playerData : gameData.playerData()) {
 			final Player player = Player.getPlayer(-1, playerData);
-			if (null == player)
+			if (player == null)
 				throw new IllegalArgumentException("The player is not exist.");
 			temp.add(player);
 		}
@@ -52,7 +52,7 @@ public class RemoteGame extends Game {
 			((RemoteGame) game).update(data);
 			return (RemoteGame) game;
 		}
-		if (null != game)
+		if (game != null)
 			throw new IllegalArgumentException("Game " + data.id() + " is not a remote game");
 		return new RemoteGame(socket, data);
 	}
@@ -64,7 +64,7 @@ public class RemoteGame extends Game {
 
 	@Override
 	public GameTileState getGameTileState() {
-		if (null == this.tilesData)
+		if (this.tilesData == null)
 			return null;
 		return this.tilesData.gameTileState();
 	}
@@ -74,9 +74,9 @@ public class RemoteGame extends Game {
 		final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("join",
 				() -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.JOIN)),
 				player.getId());
-		if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
+		if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
 			this.syncGameData(player);
-			if (GameState.PLAYING == this.getGameState())
+			if (this.getGameState() == GameState.PLAYING)
 				player.setPlayerState(Player.PlayerState.PLAYING);
 			player.setGame(this);
 			return true;
@@ -94,7 +94,7 @@ public class RemoteGame extends Game {
 		final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("leave",
 				() -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.LEAVE)),
 				player.getId());
-		if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
+		if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
 			player.setGame(null);
 			player.setPlayerState(Player.PlayerState.WAITING);
 			return true;
@@ -107,7 +107,7 @@ public class RemoteGame extends Game {
 		final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("ready",
 				() -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.READY)),
 				player.getId());
-		if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
+		if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
 			player.setPlayerState(Player.PlayerState.READY);
 			return true;
 		}
@@ -119,7 +119,7 @@ public class RemoteGame extends Game {
 		final GameActionStatusPacket.GameActionStatus status = this.gameRequester.request("unready",
 				() -> this.socket.getReceiver().sendPacket(new GameActionPacket(player.getId(), this.getId(), GameActionPacket.GameAction.UNREADY)),
 				player.getId());
-		if (GameActionStatusPacket.GameActionStatus.SUCCESS == status) {
+		if (status == GameActionStatusPacket.GameActionStatus.SUCCESS) {
 			player.setPlayerState(Player.PlayerState.WAITING);
 			return true;
 		}
@@ -138,7 +138,7 @@ public class RemoteGame extends Game {
 	}
 
 	private void setTilesData(final TilesData tilesData) {
-		if (null != this.tilesData && null != tilesData) {
+		if (this.tilesData != null && tilesData != null) {
 			if (this.tilesData.remainTiles() != tilesData.remainTiles())
 				TerminalLauncher.change("remainTiles", this, this.tilesData.remainTiles(), tilesData.remainTiles());
 			if (!this.tilesData.tileStates().equals(tilesData.tileStates()))
@@ -155,14 +155,14 @@ public class RemoteGame extends Game {
 				TerminalLauncher.change("currentPlayerId", this, this.tilesData.currentPlayerId(), tilesData.currentPlayerId());
 			if (this.tilesData.currentTileState() != tilesData.currentTileState())
 				TerminalLauncher.change("currentTileState", this, this.tilesData.currentTileState(), tilesData.currentTileState());
-		} else if (null != this.tilesData || null != tilesData) {
-			TerminalLauncher.change("remainTiles", this, null == this.tilesData ? null : this.tilesData.remainTiles(), null == tilesData ? null : tilesData.remainTiles());
-			TerminalLauncher.change("tileStates", this, null == this.tilesData ? null : this.tilesData.tileStates(), null == tilesData ? null : tilesData.tileStates());
-			TerminalLauncher.change("gameTileState", this, null == this.tilesData ? null : this.tilesData.gameTileState(), null == tilesData ? null : tilesData.gameTileState());
-			TerminalLauncher.change("larkSuits", this, null == this.tilesData ? null : this.tilesData.larkSuits(), null == tilesData ? null : tilesData.larkSuits());
-			TerminalLauncher.change("scores", this, null == this.tilesData ? null : this.tilesData.scores(), null == tilesData ? null : tilesData.scores());
-			TerminalLauncher.change("discardTileStates", this, null == this.tilesData ? null : this.tilesData.discardTileStates(), null == tilesData ? null : tilesData.discardTileStates());
-			TerminalLauncher.change("currentPlayerId", this, null == this.tilesData ? null : this.tilesData.currentPlayerId(), null == tilesData ? null : tilesData.currentPlayerId());
+		} else if (this.tilesData != null || tilesData != null) {
+			TerminalLauncher.change("remainTiles", this, this.tilesData == null ? null : this.tilesData.remainTiles(), tilesData == null ? null : tilesData.remainTiles());
+			TerminalLauncher.change("tileStates", this, this.tilesData == null ? null : this.tilesData.tileStates(), tilesData == null ? null : tilesData.tileStates());
+			TerminalLauncher.change("gameTileState", this, this.tilesData == null ? null : this.tilesData.gameTileState(), tilesData == null ? null : tilesData.gameTileState());
+			TerminalLauncher.change("larkSuits", this, this.tilesData == null ? null : this.tilesData.larkSuits(), tilesData == null ? null : tilesData.larkSuits());
+			TerminalLauncher.change("scores", this, this.tilesData == null ? null : this.tilesData.scores(), tilesData == null ? null : tilesData.scores());
+			TerminalLauncher.change("discardTileStates", this, this.tilesData == null ? null : this.tilesData.discardTileStates(), tilesData == null ? null : tilesData.discardTileStates());
+			TerminalLauncher.change("currentPlayerId", this, this.tilesData == null ? null : this.tilesData.currentPlayerId(), tilesData == null ? null : tilesData.currentPlayerId());
 		}
 		this.tilesData = tilesData;
 	}

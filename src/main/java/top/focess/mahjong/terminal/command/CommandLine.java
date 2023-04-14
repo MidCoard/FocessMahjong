@@ -20,7 +20,7 @@ public class CommandLine {
 
 	public static CommandResult execute(final String command) {
 		final List<String> args = CommandLine.splitCommand(command);
-		if (0 == args.size())
+		if (args.size() == 0)
 			return CommandResult.NONE;
 		final String commandName = args.get(0);
 		args.remove(0);
@@ -84,25 +84,25 @@ public class CommandLine {
 						stringBuilder.append(c);
 						break;
 				}
-			} else if ('\\' == c)
+			} else if (c == '\\')
 				ignore = true;
-			else if (' ' == c) {
+			else if (c == ' ') {
 				if (!stack) {
-					if (0 < stringBuilder.length()) {
+					if (stringBuilder.length() > 0) {
 						args.add(stringBuilder.toString());
 						stringBuilder.delete(0, stringBuilder.length());
 					}
 				} else
 					stringBuilder.append(' ');
-			} else if ('"' == c)
+			} else if (c == '"')
 				stack = !stack;
-			else if ('@' == c && !stack && null != last && ' ' == last) {
+			else if (c == '@' && !stack && last != null && last == ' ') {
 				stringBuilder.append('"');
 				stringBuilder.append('@');
 			} else stringBuilder.append(c);
 			last = c;
 		}
-		if (0 != stringBuilder.length())
+		if (stringBuilder.length() != 0)
 			args.add(stringBuilder.toString());
 		return args;
 	}

@@ -34,9 +34,9 @@ public class LocalGame extends Game {
 	}
 
 	private synchronized void countdown() {
-		if (GameState.WAITING != this.getGameState())
+		if (this.getGameState() != GameState.WAITING)
 			return;
-		if (0 == this.getStartTime()) {
+		if (this.getStartTime() == 0) {
 			this.task.cancel();
 			this.task = null;
 			this.start();
@@ -48,14 +48,14 @@ public class LocalGame extends Game {
 
 	@Override
 	public void doTileAction(final GameTileActionPacket.TileAction tileAction, final Player player, final TileState... tileStates) {
-		if (null == this.gameManager || GameState.PLAYING != this.getGameState())
+		if (this.gameManager == null || this.getGameState() != GameState.PLAYING)
 			return;
 		this.gameManager.doTileAction(tileAction, this.startPlayers.indexOf(player.getId()), tileStates);
 	}
 
 	@Override
 	public GameTileState getGameTileState() {
-		if (null == this.gameManager || GameState.PLAYING != this.getGameState())
+		if (this.gameManager == null || this.getGameState() != GameState.PLAYING)
 			return null;
 		return this.gameManager.getGameTileState();
 	}
@@ -65,11 +65,11 @@ public class LocalGame extends Game {
 			return true;
 		if (!this.getRule().checkPlayerSize(this.players.size() + 1))
 			return false;
-		if (null != player.getGame() || Player.PlayerState.WAITING != player.getPlayerState())
+		if (player.getGame() != null || player.getPlayerState() != Player.PlayerState.WAITING)
 			return false;
-		if (GameState.PLAYING == this.getGameState() && !this.startPlayers.contains(player.getId()))
+		if (this.getGameState() == GameState.PLAYING && !this.startPlayers.contains(player.getId()))
 			return false;
-		if (GameState.PLAYING == this.getGameState())
+		if (this.getGameState() == GameState.PLAYING)
 			player.setPlayerState(Player.PlayerState.PLAYING);
 		final List<Player> old = Lists.newArrayList(this.players);
 		this.players.add(player);
@@ -83,7 +83,7 @@ public class LocalGame extends Game {
 		for (final Player p : this.players) {
 			if (p != player && p instanceof RemotePlayer) {
 				final int clientId = ((RemotePlayer) p).getClientId();
-				if (-1 == clientId)
+				if (clientId == -1)
 					throw new IllegalStateException("Remote player " + p.getName() + " has no client id");
 				this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getPartGameData(p)));
 			}
@@ -96,7 +96,7 @@ public class LocalGame extends Game {
 
 	private synchronized GameData getPartGameData(final int player) {
 		final TilesData tilesData;
-		if (GameState.PLAYING == getGameState() && null != this.gameManager)
+		if (this.getGameState() == GameState.PLAYING && this.gameManager != null)
 			tilesData = this.gameManager.getTilesData(player);
 		else tilesData = null;
 		return new GameData(this.getId(), this.getRule(), this.getGameState(), this.getStartTime(), this.getGameTime(), this.getCountdown(), tilesData, this.players.stream().map(Player::getPlayerData).toList());
@@ -104,13 +104,13 @@ public class LocalGame extends Game {
 
 	@Override
 	public void larkSuit(final RemotePlayer player, final TileState.TileStateCategory category) {
-		if (null == this.gameManager || GameState.PLAYING != this.getGameState())
+		if (this.gameManager == null || this.getGameState() != GameState.PLAYING)
 			return;
 		this.gameManager.larkSuit(this.startPlayers.indexOf(player.getId()), category);
 	}
 
 	public synchronized boolean leave(final Player player) {
-		if (null == player.getGame() && !this.players.contains(player))
+		if (player.getGame() == null && !this.players.contains(player))
 			return true;
 		final List<Player> old = Lists.newArrayList(this.players);
 		if (player.getGame() != this || !this.players.remove(player))
@@ -118,7 +118,7 @@ public class LocalGame extends Game {
 		TerminalLauncher.change("players", this, old, this.players);
 		player.setGame(null);
 		player.setPlayerState(Player.PlayerState.WAITING);
-		if (null != this.task) {
+		if (this.task != null) {
 			this.task.cancel();
 			this.task = null;
 		}
@@ -128,43 +128,43 @@ public class LocalGame extends Game {
 
 	@Override
 	public synchronized boolean ready(final Player player) {
-		if (GameState.WAITING != this.getGameState())
+		if (this.getGameState() != GameState.WAITING)
 			return false;
 		if (this.players.contains(player))
-			if (Player.PlayerState.WAITING == player.getPlayerState()) {
+			if (player.getPlayerState() == Player.PlayerState.WAITING) {
 				player.setPlayerState(Player.PlayerState.READY);
-				if (this.players.stream().allMatch(p -> Player.PlayerState.READY == p.getPlayerState())) {
+				if (this.players.stream().allMatch(p -> p.getPlayerState() == Player.PlayerState.READY)) {
 					this.setStartTime(this.getRule().getReadyTime(this.players.size()));
-					if (null != this.task)
+					if (this.task != null)
 						this.task.cancel();
-					if (-1 != this.getStartTime())
+					if (this.getStartTime() != -1)
 						this.task = LocalGame.FOCESS_SCHEDULER.runTimer(this::countdown, Duration.ZERO, Duration.ofSeconds(1));
 				}
 				this.syncOtherPlayer(player);
 				return true;
-			} else return Player.PlayerState.READY == player.getPlayerState();
+			} else return player.getPlayerState() == Player.PlayerState.READY;
 		return false;
 	}
 
 	@Override
 	public synchronized boolean unready(final Player player) {
-		if (GameState.WAITING != this.getGameState())
+		if (this.getGameState() != GameState.WAITING)
 			return false;
 		if (this.players.contains(player))
-			if (Player.PlayerState.READY == player.getPlayerState()) {
+			if (player.getPlayerState() == Player.PlayerState.READY) {
 				player.setPlayerState(Player.PlayerState.WAITING);
-				if (null != this.task) {
+				if (this.task != null) {
 					this.task.cancel();
 					this.task = null;
 				}
 				this.syncOtherPlayer(player);
 				return true;
-			} else return Player.PlayerState.WAITING == player.getPlayerState();
+			} else return player.getPlayerState() == Player.PlayerState.WAITING;
 		return false;
 	}
 
 	public synchronized void end() {
-		if (GameState.PLAYING != this.getGameState())
+		if (this.getGameState() != GameState.PLAYING)
 			return;
 		this.setGameState(GameState.WAITING);
 		this.players.forEach(player -> player.setPlayerState(Player.PlayerState.WAITING));
@@ -192,7 +192,7 @@ public class LocalGame extends Game {
 		this.players.forEach(player -> {
 			if (player instanceof RemotePlayer) {
 				final int clientId = ((RemotePlayer) player).getClientId();
-				if (-1 == clientId)
+				if (clientId == -1)
 					throw new IllegalStateException("Remote player " + player.getName() + " has no client id");
 				this.serverSocket.getReceiver().sendPacket(clientId, packet);
 			}
@@ -200,9 +200,9 @@ public class LocalGame extends Game {
 	}
 
 	public synchronized void start() {
-		if (GameState.WAITING != this.getGameState())
+		if (this.getGameState() != GameState.WAITING)
 			return;
-		if (!this.players.stream().allMatch(player -> Player.PlayerState.READY == player.getPlayerState()))
+		if (!this.players.stream().allMatch(player -> player.getPlayerState() == Player.PlayerState.READY))
 			return;
 		this.setGameState(GameState.PLAYING);
 		this.players.forEach(player -> player.setPlayerState(Player.PlayerState.PLAYING));
@@ -216,15 +216,15 @@ public class LocalGame extends Game {
 	}
 
 	public synchronized void tick() {
-		if (GameState.PLAYING != this.getGameState())
+		if (this.getGameState() != GameState.PLAYING)
 			return;
 		this.tickGameTime();
 		this.gameManager.tick();
 		this.setCountdown(this.gameManager.getCountdown());
 		this.syncPlayer();
-		if (GameTileState.DISCARDING == this.gameManager.getGameTileState()) {
+		if (this.gameManager.getGameTileState() == GameTileState.DISCARDING) {
 			final Player player = this.getPlayer(this.gameManager.getCurrentPlayer());
-			if (null != player)
+			if (player != null)
 				if (player instanceof LocalPlayer)
 					TerminalLauncher.change("fetchTileState", player, null, this.gameManager.getCurrentTileState());
 				else if (player instanceof RemotePlayer)

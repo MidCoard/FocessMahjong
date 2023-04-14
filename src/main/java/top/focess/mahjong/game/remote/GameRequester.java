@@ -37,7 +37,7 @@ public class GameRequester {
 	public void response(final String action, final Object arg, final Predicate<Object[]> predicate) {
 		synchronized (GameRequester.LOCK) {
 			final GameRequest gameRequest = this.gameRequests.get(action);
-			if (null != gameRequest && predicate.test(gameRequest.getArgs())) {
+			if (gameRequest != null && predicate.test(gameRequest.getArgs())) {
 				this.gameRequests.remove(action);
 				synchronized (gameRequest.getLock()) {
 					gameRequest.setResponse(arg);

@@ -26,7 +26,7 @@ public class TileCommand extends Command {
 			final TileState tileState2 = dataCollection.get(TileState.class);
 			final TileState tileState3 = dataCollection.get(TileState.class);
 			final Player player = LocalPlayer.localPlayer;
-			if (null == player.getGame() || GameTileState.CHANGING_3_TILES != player.getGame().getGameTileState()) {
+			if (player.getGame() == null || player.getGame().getGameTileState() != GameTileState.CHANGING_3_TILES) {
 				ioHandler.output("You can't change tileStates now!");
 				return CommandResult.REFUSE;
 			}

@@ -43,7 +43,7 @@ public class Player {
 	}
 
 	public PlayerData getPlayerData() {
-		return new PlayerData(this.id, this.name, this.playerState, null == this.game ? null : this.game.getId());
+		return new PlayerData(this.id, this.name, this.playerState, this.game == null ? null : this.game.getId());
 	}
 
 	public PlayerState getPlayerState() {
@@ -62,7 +62,7 @@ public class Player {
 	}
 
 	public boolean leave() {
-		return null != this.getGame() && this.getGame().leave(this);
+		return this.getGame() != null && this.getGame().leave(this);
 	}
 
 	public Game getGame() {

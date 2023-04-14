@@ -80,10 +80,10 @@ public class Launcher {
 				final PlayerData playerData = game.getGameRequester().request("syncPlayer",
 						() -> this.serverSocket.getReceiver().sendPacket(clientId, new SyncPlayerPacket(packet.getPlayerId(), packet.getGameId())),
 						packet.getPlayerId());
-				if (null == playerData)
+				if (playerData == null)
 					return;
 				final RemotePlayer player = RemotePlayer.getOrCreatePlayer(clientId, playerData);
-				if (null == player)
+				if (player == null)
 					return;
 				final boolean flag = switch (packet.getGameAction()) {
 					case READY -> game.ready(player);
@@ -108,7 +108,7 @@ public class Launcher {
 			final Game game = Game.getGame(packet.getGameId());
 			if (game instanceof LocalGame) {
 				final RemotePlayer player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
-				if (null == player)
+				if (player == null)
 					return;
 				receiver.sendPacket(clientId, new GamePacket(((LocalGame) game).getPartGameData(player)));
 			}
@@ -142,19 +142,19 @@ public class Launcher {
 				new OptionParserClassifier("debug"),
 				new OptionParserClassifier("gui"));
 		Option option = options.get("name");
-		LocalPlayer.localPlayer = new LocalPlayer(null != option ? option.get(OptionType.DEFAULT_OPTION_TYPE) : "LocalPlayer");
+		LocalPlayer.localPlayer = new LocalPlayer(option != null ? option.get(OptionType.DEFAULT_OPTION_TYPE) : "LocalPlayer");
 		option = options.get("debug");
-		if (null != option)
+		if (option != null)
 			ASocket.enableDebug();
 
 		option = options.get("port");
 		try {
-			Launcher.defaultLauncher = new Launcher(null != option ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : Launcher.DEFAULT_PORT);
+			Launcher.defaultLauncher = new Launcher(option != null ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : Launcher.DEFAULT_PORT);
 		} catch (final IllegalPortException e) {
 			throw new RuntimeException(e);
 		}
 		option = options.get("gui");
-		if (null == option)
+		if (option == null)
 			TerminalLauncher.launch();
 		Runtime.getRuntime().addShutdownHook(new Thread(Launcher.defaultLauncher::exit));
 	}

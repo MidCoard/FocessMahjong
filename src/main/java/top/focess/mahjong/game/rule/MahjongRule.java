@@ -36,7 +36,7 @@ public enum MahjongRule {
 
 		@Override
 		public GameManager getGameManager(final LocalGame game, final int playerSize) {
-			return new SiChuanGameManager(game, playerSize, score -> 16 == score ? 16 : score * 2);
+			return new SiChuanGameManager(game, playerSize, score -> score == 16 ? 16 : score * 2);
 		}
 	};
 
@@ -47,7 +47,7 @@ public enum MahjongRule {
 	}
 
 	public boolean checkPlayerSize(final int size) {
-		return 4 >= size;
+		return size <= 4;
 	}
 
 	public abstract GameManager getGameManager(LocalGame game, int playerSize);

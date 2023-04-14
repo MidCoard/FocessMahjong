@@ -30,7 +30,7 @@ public class PlayerCommand extends Command {
 			final UUID gameId = UUID.fromString(dataCollection.get());
 			final Player player = LocalPlayer.localPlayer;
 			final Game game = Game.getGame(gameId);
-			if (null == game) {
+			if (game == null) {
 				ioHandler.output("Game " + gameId + " not found!");
 				return CommandResult.REFUSE;
 			}
@@ -46,7 +46,7 @@ public class PlayerCommand extends Command {
 			final UUID gameId = UUID.fromString(dataCollection.get());
 			final Player player = LocalPlayer.localPlayer;
 			final Game game = Game.getGame(gameId);
-			if (null == game) {
+			if (game == null) {
 				ioHandler.output("Game " + gameId + " not found!");
 				return CommandResult.REFUSE;
 			}
@@ -62,7 +62,7 @@ public class PlayerCommand extends Command {
 			final UUID gameId = UUID.fromString(dataCollection.get());
 			final Player player = LocalPlayer.localPlayer;
 			final Game game = Game.getGame(gameId);
-			if (null == game) {
+			if (game == null) {
 				ioHandler.output("Game " + gameId + " not found!");
 				return CommandResult.REFUSE;
 			}
@@ -78,7 +78,7 @@ public class PlayerCommand extends Command {
 			final UUID gameId = UUID.fromString(dataCollection.get());
 			final Player player = LocalPlayer.localPlayer;
 			final Game game = Game.getGame(gameId);
-			if (null == game) {
+			if (game == null) {
 				ioHandler.output("Game " + gameId + " not found!");
 				return CommandResult.REFUSE;
 			}

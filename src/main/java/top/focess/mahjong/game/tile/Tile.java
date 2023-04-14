@@ -50,7 +50,7 @@ public class Tile implements Comparable<Tile> {
 	@Override
 	public boolean equals(final Object o) {
 		if (this == o) return true;
-		if (null == o || this.getClass() != o.getClass()) return false;
+		if (o == null || this.getClass() != o.getClass()) return false;
 
 		final Tile tile = (Tile) o;
 
@@ -58,6 +58,6 @@ public class Tile implements Comparable<Tile> {
 	}
 
 	public boolean isDetail(final int detail) {
-		return 0 != (this.detail & detail);
+		return (this.detail & detail) != 0;
 	}
 }

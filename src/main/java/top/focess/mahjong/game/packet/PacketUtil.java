@@ -76,7 +76,7 @@ public class PacketUtil {
 		final String name = codec.readString();
 		final Player.PlayerState playerState = Player.PlayerState.valueOf(codec.readString());
 		final String gameIdStr = codec.tryReadString();
-		final UUID gameId = null == gameIdStr ? null : UUID.fromString(gameIdStr);
+		final UUID gameId = gameIdStr == null ? null : UUID.fromString(gameIdStr);
 		return new PlayerData(playerId, name, playerState, gameId);
 	}
 
@@ -96,7 +96,7 @@ public class PacketUtil {
 	}
 
 	private static void writeTilesData(final PacketPreCodec codec, final TilesData tilesData) {
-		if (null == tilesData)
+		if (tilesData == null)
 			codec.writeBoolean(false);
 		else {
 			codec.writeBoolean(true);
@@ -129,6 +129,6 @@ public class PacketUtil {
 		codec.writeString(playerData.id().toString());
 		codec.writeString(playerData.name());
 		codec.writeString(playerData.playerState().name());
-		codec.tryWriteString(null == playerData.gameId() ? null : playerData.gameId().toString());
+		codec.tryWriteString(playerData.gameId() == null ? null : playerData.gameId().toString());
 	}
 }

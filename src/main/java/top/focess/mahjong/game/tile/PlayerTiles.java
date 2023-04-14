@@ -32,7 +32,7 @@ public class PlayerTiles {
 
 	public void addTile(final Tile tile) {
 		this.huableTiles.clear();
-		if (null == tile)
+		if (tile == null)
 			return;
 		this.tiles.add(tile);
 	}
@@ -76,7 +76,7 @@ public class PlayerTiles {
 		final Map<TileState.TileStateCategory, Integer> map = Maps.newHashMap();
 		for (final Tile tile : this.tiles) {
 			final TileState.TileStateCategory category = tile.getTileState().getCategory();
-			map.compute(category, (k, v) -> null == v ? 1 : v + 1);
+			map.compute(category, (k, v) -> v == null ? 1 : v + 1);
 		}
 		int min = Integer.MAX_VALUE;
 		TileState.TileStateCategory category = null;
@@ -156,7 +156,7 @@ public class PlayerTiles {
 	public void markHu(final Tile tile) {
 		final int type = HuAlgorithm.calculateHuType(this.tiles, this.notDiscardTiles, tile);
 		// mark hu type or hu score to indicate ...
-		if (0 != type)
+		if (type != 0)
 			this.huableTiles.put(tile, type);
 	}
 
@@ -168,7 +168,7 @@ public class PlayerTiles {
 
 	public boolean huable(@Nullable final Tile tile) {
 		final int type = HuAlgorithm.calculateHuType(this.tiles, this.notDiscardTiles, tile);
-		if (0 == type)
+		if (type == 0)
 			return false;
 		return !this.huableTiles.containsValue(type);
 	}
