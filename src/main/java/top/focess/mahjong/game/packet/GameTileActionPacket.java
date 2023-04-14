@@ -43,12 +43,18 @@ public class GameTileActionPacket extends Packet {
 	}
 
 	public enum TileAction {
-		PUNG(2), KONG(1), DISCARD_TILE(-1), HU(0), CHANGE_3_TILES(-1);
+		PUNG("pung", 2), KONG("kong", 1), DISCARD_TILE("discard",-1), HU("hu",0), CHANGE_3_TILES("change",-1);
 
+		private final String name;
 		private final int priority;
 
-		TileAction(final int priority) {
+		TileAction(final String name, final int priority) {
+			this.name = name;
 			this.priority = priority;
+		}
+
+		public String getName() {
+			return this.name;
 		}
 
 		public int getPriority() {

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.Game;
 import top.focess.mahjong.game.LocalPlayer;
+import top.focess.mahjong.game.Player;
 import top.focess.mahjong.game.data.GameData;
 import top.focess.mahjong.game.packet.*;
 import top.focess.mahjong.terminal.TerminalLauncher;
@@ -83,10 +84,14 @@ public class RemoteServer {
 					TerminalLauncher.change("fetchTileState", LocalPlayer.localPlayer, null, packet.getTileState());
 			});
 			receiver.register(GameTileActionNoticePacket.class, (clientId, packet) -> {
-				// todo
+				final Player player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+				if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId()))
+					TerminalLauncher.change(packet.getTileAction().getName() + "_notice", player, null, packet.getTileStates());
 			});
 			receiver.register(GameTileActionConfirmPacket.class, (clientId, packet) -> {
-				// todo
+				final Player player = RemotePlayer.getPlayer(clientId, packet.getPlayerId());
+				if (LocalPlayer.localPlayer.getId().equals(packet.getPlayerId()))
+					TerminalLauncher.change(packet.getTileAction().getName() + "_confirm", player, null, packet.getTileStates());
 			});
 			RemoteServer.CLIENT_SOCKET_MAP.put(Pair.of(ip, port), clientSocket);
 		}

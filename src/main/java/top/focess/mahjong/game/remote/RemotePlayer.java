@@ -29,6 +29,7 @@ public class RemotePlayer extends Player {
 
 	public static synchronized RemotePlayer getOrCreatePlayer(final int clientId, final PlayerData playerData) {
 		if (RemotePlayer.PLAYERS.containsKey(playerData.id())) {
+			assert -1 != clientId;//todo
 			final RemotePlayer player = RemotePlayer.PLAYERS.get(playerData.id());
 			if (-1 == player.clientId && -1 != clientId)
 				player.clientId = clientId;

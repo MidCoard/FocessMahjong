@@ -158,6 +158,8 @@ public class SiChuanGameManager extends GameManager {
 				return;
 			if (1 != tileStates.length)
 				return;
+			if (0 != playerTiles.getRandomTiles(1, playerTiles.getLarkSuit(), this.random).size() && playerTiles.getLarkSuit() != tileStates[0].getCategory())
+				return;
 			if (null != this.currentTile && this.currentTile.getTileState() != tileStates[0] && 0 == playerTiles.getHandTileStateCount(tileStates[0]))
 				return;
 			if (null == this.currentTile && 0 == playerTiles.getHandTileStateCount(tileStates[0]))
@@ -307,9 +309,15 @@ public class SiChuanGameManager extends GameManager {
 			final PlayerTiles playerTiles = this.playerTilesList.get(this.currentPlayer);
 			Tile tile = this.currentTile;
 			if (null == tile) {
-				final TileState.TileStateCategory category = playerTiles.getLeastCategory(1);
-				tile = playerTiles.getRandomTiles(1, category, this.random).iterator().next();
-				playerTiles.discard(tile);
+				final Set<Tile> tiles = playerTiles.getRandomTiles(1, playerTiles.getLarkSuit(), this.random);
+				if (0 == tiles.size()) {
+					final TileState.TileStateCategory category = playerTiles.getLeastCategory(1);
+					tile = playerTiles.getRandomTiles(1, category, this.random).iterator().next();
+					playerTiles.discard(tile);
+				} else {
+					tile = tiles.iterator().next();
+					playerTiles.discard(tile);
+				}
 			} else if (tile.isDetail(Tile.AFTER_KONG_FETCHED_TILE))
 				tile.addDetail(Tile.AFTER_KONG_DISCARDED_TILE);
 			final Tile finalTile = tile;

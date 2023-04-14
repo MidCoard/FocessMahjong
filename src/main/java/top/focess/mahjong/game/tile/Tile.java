@@ -6,8 +6,9 @@ public class Tile implements Comparable<Tile> {
 
 	public static final int AFTER_KONG_DISCARDED_TILE = 0b100;
 	public static final int AFTER_KONG_FETCHED_TILE = 0b10;
-	public static final int HU_TILE = 0b100000;
-	public static final int KONG_TILE = 0b1000;
+	public static final int HU_TILE =    0b100000;
+	public static final int KONG_TILE =    0b1000;
+	public static final int LAST_TILE = 0b1000000;
 	public static final int NORMAL_KONG_TILE = 0b1;
 	public static final int PUNG_TILE = 0b10000;
 	private final int number;

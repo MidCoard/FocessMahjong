@@ -146,6 +146,7 @@ public class Launcher {
 		option = options.get("debug");
 		if (null != option)
 			ASocket.enableDebug();
+
 		option = options.get("port");
 		try {
 			Launcher.defaultLauncher = new Launcher(null != option ? option.get(IntegerOptionType.INTEGER_OPTION_TYPE) : Launcher.DEFAULT_PORT);
@@ -155,6 +156,7 @@ public class Launcher {
 		option = options.get("gui");
 		if (null == option)
 			TerminalLauncher.launch();
+		Runtime.getRuntime().addShutdownHook(new Thread(Launcher.defaultLauncher::exit));
 	}
 
 	public LocalGame createGame(final MahjongRule rule) {

@@ -3,7 +3,9 @@ package top.focess.mahjong.game.tile;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import top.focess.mahjong.game.algorithm.HuAlgorithm;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class PlayerTiles {
@@ -14,7 +16,7 @@ public class PlayerTiles {
 
 	private final Set<Tile> tiles = Sets.newHashSet();
 
-	private final Set<Tile> huableTiles = Sets.newHashSet();
+	private final Map<Tile, Integer> huableTiles = Maps.newHashMap();
 
 	private int score;
 	private boolean isHu;
@@ -111,8 +113,7 @@ public class PlayerTiles {
 	}
 
 	public int getTileScore(final Tile tile) {
-		final int score = 1;
-		// todo
+		final int score = HuAlgorithm.calculateHuScore(HuAlgorithm.calculateHuType(this.tiles, this.notDiscardTiles, tile));
 		return Math.min(score, 16);
 	}
 
@@ -153,13 +154,23 @@ public class PlayerTiles {
 	}
 
 	public void markHu(final Tile tile) {
-		if (this.huable(tile))
-			this.huableTiles.add(tile);
+		final int type = HuAlgorithm.calculateHuType(this.tiles, this.notDiscardTiles, tile);
+		// mark hu type or hu score to indicate ...
+		if (0 != type)
+			this.huableTiles.put(tile, type);
 	}
 
-	public boolean huable(final Tile tile) {
-		return !this.huableTiles.contains(tile);
-		// todo calc hu
+	public Set<Tile> getTiles() {
+		final Set<Tile> ret = Sets.newHashSet(this.tiles);
+		ret.addAll(this.notDiscardTiles);
+		return ret;
+	}
+
+	public boolean huable(@Nullable final Tile tile) {
+		final int type = HuAlgorithm.calculateHuType(this.tiles, this.notDiscardTiles, tile);
+		if (0 == type)
+			return false;
+		return !this.huableTiles.containsValue(type);
 	}
 
 	public void pung(final Set<Tile> tiles) {

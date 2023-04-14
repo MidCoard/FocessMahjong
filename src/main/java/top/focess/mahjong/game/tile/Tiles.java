@@ -27,7 +27,10 @@ public class Tiles {
 	}
 
 	public Tile fetch() {
-		return this.tiles[this.pointer++];
+		final Tile tile = this.tiles[this.pointer++];
+		if (this.pointer == this.tiles.length)
+			tile.addDetail(Tile.LAST_TILE);
+		return tile;
 	}
 
 	public int getRemainSize() {
