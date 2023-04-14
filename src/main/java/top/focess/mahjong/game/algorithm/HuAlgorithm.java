@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.tile.Tile;
 import top.focess.mahjong.game.tile.TileState;
+import top.focess.util.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -61,13 +62,15 @@ public class HuAlgorithm {
 		}
 		if (3 == tileStateList.stream().map(TileState::getCategory).distinct().count())
 			return type;
-		// judge hu todo
 		final Map<TileState, Integer> map = Maps.newHashMap();
-		final Map<TileState, Integer> handMap = Maps.newHashMap();
+		final Map<TileState, Integer> handMap = Maps.newTreeMap();
 		for (final TileState tileState : tileStateList)
 			map.compute(tileState, (__, integer) -> null == integer ? 1 : integer + 1);
 		for (final TileState tileState : handTileStateList)
 			handMap.compute(tileState, (__, integer) -> null == integer ? 1 : integer + 1);
+		if (!HuAlgorithm.calcHuable(handMap))
+			if (14 != handTileStateList.size() || !handMap.values().stream().allMatch(i -> 4 == i || 2 == i))
+				return type;
 		if (1 == handMap.size() && handMap.values().stream().allMatch(i -> 2 == i))
 			type |= HuAlgorithm.HU_TYPE_ONE_FISH;
 		else if (handMap.values().stream().allMatch(i -> 3 == i || 2 == i))
@@ -89,5 +92,89 @@ public class HuAlgorithm {
 		final int rootCount = (int) map.values().stream().filter(i -> 4 == i).count();
 		type |= (rootCount << 7);
 		return type;
+	}
+
+	private static boolean calcHuable(final Map<TileState, Integer> map) {
+		final List<MutablePair<TileState, Integer>> list = Lists.newArrayList();
+		int hand = 0;
+		for (final Map.Entry<TileState, Integer> entry : map.entrySet()) {
+			list.add(MutablePair.of(entry.getKey(), entry.getValue()));
+			hand += entry.getValue();
+		}
+		return HuAlgorithm.dfsCalcHuable(list, 1, (hand - 2) / 3);
+	}
+
+	private static boolean dfsCalcHuable(final List<MutablePair<TileState, Integer>> list, final int pairs, final int sequences) {
+		if (0 == pairs && 0 == sequences)
+			return true;
+		for (int i = 0;i < list.size();i++) {
+			final MutablePair<TileState, Integer> pair = list.get(i);
+			if (1 <= pair.getSecond() && 0 < sequences) {
+				if (i + 2 < list.size()) {
+					if (list.get(i + 1).getSecond() > 0 && list.get(i + 2).getSecond() > 0) {
+						pair.setSecond(pair.getSecond() - 1);
+						list.get(i + 1).setSecond(list.get(i + 1).getSecond() - 1);
+						list.get(i + 2).setSecond(list.get(i + 2).getSecond() - 1);
+						if (HuAlgorithm.dfsCalcHuable(list, pairs, sequences - 1))
+							return true;
+						pair.setSecond(pair.getSecond() + 1);
+						list.get(i + 1).setSecond(list.get(i + 1).getSecond() + 1);
+						list.get(i + 2).setSecond(list.get(i + 2).getSecond() + 1);
+					}
+				}
+			}
+			if (2 <= pair.getSecond() && 0 < pairs) {
+				pair.setSecond(pair.getSecond() - 2);
+				if (HuAlgorithm.dfsCalcHuable(list, pairs - 1, sequences))
+					return true;
+				pair.setSecond(pair.getSecond() + 2);
+			}
+			if (3 <= pair.getSecond() && 0 < sequences) {
+				pair.setSecond(pair.getSecond() - 3);
+				if (HuAlgorithm.dfsCalcHuable(list, pairs, sequences - 1))
+					return true;
+				pair.setSecond(pair.getSecond() + 3);
+			}
+		}
+		return false;
+	}
+
+	public static void main(String[] args) {
+		// test huable
+
+	}
+
+	public static class MutablePair<T, U> {
+		public T first;
+		public U second;
+
+		public MutablePair(final T first, final U second) {
+			this.first = first;
+			this.second = second;
+		}
+
+		public static <T, U> MutablePair<T, U> of(final T first, final U second) {
+			return new MutablePair<>(first, second);
+		}
+
+		public static <T, U> MutablePair<T, U> of(final Pair<T, U> pair) {
+			return new MutablePair<>(pair.getFirst(), pair.getSecond());
+		}
+
+		public T getFirst() {
+			return this.first;
+		}
+
+		public void setFirst(final T first) {
+			this.first = first;
+		}
+
+		public U getSecond() {
+			return this.second;
+		}
+
+		public void setSecond(final U second) {
+			this.second = second;
+		}
 	}
 }
