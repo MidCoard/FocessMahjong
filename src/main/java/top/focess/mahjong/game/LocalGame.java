@@ -81,12 +81,14 @@ public class LocalGame extends Game {
 
 	private void syncOtherPlayer(final Player player) {
 		for (final Player p : this.players) {
-			if (p != player && p instanceof RemotePlayer) {
-				final int clientId = ((RemotePlayer) p).getClientId();
-				if (clientId == -1)
-					throw new IllegalStateException("Remote player " + p.getName() + " has no client id");
-				this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getPartGameData(p)));
-			}
+			if (p != player)
+				if (p instanceof RemotePlayer) {
+					final int clientId = ((RemotePlayer) p).getClientId();
+					if (clientId == -1)
+						throw new IllegalStateException("Remote player " + p.getName() + " has no client id");
+					this.serverSocket.getReceiver().sendPacket(clientId, new GameSyncPacket(this.getPartGameData(p)));
+				} else
+					this.setTilesData(this.getPartGameData(p).tilesData());
 		}
 	}
 

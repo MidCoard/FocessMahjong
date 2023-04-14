@@ -3,6 +3,7 @@ package top.focess.mahjong.game;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.mahjong.game.data.GameData;
+import top.focess.mahjong.game.data.TilesData;
 import top.focess.mahjong.game.packet.GameTileActionPacket;
 import top.focess.mahjong.game.remote.GameRequester;
 import top.focess.mahjong.game.remote.RemotePlayer;
@@ -26,6 +27,7 @@ public abstract class Game {
 	private int gameTime;
 	private int countdown = -1;
 	private GameState gameState = GameState.WAITING;
+	private TilesData tilesData;
 
 	public Game(final MahjongRule rule) {
 		this(UUID.randomUUID(), rule);
@@ -125,6 +127,10 @@ public abstract class Game {
 		this.setGameTime(this.getGameTime() + 1);
 	}
 
+	public List<Player> getPlayers() {
+		return this.players;
+	}
+
 	@Override
 	public String toString() {
 		return "Game{" +
@@ -135,6 +141,42 @@ public abstract class Game {
 	}
 
 	public abstract boolean unready(Player player);
+
+	public TilesData getTilesData() {
+		return this.tilesData;
+	}
+
+	public void setTilesData(final TilesData tilesData) {
+		if (this.tilesData != null && tilesData != null) {
+			if (this.tilesData.remainTiles() != tilesData.remainTiles())
+				TerminalLauncher.change("remainTiles", this, this.tilesData.remainTiles(), tilesData.remainTiles());
+			if (!this.tilesData.tileStates().equals(tilesData.tileStates()))
+				TerminalLauncher.change("tileStates", this, this.tilesData.tileStates(), tilesData.tileStates());
+			if (this.tilesData.gameTileState() != tilesData.gameTileState())
+				TerminalLauncher.change("gameTileState", this, this.tilesData.gameTileState(), tilesData.gameTileState());
+			if (!this.tilesData.larkSuits().equals(tilesData.larkSuits()))
+				TerminalLauncher.change("larkSuits", this, this.tilesData.larkSuits(), tilesData.larkSuits());
+			if (!this.tilesData.scores().equals(tilesData.scores()))
+				TerminalLauncher.change("scores", this, this.tilesData.scores(), tilesData.scores());
+			if (!this.tilesData.discardTileStates().equals(tilesData.discardTileStates()))
+				TerminalLauncher.change("discardTileStates", this, this.tilesData.discardTileStates(), tilesData.discardTileStates());
+			if (!this.tilesData.currentPlayerId().equals(tilesData.currentPlayerId()))
+				TerminalLauncher.change("currentPlayerId", this, this.tilesData.currentPlayerId(), tilesData.currentPlayerId());
+			if (this.tilesData.currentTileState() != tilesData.currentTileState())
+				TerminalLauncher.change("currentTileState", this, this.tilesData.currentTileState(), tilesData.currentTileState());
+		} else if (this.tilesData != null || tilesData != null) {
+			TerminalLauncher.change("remainTiles", this, this.tilesData == null ? null : this.tilesData.remainTiles(), tilesData == null ? null : tilesData.remainTiles());
+			TerminalLauncher.change("tileStates", this, this.tilesData == null ? null : this.tilesData.tileStates(), tilesData == null ? null : tilesData.tileStates());
+			TerminalLauncher.change("gameTileState", this, this.tilesData == null ? null : this.tilesData.gameTileState(), tilesData == null ? null : tilesData.gameTileState());
+			TerminalLauncher.change("larkSuits", this, this.tilesData == null ? null : this.tilesData.larkSuits(), tilesData == null ? null : tilesData.larkSuits());
+			TerminalLauncher.change("scores", this, this.tilesData == null ? null : this.tilesData.scores(), tilesData == null ? null : tilesData.scores());
+			TerminalLauncher.change("discardTileStates", this, this.tilesData == null ? null : this.tilesData.discardTileStates(), tilesData == null ? null : tilesData.discardTileStates());
+			TerminalLauncher.change("currentPlayerId", this, this.tilesData == null ? null : this.tilesData.currentPlayerId(), tilesData == null ? null : tilesData.currentPlayerId());
+			TerminalLauncher.change("currentTileState", this, this.tilesData == null ? null : this.tilesData.currentTileState(), tilesData == null ? null : tilesData.currentTileState());
+		}
+		this.tilesData = tilesData;
+	}
+
 
 	public enum GameState {
 

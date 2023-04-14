@@ -30,8 +30,14 @@ public class RemoteServer {
 			final ClientReceiver receiver = clientSocket.getReceiver();
 			receiver.setDisconnectedHandler(clientId -> {
 				synchronized (this.games) {
-					for (final RemoteGame game : this.games)
+					for (final RemoteGame game : this.games) {
+						if (LocalPlayer.localPlayer.getGame().equals(game)) {
+							LocalPlayer.localPlayer.setGame(null);
+							LocalPlayer.localPlayer.setPlayerState(Player.PlayerState.WAITING);
+						}
+						TerminalLauncher.change("players", game, game.getPlayers(), Lists.newArrayList());
 						game.remove();
+					}
 					this.games.clear();
 				}
 			});

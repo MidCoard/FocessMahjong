@@ -10,9 +10,10 @@ public enum MahjongRule {
 		@Override
 		public int getReadyTime(final int size) {
 			return switch (size) {
-				case 2 -> 10;
+//				case 2 -> 20;
+				case 2 -> 4;
 				case 3 -> 15;
-				case 4 -> 20;
+				case 4 -> 10;
 				default -> -1;
 			};
 		}
@@ -27,9 +28,9 @@ public enum MahjongRule {
 		@Override
 		public int getReadyTime(final int size) {
 			return switch (size) {
-				case 2 -> 10;
+				case 2 -> 20;
 				case 3 -> 15;
-				case 4 -> 20;
+				case 4 -> 10;
 				default -> -1;
 			};
 		}
