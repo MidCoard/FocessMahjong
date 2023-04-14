@@ -43,8 +43,10 @@ public class PacketUtil {
 			final GameTileState gameTileState = GameTileState.values()[codec.readInt()];
 			final int larkSuitSize = codec.readInt();
 			final List<TileState.TileStateCategory> larkSuits = Lists.newArrayList();
-			for (int i = 0; i < larkSuitSize; i++)
-				larkSuits.add(TileState.TileStateCategory.values()[codec.readInt()]);
+			for (int i = 0; i < larkSuitSize; i++) {
+				final int tmp = codec.readInt();
+				larkSuits.add(tmp == -1 ? null : TileState.TileStateCategory.values()[tmp]);
+			}
 			final List<Integer> scores = Lists.newArrayList();
 			for (int i = 0; i < larkSuitSize; i++)
 				scores.add(codec.readInt());
@@ -65,7 +67,8 @@ public class PacketUtil {
 				discardTileStats.add(discardTileStatList);
 			}
 			final UUID currentPlayerId = UUID.fromString(codec.readString());
-			final TileState currentTileState = TileState.values()[codec.readInt()];
+			final int currentTileStateOrdinal = codec.readInt();
+			final TileState currentTileState = currentTileStateOrdinal == -1 ? null : TileState.values()[currentTileStateOrdinal];
 			return new TilesData(remainTiles, tileStates, gameTileState, larkSuits, scores, noDiscardTileStats, discardTileStats, currentPlayerId, currentTileState);
 		} else
 			return null;
@@ -107,7 +110,7 @@ public class PacketUtil {
 			codec.writeInt(tilesData.gameTileState().ordinal());
 			codec.writeInt(tilesData.larkSuits().size());
 			for (final TileState.TileStateCategory tileStateCategory : tilesData.larkSuits())
-				codec.writeInt(tileStateCategory.ordinal());
+				codec.writeInt(tileStateCategory == null ? -1 : tileStateCategory.ordinal());
 			for (final int score : tilesData.scores())
 				codec.writeInt(score);
 			for (final List<TileState> tiles : tilesData.noDiscardTileStates()) {
@@ -121,7 +124,7 @@ public class PacketUtil {
 					codec.writeInt(tile.ordinal());
 			}
 			codec.writeString(tilesData.currentPlayerId().toString());
-			codec.writeInt(tilesData.currentTileState().ordinal());
+			codec.writeInt(tilesData.currentTileState() == null ? -1 : tilesData.currentTileState().ordinal());
 		}
 	}
 
